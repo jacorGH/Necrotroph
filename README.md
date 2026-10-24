@@ -36,6 +36,28 @@ A corpse is worth half the cost of the unit that died, multiplied by how well yo
 
 Each lifeform has a worker, three combat units, a foothold, a core with its own aura, and six mutations: three shared and three of its own.
 
+## Campaign: the Atlas
+
+Each lifeform has its own story campaign across a map of Varuun's body: nine organs joined by Lumen channels.
+
+- **Start in your home organ** (the Brood in the Baleen Reefs, the Quiet Choir in the Furnace Gut, the Restoration in the Hesper Wreck, the Grafted in the Lumen Sea) and invade neighbouring organs one battle at a time.
+- **Every organ plays differently.** The Starlung is built from bone chambers, the Marrow Spires bristle with Warden Nests, the Lumen Sea is cut by blood channels, and the Hesper Wreck is a maze of metal corridors.
+- **Organs you hold carry over** as rewards in later battles: extra Nutrient or Essence, extra workers, more supply, a free mutation, or a faster start.
+- **Rivals spread too.** Between battles the other lifeforms claim free organs, and their strongholds fight back harder.
+- **Five acts.** Infection, then Fever (Wardens surge and units burn hot), then Collapse (tissue rots and corpses decay faster), then the Last Breath, a four-way battle for Varuun's mind. Last comes the hidden Cradle, and an ending unique to each lifeform.
+
+## Drift: the Lumen Sea
+
+A second kind of battlefield, set on Varuun's bloodstream.
+
+- **Bases sit on anchored islands** in the corners. Everything else drifts: three rings of islands wheel around a central heart-island at different speeds and in different directions.
+- **Golden bridges** glow between islands whenever they pass within leaping distance. Units ordered across walk to the edge and leap; if no bridge is open, they hop toward the target where they can, or wait at the edge for the current to bring one.
+- **Everything rides along.** Units, nutrient wells, corpses and buildings move with their island, so a foothold on a drifting cell becomes a moving base.
+- **Spore rafts and wrecks** keep shedding fresh corpses, a steady supply of Essence worth fighting over.
+- Anyone knocked into the sea is washed back onto the nearest island, hurt.
+
+Pick **Drift** as the battlefield in skirmish or when hosting online. In the campaign, the Lumen Sea is always a Drift battle.
+
 ## Features
 
 - **Fog of war with line of sight.** Rock and thickets block vision. Teammates share sight.
@@ -145,8 +167,8 @@ Saved maps, races, settings and in-progress matches are stored in the browser's 
 
 ## Roadmap
 
-1. **The Atlas.** A campaign map of Varuun's organs joined by Lumen channels, where each organ you invade opens a battle, and a story campaign for each lifeform.
-2. **Drift mode.** Real-time battles in the Lumen Sea, where currents carry blood cells, spore rafts and wreckage as moving islands to build on and jump between.
+1. **The Atlas.** Done: see Campaign above.
+2. **Drift mode.** Done: see Drift above.
 3. **The Deep Lumen.** A 3D mode: steer through glowing vessel tunnels and dock with floating bodies, then fight for them.
 
 ## Credits
