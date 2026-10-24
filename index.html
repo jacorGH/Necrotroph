@@ -63,7 +63,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--ichor);outline-
 #ctx:empty{display:none}
 .prow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 .prow::-webkit-scrollbar{display:none}
-.pb{flex:0 0 auto;width:78px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);padding:5px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer}
+.pb{flex:0 0 auto;width:84px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);padding:5px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer}
 .pb img{width:36px;height:36px}
 .pb .nm{font-size:11px;font-weight:600;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .pb .cs{font-size:11px;color:var(--mute);display:flex;align-items:center;gap:5px}
@@ -84,7 +84,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--ichor);outline-
 #netBanner{position:absolute;left:50%;top:calc(var(--sat) + 60px);transform:translateX(-50%);width:min(92vw,420px);pointer-events:auto;
   background:var(--panel);border:1px solid var(--warn);border-radius:14px;padding:12px 14px;text-align:center;font-size:13.5px;line-height:1.4}
 #netBanner .acts{display:flex;gap:8px;justify-content:center;margin-top:10px}
-#toast{position:fixed;left:50%;bottom:calc(var(--sab) + 160px);transform:translateX(-50%);background:var(--panel);border:1px solid var(--line);
+#toast{position:fixed;left:50%;bottom:calc(var(--sab) + 300px);transform:translateX(-50%);background:var(--panel);border:1px solid var(--line);
   border-radius:12px;padding:9px 14px;font-size:13.5px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:30;max-width:86vw;text-align:center}
 #toast.show{opacity:1}
 #hint{position:absolute;left:50%;top:calc(var(--sat) + 60px);transform:translateX(-50%);width:min(92vw,400px);pointer-events:auto;
@@ -176,7 +176,10 @@ textarea{width:100%;min-height:140px;border-radius:12px;border:1px solid var(--l
 .tabs button img{width:22px;height:22px}
 .tabs button.on{border-color:var(--ichor);color:var(--ichor)}
 .pb.up{width:150px;align-items:flex-start;text-align:left;padding:8px}
-.pb.up .ud{font-size:10.5px;color:var(--mute);line-height:1.3;white-space:normal;margin:2px 0 4px}
+.pb .ud{font-size:10.5px;color:var(--mute);line-height:1.3;white-space:normal;margin:2px 0 4px;text-align:center}
+.pb.up .ud{text-align:left}
+.pb.grow{width:104px}
+.pb .cs{white-space:nowrap}
 .pb.up.done{border-color:var(--good);opacity:.7}
 .pb.up.busy{border-color:var(--warn)}
 #groups{position:absolute;right:calc(var(--sar) + 10px);top:calc(var(--sat) + 176px);display:flex;flex-direction:column;gap:6px;pointer-events:auto}
@@ -351,13 +354,13 @@ const U = {
   n_post: { post: 1, struct: 1, name: 'Blight Pustule', cost: POST_COST, hp: 700, ar: 2, rng: 120, dmg: 8, cd: 1.2, r: 24, bt: 22, vis: 320, desc: 'Outpost. Drop-off point, vision, and raises corpses nearby.' },
   k_core: { core: 1, struct: 1, name: 'Brood Mound', hp: 2400, ar: 3, rng: 140, dmg: 12, cd: 1, r: 44, vis: 340 },
   k_work: { worker: 1, name: 'Larva', cost: 50, hp: 55, spd: 70, rng: 14, dmg: 4, cd: 1, r: 8, bt: 8, s: 1, vis: 210, desc: 'Harvests Matter, builds Chambers. Turns organic dead into rich biomass.' },
-  k_skit: { name: 'Skitter', cost: 55, hp: 88, ar: 1, spd: 96, rng: 14, dmg: 8, cd: 0.7, r: 9, bt: 9, s: 1, desc: 'Very fast swarming melee.' },
-  k_spit: { name: 'Spitter', cost: 100, hp: 110, ar: 1, spd: 62, rng: 130, dmg: 15, cd: 1.5, r: 11, bt: 13, s: 2, splash: 22, vis: 270, desc: 'Acid artillery with splash.' },
-  k_cara: { name: 'Carapace', cost: 220, ess: 30, hp: 560, ar: 4, spd: 42, rng: 22, dmg: 30, cd: 1.6, r: 21, bt: 24, s: 4, desc: 'Colossal armored tank. Very hard to kill.' },
+  k_skit: { name: 'Skitter', cost: 55, hp: 96, ar: 1, spd: 96, rng: 14, dmg: 8, cd: 0.7, r: 9, bt: 9, s: 1, desc: 'Very fast swarming melee.' },
+  k_spit: { name: 'Spitter', cost: 100, hp: 115, ar: 1, spd: 62, rng: 135, dmg: 16, cd: 1.5, r: 11, bt: 13, s: 2, splash: 22, vis: 270, desc: 'Acid artillery with splash.' },
+  k_cara: { name: 'Carapace', cost: 220, ess: 30, hp: 600, ar: 4, spd: 42, rng: 22, dmg: 30, cd: 1.6, r: 21, bt: 24, s: 4, desc: 'Colossal armored tank. Very hard to kill.' },
   k_post: { post: 1, struct: 1, name: 'Brood Chamber', cost: POST_COST, hp: 760, ar: 2, rng: 110, dmg: 8, cd: 1.2, r: 24, bt: 18, vis: 320, desc: 'Outpost. Drop-off point, vision, and heals units nearby.' },
   m_core: { core: 1, struct: 1, name: 'Nexus Forge', hp: 2200, ar: 3, rng: 150, dmg: 12, cd: 1, r: 42, vis: 340 },
   m_work: { worker: 1, name: 'Salvager', cost: 55, hp: 60, ar: 1, spd: 60, rng: 14, dmg: 4, cd: 1, r: 8, bt: 9, s: 1, vis: 210, desc: 'Harvests Matter, builds Pylons. Strips machine wrecks for huge yields.' },
-  m_sent: { name: 'Sentry', cost: 75, hp: 100, ar: 2, spd: 58, rng: 110, dmg: 10, cd: 1, r: 10, bt: 12, s: 1, desc: 'Reliable laser infantry.' },
+  m_sent: { name: 'Sentry', cost: 75, hp: 105, ar: 2, spd: 58, rng: 115, dmg: 11, cd: 1, r: 10, bt: 12, s: 1, desc: 'Reliable laser infantry.' },
   m_lanc: { name: 'Lancer', cost: 160, hp: 80, spd: 40, rng: 210, dmg: 28, cd: 3, r: 12, bt: 22, s: 2, splash: 30, vis: 290, desc: 'Extreme-range siege lance with splash.' },
   m_bast: { name: 'Bastion', cost: 240, ess: 30, hp: 380, ar: 3, spd: 36, rng: 90, dmg: 18, cd: 0.9, r: 19, bt: 32, s: 4, shield: 200, desc: 'Heavy walker with a regenerating shield.' },
   m_post: { post: 1, struct: 1, name: 'Relay Pylon', cost: POST_COST, hp: 650, ar: 3, rng: 140, dmg: 9, cd: 1.1, r: 24, bt: 22, vis: 360, desc: 'Outpost. Drop-off point, long sight, and salvages wrecks nearby.' },
@@ -934,13 +937,13 @@ function startsFor(np, map) { return map.starts.length >= 4 && np === 2 ? [0, 2]
 /* ---------- World ---------- */
 function rebuild() { BY.clear(); for (const u of W.units) BY.set(u.id, u); }
 function mkP(race, team) {
-  return { race, team, matter: 220, ess: 0, cap: CAP_START, q: [], res: null, up: {}, rally: null, auto: true, core: 0, ab: 0, dead: 0, ai: null, name: '',
+  return { race, team, matter: 220, ess: 0, cap: CAP_START, res: null, up: {}, auto: true, core: 0, ab: 0, dead: 0, ai: null, name: '', prod: 0, armsCd: 0,
     st: { k: 0, l: 0, r: 0, s: 0, g: 0, b: 0, e: 0, kf: 0, u: 0, ab: 0, t: 0 } };
 }
 // slots: [{ race, team, ai: 'easy'|'normal'|'hard'|'passive'|null, name }]
 function newWorld(slots, opts = {}) {
   const map = opts.map || mapBasin();
-  W = { v: 3, tick: 0, time: 0, nid: 1, seed: opts.seed || ((Math.random() * 1e9) | 0), units: [], corpses: [], nodes: [], P: [], F: mkP('feral', -1),
+  W = { v: 4, tick: 0, time: 0, nid: 1, seed: opts.seed || ((Math.random() * 1e9) | 0), units: [], corpses: [], nodes: [], P: [], F: mkP('feral', -1),
     over: -1, fx: [], fog: opts.fog !== false, map: mapToJSON(map), custom: opts.custom || [], np: slots.length,
     heat: {}, rot: 0, tchg: [], miteT: 40, demo: !!opts.demo };
   BY.clear();
@@ -1010,6 +1013,7 @@ function spawn(type, o, x, y, ex) {
   const u = { id: W.nid++, type, o, x, y, px: x, py: y, hp: s.mhp, mhp: s.mhp, ar: s.ar, spd: s.spd, rng: s.rng, dmg: s.dmg, cd: s.cd,
     shmax: s.shmax, sh: s.shmax, splash: s.splash, heal: s.heal, r: d.r, face: -0.785, cmd: { k: 'idle' }, tid: 0, ac: 0, work: 0, carry: 0, carryE: 0,
     lastHit: -99, lastSrc: -1, scan: Math.random() * 0.3, rcd: 1, rv: '', best: 1e9, stall: 0, bt: 0, os: 0 };
+  if (d.core || d.post) { u.q = []; u.rally = null; }
   if (ex) Object.assign(u, ex);
   W.units.push(u); BY.set(u.id, u);
   return u;
@@ -1026,10 +1030,19 @@ function nearestNode(x, y) {
 function nearestGatherCmd(u) { const n = nearestNode(u.x, u.y); return n < 0 ? { k: 'idle' } : { k: 'gather', n }; }
 function supplyUsed(o) {
   let s = 0;
-  for (const u of W.units) if (u.o === o && u.hp > 0) s += U[u.type].s;
-  for (const q of W.P[o].q) s += U[q.t].s;
+  for (const u of W.units) {
+    if (u.o !== o || u.hp <= 0) continue;
+    s += U[u.morph ? u.morph.t : u.type].s;
+    if (u.q) for (const q of u.q) s += U[q.t].s;
+  }
   return s;
 }
+// Production buildings ("build points"): the core and every finished outpost.
+function prodStructs(o) { return W.units.filter(u => u.o === o && u.q && u.build == null && u.hp > 0); }
+function queueLimit(s) { return U[s.type].core ? 5 : 3; }
+function prodMult(P) { return 1 + 0.25 * (P.prod || 0); }
+const QUICKEN = [{ cost: 150, ess: 30 }, { cost: 250, ess: 60 }];
+function musterCost(race) { const r = ROSTER[race]; return Math.max(15, U[r[1]].cost - U[r[0]].cost); }
 function huskCap(o) { return HUSK_MAX + (W.P[o].up.n_rot ? 8 : 0); }
 function huskCount(o) { let n = 0; for (const u of W.units) if (u.o === o && u.type === 'n_husk' && u.hp > 0) n++; return n; }
 function incomeMult(o) { const P = W.P[o]; return P && P.ai ? P.ai.inc : 1; }
@@ -1141,7 +1154,7 @@ function engage(u, t, dt) {
   if (u.ac <= 0) { u.ac = u.cd / (u.bt > 0 ? (u.br || 1) : 1); strike(u, d, t); }
 }
 function strike(a, d, t) {
-  const ri = COLK.indexOf(d.race), dmg = a.dmg * (a.bt > 0 ? (a.bd || 1) : 1);
+  const ri = COLK.indexOf(d.race), dmg = a.dmg * (a.bt > 0 ? (a.bd || 1) : 1) * (a.mil > 0 ? 3 : 1);
   if (a.rng > 30) W.fx.push([0, a.x | 0, a.y | 0, t.x | 0, t.y | 0, ri]);
   else W.fx.push([6, t.x | 0, t.y | 0, ri]);
   let dealt = hurt(t, dmg, a.o);
@@ -1161,7 +1174,7 @@ function hurt(t, amt, src) {
   if (t.sh > 0) { const s = Math.min(t.sh, amt); t.sh -= s; amt -= s; if (amt <= 0) return 0; }
   const td = U[t.type];
   if (!td.worker && !td.struct && ((RACES[td.race] || {}).feat || {}).undead) amt *= 0.9;
-  const dealt = Math.max(1, amt - t.ar);
+  const dealt = Math.max(1, amt - t.ar - (t.mil > 0 ? 2 : 0));
   t.hp -= dealt;
   return dealt;
 }
@@ -1222,6 +1235,8 @@ function updateUnit(u, dt) {
   if (u.shmax && W.time - u.lastHit > 4 && u.sh < u.shmax) u.sh = Math.min(u.shmax, u.sh + dt * 12);
   if (u.heal) { u.htimer = (u.htimer || 0) - dt; if (u.htimer <= 0) { u.htimer = 0.5; healPulse(u); } }
   if (d.raise) { u.rcd -= dt; if (u.rcd <= 0) u.rcd = tryRaise(u.o, u.x, u.y, 150) ? 3 : 0.6; }
+  if (u.morph) { u.morph.p += dt / 5; if (u.morph.p >= 1) finishMorph(u, P); return; }
+  if (u.mil > 0) { u.mil -= dt; if (u.mil <= 0) { u.mil = 0; setCmd(u, u.milBack || nearestGatherCmd(u)); u.milBack = null; } }
   const c = u.cmd;
   switch (c.k) {
     case 'idle': idleTick(u, d, P, R, dt); break;
@@ -1233,10 +1248,12 @@ function updateUnit(u, dt) {
     case 'return': returnTick(u, c, P, dt); break;
     case 'devour': devourTick(u, c, P, dt); break;
     case 'build': buildTick(u, c, P, dt); break;
+    case 'assist': assistTick(u, c, P, dt); break;
     default: setCmd(u, { k: 'idle' });
   }
 }
 function idleTick(u, d, P, R, dt) {
+  if (d.worker && u.mil > 0) { const t = acquire(u, 320, dt); if (t) engage(u, t, dt); return; }
   if (d.worker) { if (P.auto && u.carry <= 0) autoScav(u, P, dt); return; }
   const t = acquire(u, u.rng + 140, dt);
   if (t) { engage(u, t, dt); return; }
@@ -1378,6 +1395,21 @@ function devourTick(u, c, P, dt) {
     }
   }
 }
+function finishMorph(u, P) {
+  const t = u.morph.t, ratio = u.hp / u.mhp, s = statsFor(t, u.o);
+  u.type = t; u.morph = null;
+  Object.assign(u, { mhp: s.mhp, ar: s.ar, dmg: s.dmg, spd: s.spd, rng: s.rng, shmax: s.shmax, sh: s.shmax, splash: s.splash, heal: s.heal, cd: s.cd });
+  u.r = U[t].r; u.hp = Math.max(1, ratio * s.mhp); u.carry = 0; u.carryE = 0; u.mil = 0;
+  setCmd(u, { k: 'idle' }); P.st.m = (P.st.m || 0) + 1;
+  W.fx.push([10, u.x | 0, u.y | 0, COLK.indexOf(P.race)]);
+}
+// Workers speed up construction (each adds 60%, up to four) and repair damaged buildings for free.
+function assistTick(u, c, P, dt) {
+  const st = BY.get(c.sid);
+  if (!st || st.o !== u.o || st.hp <= 0 || (st.build == null && st.hp >= st.mhp)) { setCmd(u, nearestGatherCmd(u)); return; }
+  c.near = goTo(u, st.x, st.y, dt, st.r + u.r + 8) ? 1 : 0;
+  if (c.near && st.build == null) { st.hp = Math.min(st.mhp, st.hp + 6 * dt); if (Math.random() < dt) W.fx.push([5, st.x | 0, st.y | 0, 3]); }
+}
 function buildTick(u, c, P, dt) {
   if (!goTo(u, c.x, c.y, dt, 34)) return;
   c.done = true;
@@ -1389,8 +1421,11 @@ function buildTick(u, c, P, dt) {
 }
 function structTick(u, d, P, R, dt) {
   if (u.build != null) {
-    u.build += dt / d.bt;
-    u.hp = Math.min(u.mhp, u.hp + u.mhp * 0.9 * dt / d.bt);
+    let helpers = 0;
+    for (const w of W.units) if (w.o === u.o && w.cmd.k === 'assist' && w.cmd.sid === u.id && w.cmd.near) helpers++;
+    const rate = 1 + 0.6 * Math.min(4, helpers);
+    u.build += rate * dt / d.bt;
+    u.hp = Math.min(u.mhp, u.hp + u.mhp * 0.9 * rate * dt / d.bt);
     if (u.build >= 1) u.build = null;
     return;
   }
@@ -1429,19 +1464,22 @@ function production(dt) {
       P.res.p += dt / UPG[P.res.id].t;
       if (P.res.p >= 1) { P.up[P.res.id] = 1; P.st.u++; P.res = null; refreshStats(o); W.fx.push([8, core.x | 0, core.y | 0, COLK.indexOf(P.race)]); }
     }
-    if (!P.q.length) continue;
-    const q = P.q[0], d = U[q.t];
-    q.p += dt / buildTime(o, q.t);
-    if (q.p < 1) continue;
-    P.q.shift(); P.st.t++;
-    const tx = P.rally ? P.rally.x : MAP_W / 2, ty = P.rally ? P.rally.y : MAP_H / 2;
-    const a = Math.atan2(ty - core.y, tx - core.x) + (Math.random() - 0.5) * 0.8;
-    const p = findWalkable(core.x + Math.cos(a) * (core.r + d.r + 4), core.y + Math.sin(a) * (core.r + d.r + 4));
-    const u = spawn(q.t, o, p[0], p[1]);
-    u.face = a;
-    if (d.worker) setCmd(u, nearestGatherCmd(u));
-    else if (P.rally) setCmd(u, { k: 'amove', x: clampX(P.rally.x + (Math.random() - 0.5) * 50), y: clampY(P.rally.y + (Math.random() - 0.5) * 50) });
-    else { const m = findWalkable(core.x + Math.cos(a) * (core.r + 70), core.y + Math.sin(a) * (core.r + 70)); setCmd(u, { k: 'move', x: m[0], y: m[1] }); }
+    for (const st of W.units) {
+      if (st.o !== o || !st.q || !st.q.length || st.build != null || st.hp <= 0) continue;
+      const q = st.q[0], d = U[q.t];
+      q.p += dt * prodMult(P) / buildTime(o, q.t);
+      if (q.p < 1) continue;
+      st.q.shift(); P.st.t++;
+      const rally = st.rally;
+      const tx = rally ? rally.x : MAP_W / 2, ty = rally ? rally.y : MAP_H / 2;
+      const a = Math.atan2(ty - st.y, tx - st.x) + (Math.random() - 0.5) * 0.8;
+      const p = findWalkable(st.x + Math.cos(a) * (st.r + d.r + 4), st.y + Math.sin(a) * (st.r + d.r + 4));
+      const u = spawn(q.t, o, p[0], p[1]);
+      u.face = a;
+      if (d.worker) setCmd(u, nearestGatherCmd(u));
+      else if (rally) setCmd(u, { k: 'amove', x: clampX(rally.x + (Math.random() - 0.5) * 50), y: clampY(rally.y + (Math.random() - 0.5) * 50) });
+      else { const m = findWalkable(st.x + Math.cos(a) * (st.r + 70), st.y + Math.sin(a) * (st.r + 70)); setCmd(u, { k: 'move', x: m[0], y: m[1] }); }
+    }
   }
 }
 function separate() {
@@ -1469,7 +1507,7 @@ function separate() {
 function eliminate(o) {
   const P = W.P[o];
   if (P.dead) return;
-  P.dead = 1; P.q = []; P.res = null;
+  P.dead = 1; P.res = null;
   for (const v of W.units) if (v.o === o && v.hp > 0) { v.hp = 0; v.noRise = 1; }
   const alive = new Set(W.P.filter(p => !p.dead).map(p => p.team));
   if (alive.size <= 1 && W.over < 0) W.over = alive.size ? [...alive][0] : 0;
@@ -1515,7 +1553,7 @@ function tick(dt) {
   W.tick++; W.time += dt;
   rebuild();
   for (const u of W.units) { u.px = u.x; u.py = u.y; }
-  for (const P of W.P) if (P.ab > 0) P.ab = Math.max(0, P.ab - dt);
+  for (const P of W.P) { if (P.ab > 0) P.ab = Math.max(0, P.ab - dt); if (P.armsCd > 0) P.armsCd = Math.max(0, P.armsCd - dt); }
   production(dt);
   const list = W.units.slice();
   for (const u of list) if (u.hp > 0) updateUnit(u, dt);
@@ -1594,14 +1632,58 @@ function applyCmd(o, c) {
     case 'train': {
       const d = U[c.t];
       if (!d || d.race !== P.race || !d.cost || d.struct) return 'no';
-      if (P.q.length >= 5) return 'queue';
+      const st = c.sid ? BY.get(c.sid) : BY.get(P.core);
+      if (!st || st.o !== o || !st.q || st.build != null) return 'no';
+      if (st.q.length >= queueLimit(st)) return 'queue';
       if (P.matter < d.cost) return 'matter';
       if (P.ess < d.ess) return 'ess';
       if (supplyUsed(o) + d.s > P.cap) return 'supply';
-      P.matter -= d.cost; P.ess -= d.ess; P.q.push({ t: c.t, p: 0 });
+      P.matter -= d.cost; P.ess -= d.ess; st.q.push({ t: c.t, p: 0 });
       return 'ok';
     }
-    case 'cancel': { const q = P.q.pop(); if (q) { P.matter += U[q.t].cost; P.ess += U[q.t].ess; } break; }
+    case 'cancel': { const st = c.sid ? BY.get(c.sid) : BY.get(P.core); if (!st || st.o !== o || !st.q) break; const q = st.q.pop(); if (q) { P.matter += U[q.t].cost; P.ess += U[q.t].ess; } break; }
+    case 'quicken': {
+      const lv = P.prod || 0, g = QUICKEN[lv];
+      if (!g) return 'max';
+      if (P.matter < g.cost) return 'matter';
+      if (P.ess < g.ess) return 'ess';
+      P.matter -= g.cost; P.ess -= g.ess; P.prod = lv + 1;
+      return 'ok';
+    }
+    case 'muster': {
+      const t1 = ROSTER[P.race][1], cost = musterCost(P.race), d1 = U[t1];
+      const ws = own(c.ids).filter(u => U[u.type].worker && !u.morph);
+      if (!ws.length) return 'no';
+      let n = 0;
+      for (const w of ws) {
+        if (P.matter < cost) return n ? 'ok' : 'matter';
+        if (supplyUsed(o) + d1.s - U[w.type].s > P.cap) return n ? 'ok' : 'supply';
+        P.matter -= cost; setCmd(w, { k: 'idle' }); w.mil = 0; w.morph = { t: t1, p: 0 }; n++;
+      }
+      return 'ok';
+    }
+    case 'arms': {
+      if (P.armsCd > 0) return 'cd';
+      const bases = W.units.filter(s => s.o === o && s.q && s.build == null);
+      let n = 0;
+      for (const w of W.units) {
+        if (w.o !== o || !U[w.type].worker || w.morph || w.hp <= 0) continue;
+        if (!bases.some(b => dist2(b, w) < 460 * 460)) continue;
+        w.milBack = w.cmd.k === 'gather' ? { k: 'gather', n: w.cmd.n } : null;
+        if (w.carry > 0 || w.carryE > 0) w.milBack = { k: 'return', then: w.milBack };
+        setCmd(w, { k: 'idle' }); w.mil = 25; n++;
+      }
+      if (!n) return 'none';
+      P.armsCd = 70;
+      const core = BY.get(P.core); if (core) W.fx.push([8, core.x | 0, core.y | 0, COLK.indexOf(P.race)]);
+      return 'ok';
+    }
+    case 'assist': {
+      const st = BY.get(c.sid);
+      if (!st || st.o !== o || !U[st.type].struct) return 'no';
+      for (const w of own(c.ids)) if (U[w.type].worker && !w.morph) setCmd(w, { k: 'assist', sid: st.id });
+      return 'ok';
+    }
     case 'research': {
       const g = UPG[c.id];
       if (!g || !R.upg.includes(c.id) || P.up[c.id]) return 'no';
@@ -1618,7 +1700,7 @@ function applyCmd(o, c) {
       P.matter -= GROW_COST; P.cap = Math.min(CAP_MAX, P.cap + 10);
       return 'ok';
     }
-    case 'rally': P.rally = { x: clampX(+c.x || 0), y: clampY(+c.y || 0) }; break;
+    case 'rally': { const st = c.sid ? BY.get(c.sid) : BY.get(P.core); if (st && st.o === o && st.q) st.rally = { x: clampX(+c.x || 0), y: clampY(+c.y || 0) }; break; }
     case 'auto': P.auto = !!c.v; break;
     case 'gg': { const core = BY.get(P.core); if (core) core.hp = 0; else eliminate(o); break; }
   }
@@ -1703,9 +1785,15 @@ function aiTick(o) {
     const opts = R.upg.filter(id => !P.up[id] && P.matter >= UPG[id].cost + 80 && P.ess >= UPG[id].ess);
     if (opts.length) applyCmd(o, { k: 'research', id: opts[(Math.random() * opts.length) | 0] });
   }
-  const wantW = Math.min(20, ai.workers + posts * 4), qW = P.q.filter(q => q.t === wk).length;
-  if (workers.length + qW < wantW && P.q.length < 2) applyCmd(o, { k: 'train', t: wk });
-  else if (P.q.length < 3) applyCmd(o, { k: 'train', t: aiPick(o, comp) });
+  const wantW = Math.min(20, ai.workers + posts * 4), pts = prodStructs(o);
+  const qAll = pts.flatMap(s => s.q), qW = qAll.filter(q => q.t === wk).length;
+  if (workers.length + qW < wantW && core.q.length < 2) applyCmd(o, { k: 'train', t: wk, sid: core.id });
+  else {
+    const free = pts.filter(s => s.q.length < (U[s.type].core ? 3 : 2)).sort((a, b) => a.q.length - b.q.length)[0];
+    if (free) applyCmd(o, { k: 'train', t: aiPick(o, comp), sid: free.id });
+  }
+  if (!ai.noAttack && W.time > 240 && (P.prod || 0) < 2 && P.matter > 450) applyCmd(o, { k: 'quicken' });
+  if (workers.length > wantW + 2 && P.matter > 200) applyCmd(o, { k: 'muster', ids: workers.slice(0, workers.length - wantW).map(w => w.id) });
   for (const w of workers) if (w.cmd.k === 'idle' && w.carry <= 0) setCmd(w, nearestGatherCmd(w));
   if (W.time > 90 && posts < ai.posts && P.matter >= POST_COST + 60 && !workers.some(w => w.cmd.k === 'build')) {
     const site = aiExpand(o, core, S);
@@ -1724,6 +1812,7 @@ function aiTick(o) {
   }
   const engaged = army.filter(u => u.tid && BY.get(u.tid));
   if (P.ab <= 0 && engaged.length >= 4) applyCmd(o, { k: 'ab', ids: engaged.map(u => u.id) });
+  if (threat && army.length < 3 && P.armsCd <= 0 && threat.o !== FER && Math.hypot(threat.x - core.x, threat.y - core.y) < 450) applyCmd(o, { k: 'arms' });
   if (threat) {
     S.st = 'defend';
     for (const u of army) if (u.cmd.k !== 'attack' && u.cmd.k !== 'devour' && !(u.cmd.k === 'amove' && Math.hypot(u.cmd.x - threat.x, u.cmd.y - threat.y) < 220)) setCmd(u, { k: 'amove', x: threat.x, y: threat.y });
@@ -1792,7 +1881,7 @@ function aiTick(o) {
    PeerJS signaling is used only to open a room, make first handshakes, and as a last-resort
    rendezvous. Once every seat has a direct WebRTC data channel the host releases the
    signaling socket (peer.disconnect()) while the peer-to-peer channels stay up. */
-const PROTO = 3, ID_PREFIX = 'necrotroph-v3-';
+const PROTO = 4, ID_PREFIX = 'necrotroph-v3-';
 const Net = { peer: null, conn: null, role: null, code: '', token: '', linked: false, state: 'off', info: '', lastSeen: 0, ping: 0,
   recovering: false, attempt: 0, aborted: false, leaveT: 0, pendingDial: null };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -2066,6 +2155,11 @@ function sendInit(slot) {
       nodes: W.nodes.map(n => [n.x, n.y, n.r, n.amt | 0, n.max]) });
   } catch (e) {}
 }
+function structQueues(o) {
+  const out = {};
+  for (const u of W.units) if (u.o === o && u.q) out[u.id] = { q: u.q.map(q => [TI[q.t], Math.round(q.p * 100)]), r: u.rally ? [u.rally.x | 0, u.rally.y | 0] : null };
+  return out;
+}
 function buildSnap(seat, fx, tch) {
   const team = W.P[seat].team, vis = VIS[team];
   const sees = (x, y) => { if (!W.fog) return true; const i = tIdx(x, y); return i >= 0 && vis[i] === 1; };
@@ -2074,12 +2168,13 @@ function buildSnap(seat, fx, tch) {
     const d = U[u.type];
     if (!(u.o !== FER && W.P[u.o].team === team) && !d.struct && !sees(u.x, u.y)) continue;
     Us.push([u.id, TI[u.type], u.o, Math.round(u.x), Math.round(u.y), Math.ceil(u.hp), Math.round(u.mhp), Math.ceil(u.sh + (u.os || 0)),
-      Math.round(u.face * 100), (u.carry > 0 || u.carryE > 0) ? 1 : 0, u.rv ? TI[u.rv] : -1, Math.round(u.r), u.bt > 0 ? 1 : 0, u.build != null ? Math.round(u.build * 100) : -1, Math.round(u.shmax || 0)]);
+      Math.round(u.face * 100), (u.carry > 0 || u.carryE > 0) ? 1 : 0, u.rv ? TI[u.rv] : -1, Math.round(u.r), u.bt > 0 ? 1 : 0, u.build != null ? Math.round(u.build * 100) : -1, Math.round(u.shmax || 0),
+      (u.morph ? 1 : 0) | (u.mil > 0 ? 2 : 0), u.morph ? Math.round(u.morph.p * 100) : 0]);
   }
   const C = W.corpses.filter(k => sees(k.x, k.y)).map(k => [k.id, k.x | 0, k.y | 0, CLS.indexOf(k.cls), Math.max(0, k.age | 0), k.val, k.r]);
   const P = W.P.map((p, i) => { const me = i === seat; return [me ? p.matter | 0 : 0, me ? p.ess | 0 : 0, p.cap, me ? supplyUsed(i) : 0, p.auto ? 1 : 0,
-    me ? p.q.map(q => [TI[q.t], Math.round(q.p * 100)]) : [], me && p.rally ? p.rally.x | 0 : -1, me && p.rally ? p.rally.y | 0 : -1, p.core, p.st, me ? Math.ceil(p.ab) : 0,
-    p.dead, me ? Object.keys(p.up) : [], me && p.res ? [p.res.id, Math.round(p.res.p * 100)] : 0]; });
+    me ? structQueues(i) : {}, 0, 0, p.core, p.st, me ? Math.ceil(p.ab) : 0,
+    p.dead, me ? Object.keys(p.up) : [], me && p.res ? [p.res.id, Math.round(p.res.p * 100)] : 0, p.prod || 0, me ? Math.ceil(p.armsCd || 0) : 0]; });
   const F = fx.filter(f => sees(f[1], f[2]) || (f[0] === 0 && sees(f[3], f[4])));
   const s = { t: 's', k: W.tick, P, U: Us, C, N: W.nodes.map(n => n.amt | 0), F, O: W.over };
   if (tch.length) s.T = tch;
@@ -2103,14 +2198,15 @@ function applySnap(m) {
     else { r.px = r.rx; r.py = r.ry; }
     r.type = TYPES[a[1]]; r.o = a[2]; r.tx = r.x = a[3]; r.ty = r.y = a[4]; r.hp = a[5]; r.mhp = a[6]; r.sh = a[7];
     r.face = a[8] / 100; r.carry = a[9]; r.rv = a[10] >= 0 ? TYPES[a[10]] : ''; r.r = a[11]; r.bt = a[12]; r.build = a[13] >= 0 ? a[13] / 100 : null; r.shmax = a[14];
+    r.morph = a[15] & 1 ? { p: a[16] / 100 } : null; r.mil = a[15] & 2 ? 1 : 0;
     seen.add(id);
   }
   for (const id of [...G.units.keys()]) if (!seen.has(id)) G.units.delete(id);
   G.list = [...G.units.values()];
   G.corpses = m.C.map(a => ({ id: a[0], x: a[1], y: a[2], cls: CLS[a[3]], age: a[4], val: a[5], r: a[6] }));
   m.N.forEach((v, i) => { if (G.nodes[i]) G.nodes[i].amt = v; });
-  G.P = m.P.map((a, i) => ({ race: G.players[i].race, team: G.players[i].team, matter: a[0], ess: a[1], cap: a[2], sup: a[3], auto: !!a[4], q: a[5],
-    rally: a[6] >= 0 ? { x: a[6], y: a[7] } : null, core: a[8], st: a[9], ab: a[10], dead: a[11], up: Object.fromEntries((a[12] || []).map(k => [k, 1])), res: a[13] ? { id: a[13][0], p: a[13][1] / 100 } : null }));
+  G.P = m.P.map((a, i) => ({ race: G.players[i].race, team: G.players[i].team, matter: a[0], ess: a[1], cap: a[2], sup: a[3], auto: !!a[4], qs: a[5] || {},
+    core: a[8], st: a[9], ab: a[10], dead: a[11], up: Object.fromEntries((a[12] || []).map(k => [k, 1])), res: a[13] ? { id: a[13][0], p: a[13][1] / 100 } : null, prod: a[14] || 0, armsCd: a[15] || 0 }));
   if (m.T) for (const [i, v] of m.T) setTile(i, v);
   if (m.V) { unpackBits(m.V, G.vis); for (let i = 0; i < G.vis.length; i++) if (G.vis[i]) G.exp[i] = 1; fogVer++; }
   for (const f of m.F) pushFx(f);
@@ -2200,7 +2296,7 @@ function resumeAvailable() {
   try { s = JSON.parse(sessionStorage.getItem('lc.session')); } catch (e) {}
   if (!s) s = LS.get('lc.session');
   if (!s || Date.now() - s.ts > 30 * 60e3) return null;
-  if (s.role !== 'guest') { const w = LS.get('lc.world'); if (!w || !w.W || w.W.v !== 3 || w.W.over >= 0) return null; s.world = w; }
+  if (s.role !== 'guest') { const w = LS.get('lc.world'); if (!w || !w.W || w.W.v !== 4 || w.W.over >= 0) return null; s.world = w; }
   return s;
 }
 setInterval(() => { if (App.inGame && App.role !== 'demo' && !App.tut) { saveSession(); saveWorld(); } }, 5000);
@@ -2231,8 +2327,10 @@ const V = {
   player(i) {
     if (V.guest()) return G.P[i] || null;
     const P = W && W.P[i]; if (!P) return null;
-    return { race: P.race, team: P.team, matter: P.matter, ess: P.ess, cap: P.cap, sup: supplyUsed(i), auto: P.auto, q: P.q.map(q => [TI[q.t], q.p * 100]), rally: P.rally,
-      core: P.core, st: P.st, ab: P.ab, dead: P.dead, up: P.up, res: P.res, name: P.name };
+    const qs = {};
+    for (const u of W.units) if (u.o === i && u.q) qs[u.id] = { q: u.q.map(q => [TI[q.t], q.p * 100]), r: u.rally ? [u.rally.x, u.rally.y] : null };
+    return { race: P.race, team: P.team, matter: P.matter, ess: P.ess, cap: P.cap, sup: supplyUsed(i), auto: P.auto, qs,
+      core: P.core, st: P.st, ab: P.ab, dead: P.dead, up: P.up, res: P.res, name: P.name, prod: P.prod || 0, armsCd: P.armsCd || 0 };
   }
 };
 /* ================= RENDERING ================= */
@@ -2431,9 +2529,9 @@ function iconFor(type, huskOf) {
   return ICONS[key] = c.toDataURL();
 }
 
-const FXD = [0.14, 0.5, 1.0, 0.6, 0.8, 0.6, 0.25, 0.55, 0.9, 1.4];
+const FXD = [0.14, 0.5, 1.0, 0.6, 0.8, 0.6, 0.25, 0.55, 0.9, 1.4, 0.9];
 let localFx = [], markers = [];
-function pushFx(f) { localFx.push({ f, t0: performance.now() }); if (localFx.length > 320) localFx.splice(0, localFx.length - 320); SFX.fx(f); }
+function pushFx(f) { localFx.push({ f, t0: performance.now() }); if (localFx.length > 320) localFx.splice(0, localFx.length - 320); SFX.fx(f); Music.notice(f); }
 function drawFx(c, now) {
   for (let i = localFx.length - 1; i >= 0; i--) {
     const e = localFx[i], f = e.f, life = Math.max(0, (now - e.t0) / 1000 / FXD[f[0]]);
@@ -2450,6 +2548,7 @@ function drawFx(c, now) {
       case 5: { c.strokeStyle = '#8fe388'; c.lineWidth = 2.4; c.beginPath(); const hy = f[2] - 14 - life * 12; c.moveTo(f[1] - 5, hy); c.lineTo(f[1] + 5, hy); c.moveTo(f[1], hy - 5); c.lineTo(f[1], hy + 5); c.stroke(); break; }
       case 6: c.strokeStyle = col.col2; c.lineWidth = 1.6; c.beginPath(); for (let k = 0; k < 4; k++) { const a = k * 1.57 + .7; c.moveTo(f[1] + Math.cos(a) * 3, f[2] + Math.sin(a) * 3); c.lineTo(f[1] + Math.cos(a) * 9, f[2] + Math.sin(a) * 9); } c.stroke(); break;
       case 7: c.fillStyle = 'rgba(200,190,170,.4)'; circ(c, f[1], f[2], 6 + life * 16); c.fill(); break;
+      case 10: c.strokeStyle = col.col2; c.lineWidth = 3 * (1 - life) + 1; for (let k = 0; k < 8; k++) { const a = k * 0.785; c.beginPath(); c.moveTo(f[1] + Math.cos(a) * 8, f[2] + Math.sin(a) * 8); c.lineTo(f[1] + Math.cos(a) * (12 + life * 30), f[2] + Math.sin(a) * (12 + life * 30)); c.stroke(); } break;
       case 9: c.fillStyle = '#7d9a3c'; for (let k = 0; k < 7; k++) { circ(c, f[1] + Math.cos(k * 2.1) * 26 * life, f[2] + Math.sin(k * 2.1) * 26 * life - life * 10, 3 * (1 - life) + 1); c.fill(); } break;
       case 8: c.strokeStyle = col.col2; c.lineWidth = 4 * (1 - life) + 1; circ(c, f[1], f[2], 30 + life * 260); c.stroke(); c.strokeStyle = col.col; circ(c, f[1], f[2], 20 + life * 200); c.stroke(); break;
     }
@@ -2563,12 +2662,17 @@ function drawUnit(c, u, t, mine, sel) {
   c.strokeStyle = sel ? '#f4ffe2' : REL_COL[rel];
   c.lineWidth = sel ? 2.2 : 1.4;
   c.beginPath(); c.ellipse(u.rx, u.ry + r * .2, r * 1.2, r * .82, 0, 0, TAU); c.stroke();
+  if (u.mil) { c.strokeStyle = '#ff5a4e'; c.globalAlpha = .5 + .35 * Math.sin(t * 9); c.lineWidth = 2; c.beginPath(); c.ellipse(u.rx, u.ry + r * .2, r * 1.6, r * 1.1, 0, 0, TAU); c.stroke(); c.globalAlpha = 1; }
   if (u.bt > 0) { c.strokeStyle = PAL[d.race] ? PAL[d.race].a : '#fff'; c.globalAlpha = .5 + .3 * Math.sin(t * 10); c.lineWidth = 2; c.beginPath(); c.ellipse(u.rx, u.ry + r * .2, r * 1.45, r * 1.0, 0, 0, TAU); c.stroke(); c.globalAlpha = 1; }
   c.save(); c.translate(u.rx, u.ry);
   if (!d.struct) c.rotate(u.face || 0);
   const pal = d.husk ? HUSK_PAL[u.rv && U[u.rv] ? U[u.rv].race : 'necrosis'] : PAL[d.race];
   if (u.build != null) c.globalAlpha = .45 + .4 * u.build;
-  SH[u.type](c, r, t + u.id * .37, pal, u);
+  if (u.morph) {
+    const k = 0.6 + 0.5 * u.morph.p + 0.06 * Math.sin(t * 6);
+    c.beginPath(); c.ellipse(0, 0, r * 1.3 * k, r * 1.0 * k, 0, 0, TAU); fs(c, pal.d, pal.a, 2);
+    c.strokeStyle = pal.b; c.lineWidth = 1.5; c.beginPath(); for (let i = 0; i < 4; i++) { c.moveTo(-r * k, (i - 1.5) * r * 0.45); c.quadraticCurveTo(0, (i - 1.5) * r * 0.65, r * k, (i - 1.5) * r * 0.45); } c.stroke();
+  } else SH[u.type](c, r, t + u.id * .37, pal, u);
   c.globalAlpha = 1;
   if (u.carry) { c.fillStyle = '#ff5e8a'; circ(c, -r * .6, 0, r * .3); c.fill(); }
   c.restore();
@@ -2649,13 +2753,13 @@ function render(now, alpha) {
     for (const u of units) if (U[u.type].struct && V.canSee(u)) { circ(ctx, u.rx, u.ry, 200); ctx.stroke(); }
     ctx.setLineDash([]);
   }
-  const selCore = me && App.sel.size === 1 && App.sel.has(me.core);
-  if (selCore && me.rally) {
-    const core = V.unit(me.core);
+  const selId = me && App.sel.size === 1 ? [...App.sel][0] : 0, sq = selId && me.qs && me.qs[selId];
+  if (sq && sq.r) {
+    const core = V.unit(selId), rp = { x: sq.r[0], y: sq.r[1] };
     if (core) {
       ctx.setLineDash([8 / z, 6 / z]); ctx.strokeStyle = 'rgba(236,227,208,.5)'; ctx.lineWidth = 1.5 / z;
-      ctx.beginPath(); ctx.moveTo(core.rx, core.ry); ctx.lineTo(me.rally.x, me.rally.y); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = RACES[me.race].col; ctx.beginPath(); ctx.moveTo(me.rally.x, me.rally.y); ctx.lineTo(me.rally.x, me.rally.y - 22); ctx.lineTo(me.rally.x + 14, me.rally.y - 17); ctx.lineTo(me.rally.x, me.rally.y - 12); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(core.rx, core.ry); ctx.lineTo(rp.x, rp.y); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = RACES[me.race].col; ctx.beginPath(); ctx.moveTo(rp.x, rp.y); ctx.lineTo(rp.x, rp.y - 22); ctx.lineTo(rp.x + 14, rp.y - 17); ctx.lineTo(rp.x, rp.y - 12); ctx.fill();
     }
   }
   const vis = units.filter(u => u.rx > x0 - 60 && u.rx < x1 + 60 && u.ry > y0 - 60 && u.ry < y1 + 60 && V.canSee(u)).sort((a, b) => a.ry - b.ry);
@@ -2842,6 +2946,10 @@ function command(sx, sy, fromTap) {
   if (App.amove && mov.length) { issue({ k: 'move', ids, x: w.x, y: w.y, a: true }); mark(w.x, w.y, '#ff5a4e'); App.amove = false; UI.bar(); SFX.ui('order'); return true; }
   const hit = pickUnit(w.x, w.y);
   if (hit && isHostile(hit) && mov.length) { issue({ k: 'atk', ids, t: hit.id }); mark(hit.rx, hit.ry, '#ff5a4e'); SFX.ui('order'); return true; }
+  if (hit && hit.o === App.seat && U[hit.type].struct && (hit.build != null || hit.hp < hit.mhp) && mov.some(u => U[u.type].worker)) {
+    issue({ k: 'assist', ids: mov.filter(u => U[u.type].worker).map(u => u.id), sid: hit.id }); mark(hit.rx, hit.ry, '#8fe388'); SFX.ui('order');
+    toast(hit.build != null ? 'Workers will help build it' : 'Workers will repair it'); return true;
+  }
   if (hit && hit.o === App.seat && fromTap) return false;
   const k = pickCorpse(w.x, w.y);
   if (k && mov.length) { issue({ k: 'scav', ids, c: k.id }); mark(k.x, k.y, '#ffe08a'); SFX.ui('order'); return true; }
@@ -2851,13 +2959,15 @@ function command(sx, sy, fromTap) {
     if (!walkAt(w.x, w.y)) toast('That ground is impassable. Units will get as close as they can.');
     issue({ k: 'move', ids, x: w.x, y: w.y, a: false }); mark(w.x, w.y, '#8fe388'); SFX.ui('order'); return true;
   }
-  if (me && App.sel.has(me.core)) { issue({ k: 'rally', x: w.x, y: w.y }); mark(w.x, w.y, '#ece3d0'); toast('Rally point set'); return true; }
+  const ps = selUnits().find(u => U[u.type].core || U[u.type].post);
+  if (me && ps && App.sel.size === 1) { issue({ k: 'rally', x: w.x, y: w.y, sid: ps.id }); mark(w.x, w.y, '#ece3d0'); toast('Rally point set'); return true; }
   return false;
 }
 function tap(sx, sy) {
   const w = s2w(sx, sy), now = performance.now();
   if (App.amove || App.place) { command(sx, sy, true); return; }
   const hit = pickUnit(w.x, w.y);
+  if (hit && hit.o === App.seat && U[hit.type].struct && (hit.build != null || hit.hp < hit.mhp) && selMovable().some(u => U[u.type].worker)) { command(sx, sy, true); return; }
   if (hit && hit.o === App.seat) {
     if (now - lastTap.t < 330 && lastTap.type === hit.type && !U[hit.type].struct) {
       const x0 = cam.x - vw / 2 / cam.z, x1 = cam.x + vw / 2 / cam.z, y0 = cam.y - vh / 2 / cam.z, y1 = cam.y + vh / 2 / cam.z;
@@ -2902,6 +3012,19 @@ function useAbility() {
   if (me.ab > 0) { toast(`${RACES[me.race].ab.name} is ready in ${Math.ceil(me.ab)}s`); return; }
   const r = issue({ k: 'ab', ids: us.map(u => u.id) });
   if (r === 'none') toast(RACES[me.race].ability === 'raise' ? 'No organic or hybrid corpses near those units' : 'Nothing to empower');
+}
+function doMuster() {
+  const me = V.player(App.seat), ws = selMovable().filter(u => U[u.type].worker && !u.morph);
+  if (!ws.length) { toast('Select workers to muster'); return; }
+  const r = issue({ k: 'muster', ids: ws.map(u => u.id) });
+  if (r === 'matter') toast(`Mustering costs ${musterCost(me.race)} Matter each`); else if (r === 'supply') toast(`Supply full. Use ${RACES[me.race].grow}.`);
+  else toast(`Transforming into ${U[ROSTER[me.race][1]].name}s. They can't move for 5 seconds.`);
+}
+function doArms() {
+  const me = V.player(App.seat);
+  if ((me.armsCd || 0) > 0) { toast(`Call to arms is ready in ${Math.ceil(me.armsCd)}s`); return; }
+  const r = issue({ k: 'arms' });
+  if (r === 'none') toast('No workers near your buildings'); else { toast('Workers near your buildings take up arms for 25 seconds'); SFX.ui('alert'); }
 }
 function barAction(b) {
   const mine = V.units().filter(u => u.o === App.seat);
@@ -3063,8 +3186,9 @@ const UI = {
     const el = $('ctx'), su = selUnits();
     const one = su.length === 1 ? su[0] : null;
     let mode = 'none', sig = '';
-    if (one && U[one.type].core) { mode = 'core'; sig = 'core:' + me.race + ':' + UI.coreTab; }
-    else if (one && U[one.type].struct) { mode = 'struct'; sig = 'st:' + one.id; }
+    if (one && U[one.type].core) { mode = 'core'; sig = 'core:' + one.id + ':' + me.race + ':' + UI.coreTab + ':' + (me.prod || 0); }
+    else if (one && U[one.type].post && one.build == null) { mode = 'core'; sig = 'post:' + one.id; }
+    else if (one && U[one.type].struct) { mode = 'struct'; sig = 'st:' + one.id + ':' + (one.build != null); }
     else if (su.length) { mode = 'units'; const counts = {}; su.forEach(u => counts[u.type + (u.rv || '')] = (counts[u.type + (u.rv || '')] || 0) + 1); sig = 'u:' + Object.entries(counts).map(e => e.join('x')).join(','); }
     else if (App.sel.size === 1) { const u = V.unit([...App.sel][0]); if (u && u.o !== App.seat) { mode = 'other'; sig = 'e:' + u.id + ':' + Math.ceil(u.hp / 10); } }
     sig += App.place ? ':place' : '';
@@ -3073,10 +3197,15 @@ const UI = {
     if (sig !== UI.ctxSig || UI.ctxDirty) {
       UI.ctxSig = sig; UI.ctxDirty = false;
       if (mode === 'core') {
-        const tabs = `<div class="tabs"><button data-act="tab" data-t="train" class="${UI.coreTab === 'train' ? 'on' : ''}">Train</button><button data-act="tab" data-t="evolve" class="${UI.coreTab === 'evolve' ? 'on' : ''}">Evolve</button></div>`;
-        if (UI.coreTab === 'train') el.innerHTML = tabs + `<div class="prow">${ROSTER[me.race].map(t => `<button class="pb" data-act="train" data-t="${t}" title="${esc(U[t].desc)}">
+        const isCore = !!U[one.type].core, tab = isCore ? UI.coreTab : 'train';
+        const tabs = isCore ? `<div class="tabs"><button data-act="tab" data-t="train" class="${tab === 'train' ? 'on' : ''}">Train</button><button data-act="tab" data-t="evolve" class="${tab === 'evolve' ? 'on' : ''}">Evolve</button></div>`
+          : `<div class="tabs"><button class="on">${esc(R.post)}: train here</button></div>`;
+        const qk = QUICKEN[me.prod || 0];
+        if (tab === 'train') el.innerHTML = tabs + `<div class="prow">${ROSTER[me.race].map(t => `<button class="pb" data-act="train" data-t="${t}" title="${esc(U[t].desc)}">
           <img src="${iconFor(t)}" alt=""><span class="nm">${esc(U[t].name)}</span><span class="cs">${cost(U[t].cost, U[t].ess)} · ${U[t].s}</span></button>`).join('')}
-          <button class="pb grow" data-act="grow"><img src="${iconFor(PFX[me.race] + '_core')}" alt=""><span class="nm">${esc(R.grow)}</span><span class="cs">${cost(GROW_COST)} · +10</span></button></div>
+          ${isCore ? `<button class="pb grow" data-act="grow"><img src="${iconFor(PFX[me.race] + '_core')}" alt=""><span class="nm">${esc(R.grow)}</span><span class="cs">${cost(GROW_COST)} · +10</span></button>
+          <button class="pb grow" data-act="quicken" title="All your buildings train 25% faster per level"><span class="nm">Quicken ${'●'.repeat(me.prod || 0)}${'○'.repeat(2 - (me.prod || 0))}</span><span class="ud">${qk ? 'Train 25% faster everywhere' : 'Fully quickened'}</span><span class="cs">${qk ? cost(qk.cost, qk.ess) : 'Max'}</span></button>
+          <button class="pb grow" data-act="arms" title="Workers near your buildings fight as militia for 25 seconds"><span class="nm">Call to arms</span><span class="ud" id="armsT">Arm nearby workers</span><span class="cs">Free · 70s</span></button>` : ''}</div>
           <div class="qrow"><div id="qslots" style="display:flex;gap:5px"></div><div class="qlab" id="qlab"></div>
           <button class="tog" data-act="auto" id="autoT">Auto-scavenge</button></div>`;
         else el.innerHTML = tabs + `<div class="prow">${R.upg.map(id => `<button class="pb up" data-act="research" data-id="${id}" title="${esc(UPG[id].desc)}">
@@ -3087,31 +3216,36 @@ const UI = {
         const first = su[0];
         const line = Object.entries(counts).map(([k, n]) => { const [t, rv] = k.split('|'); return `${n > 1 ? n + ' ' : ''}${rv && U[rv] ? 'raised ' + U[rv].name : U[t].name}`; }).join(', ');
         const hasW = su.some(u => U[u.type].worker), hasA = su.some(u => !U[u.type].worker && !U[u.type].struct);
-        const tip = App.place ? 'Tap open, explored ground at least a short walk from other buildings.' : mode === 'struct' ? (first.build != null ? 'Under construction.' : U[first.type].desc) :
-          R.feat.devour && !hasW ? 'Tap a corpse to devour it and heal.' : hasW ? 'Tap a bloom to harvest or a corpse to scavenge. Corpses give Matter and Essence.' :
+        const tip = App.place ? 'Tap open, explored ground at least a short walk from other buildings.' : mode === 'struct' ? (first.build != null ? 'Under construction. Select workers and tap it to help build faster.' : U[first.type].desc) :
+          R.feat.devour && !hasW ? 'Tap a corpse to devour it and heal.' : hasW ? 'Tap a bloom to harvest, a corpse to scavenge, or your building to help build or repair it.' :
           raiser(me.race) ? 'Corpses near your raisers rise as Husks.' : 'Tap an enemy to attack, or use A-Move.';
         el.innerHTML = `<div class="uinfo"><img src="${iconFor(first.type, first.rv)}" alt=""><div class="t"><b style="color:${R.col}">${esc(line)}</b><br><span>${esc(one && !hasW && mode === 'units' ? U[one.type].desc : tip)}</span></div></div>
-          ${hasW || hasA ? `<div class="uacts">${hasW ? `<button class="tog ${App.place ? 'on' : ''}" data-act="place" id="placeB">Build ${esc(R.post)} · ${POST_COST}</button>` : ''}
+          ${hasW || hasA ? `<div class="uacts">${hasW ? `<button class="tog ${App.place ? 'on' : ''}" data-act="place" id="placeB">Build ${esc(R.post)} · ${POST_COST}</button>
+          <button class="tog" data-act="muster" title="Turn the selected workers into ${esc(U[ROSTER[me.race][1]].name)}s">Muster · ${musterCost(me.race)} each</button>
+          <button class="tog" data-act="arms" id="armsB">Call to arms</button>` : ''}
           ${hasA ? `<button class="tog" data-act="ab" id="abB" title="${esc(R.ab.desc)}">${esc(R.ab.name)}</button>` : ''}</div>` : ''}`;
       } else if (mode === 'other') {
         const u = V.unit([...App.sel][0]), d = U[u.type], RR = RACES[d.race], rel = V.rel(u.o);
         el.innerHTML = `<div class="uinfo"><img src="${iconFor(u.type, u.rv)}" alt=""><div class="t"><b style="color:${RR.col}">${esc(u.rv && U[u.rv] ? 'Raised ' + U[u.rv].name : d.name)}</b> <span>(${esc(RR.name)}${rel === 'ally' ? ', ally' : ''})</span><br><span>${Math.ceil(u.hp)} / ${u.mhp} health. ${esc(d.desc || RR.core || '')}</span></div></div>`;
       } else el.innerHTML = '';
     }
-    if (mode === 'core' && UI.coreTab === 'train') {
-      el.querySelectorAll('[data-act="train"]').forEach(b => { const d = U[b.dataset.t]; b.disabled = me.matter < d.cost || (me.ess || 0) < d.ess || me.sup + d.s > me.cap || me.q.length >= 5; });
+    if (mode === 'core' && (UI.coreTab === 'train' || !U[one.type].core)) {
+      const sq = ((me.qs || {})[one.id] || {}).q || [], lim = U[one.type].core ? 5 : 3;
+      el.querySelectorAll('[data-act="train"]').forEach(b => { const d = U[b.dataset.t]; b.disabled = me.matter < d.cost || (me.ess || 0) < d.ess || me.sup + d.s > me.cap || sq.length >= lim; });
       const g = el.querySelector('[data-act="grow"]'); if (g) g.disabled = me.matter < GROW_COST || me.cap >= CAP_MAX;
+      const qb = el.querySelector('[data-act="quicken"]'); if (qb) { const qk = QUICKEN[me.prod || 0]; qb.disabled = !qk || me.matter < qk.cost || (me.ess || 0) < qk.ess; }
+      const ab2 = el.querySelector('[data-act="arms"]'); if (ab2) { ab2.disabled = (me.armsCd || 0) > 0; const at2 = $('armsT'); if (at2) at2.textContent = me.armsCd > 0 ? `Ready in ${Math.ceil(me.armsCd)}s` : 'Arm nearby workers'; }
       const qs = $('qslots');
       if (qs) {
-        const key = me.q.map(q => q[0]).join(',');
-        if (qs.dataset.k !== key) { qs.dataset.k = key; qs.innerHTML = me.q.map(q => `<div class="qs" data-act="cancel"><img src="${iconFor(TYPES[q[0]])}" alt=""><b></b></div>`).join(''); }
-        qs.querySelectorAll('b').forEach((b, i) => b.style.width = (me.q[i] ? me.q[i][1] : 0) + '%');
+        const key = sq.map(q => q[0]).join(',');
+        if (qs.dataset.k !== key) { qs.dataset.k = key; qs.innerHTML = sq.map(q => `<div class="qs" data-act="cancel"><img src="${iconFor(TYPES[q[0]])}" alt=""><b></b></div>`).join(''); }
+        qs.querySelectorAll('b').forEach((b, i) => b.style.width = (sq[i] ? sq[i][1] : 0) + '%');
       }
       const ql = $('qlab');
-      if (ql) ql.textContent = me.q.length ? 'Tap the queue to cancel the last order.' : me.sup >= me.cap ? `Supply full. Use ${R.grow}.` : 'Tap the ground to set a rally point.';
+      if (ql) ql.textContent = sq.length ? 'Tap the queue to cancel the last order.' : me.sup >= me.cap ? `Supply full. Use ${R.grow}.` : 'Tap the ground to set this building\'s rally point.';
       const at = $('autoT'); if (at) at.classList.toggle('on', !!me.auto);
     }
-    if (mode === 'core' && UI.coreTab === 'evolve') {
+    if (mode === 'core' && UI.coreTab === 'evolve' && U[one.type].core) {
       el.querySelectorAll('[data-act="research"]').forEach(b => {
         const id = b.dataset.id, g = UPG[id], done = me.up && me.up[id], busy = me.res && me.res.id === id;
         b.disabled = !!done || !!me.res || me.matter < g.cost || (me.ess || 0) < g.ess;
@@ -3122,6 +3256,7 @@ const UI = {
       if (rl) rl.textContent = me.res ? `Evolving ${UPG[me.res.id].name}: ${Math.round(me.res.p * 100)}%` : 'Upgrades cost Essence, which only comes from corpses.';
       if (rx) rx.classList.toggle('hide', !me.res);
     }
+    const ab3 = $('armsB'); if (ab3) ab3.textContent = me.armsCd > 0 ? `Call to arms ${Math.ceil(me.armsCd)}s` : 'Call to arms';
     const ab = $('abB');
     if (ab) { ab.textContent = me.ab > 0 ? `${R.ab.name} ${Math.ceil(me.ab)}s` : R.ab.name; ab.classList.toggle('on', !(me.ab > 0)); }
   }
@@ -3136,10 +3271,14 @@ $('ctx').addEventListener('click', e => {
     if (me.matter < d.cost) return toast('Not enough Matter');
     if ((me.ess || 0) < d.ess) return toast('Not enough Essence. Scavenge corpses to get more.');
     if (me.sup + d.s > me.cap) return toast(`Supply full. Use ${RACES[me.race].grow}.`);
-    const r = issue({ k: 'train', t: b.dataset.t });
+    const st = selUnits()[0];
+    const r = issue({ k: 'train', t: b.dataset.t, sid: st && st.id });
     if (r === 'queue') toast('Queue is full');
   } else if (a === 'grow') { const r = issue({ k: 'grow' }); if (r === 'ok') toast('Supply cap +10'); }
-  else if (a === 'cancel') issue({ k: 'cancel' });
+  else if (a === 'cancel') { const st = selUnits()[0]; issue({ k: 'cancel', sid: st && st.id }); }
+  else if (a === 'quicken') { const r = issue({ k: 'quicken' }); if (r === 'ok' || r === 'sent') toast('Training is now faster at every building'); else if (r === 'ess') toast('Not enough Essence'); else if (r === 'matter') toast('Not enough Matter'); }
+  else if (a === 'muster') doMuster();
+  else if (a === 'arms') doArms();
   else if (a === 'tab') { UI.coreTab = b.dataset.t; UI.ctxDirty = true; }
   else if (a === 'research') { const r = issue({ k: 'research', id: b.dataset.id }); if (r === 'ess') toast('Not enough Essence'); else if (r === 'matter') toast('Not enough Matter'); else if (r === 'busy') toast('Already evolving something'); }
   else if (a === 'cancelres') issue({ k: 'cancelres' });
@@ -3383,6 +3522,7 @@ function startDemo() {
 }
 function menuScreen() {
   if (App.inGame || App.editing) return;
+  Music.setTheme('menu');
   if (App.role !== 'demo' || !W) startDemo();
   const res = resumeAvailable();
   show(`<div class="card">
@@ -3399,7 +3539,8 @@ function menuScreen() {
 function settingsScreen() {
   show(`<div class="card"><h2>Settings</h2>
     <div class="row"><label for="pname">Your name in online rooms</label><input id="pname" class="txt" maxlength="16" value="${esc(App.name())}"></div>
-    <div class="row"><label>Sound</label><div class="seg"><button data-go="snd:1" class="${SFX.on ? 'on' : ''}">On</button><button data-go="snd:0" class="${SFX.on ? '' : 'on'}">Off</button></div></div>
+    <div class="row"><label>Music</label><div class="seg"><button data-go="mus:1" class="${Music.on ? 'on' : ''}">On</button><button data-go="mus:0" class="${Music.on ? '' : 'on'}">Off</button></div><p class="fine" style="text-align:left">Each race has its own theme, and the music builds as fighting heats up on screen.</p></div>
+    <div class="row"><label>Sound effects</label><div class="seg"><button data-go="snd:1" class="${SFX.on ? 'on' : ''}">On</button><button data-go="snd:0" class="${SFX.on ? '' : 'on'}">Off</button></div></div>
     <div class="actions"><button class="btn prime" data-go="menu">Done</button></div></div>`);
   $('pname').addEventListener('input', e => LS.set('lc.name', e.target.value.trim().slice(0, 16) || 'Player'));
 }
@@ -3458,6 +3599,8 @@ function codexScreen(back) {
     <h3>Fog of war</h3><p>You only see what your team's units and buildings can see. Enemy buildings stay marked once found. Units cannot target what they cannot see.</p>
     <h3>Outposts</h3><p>Select a worker and build an outpost (${POST_COST} Matter) at a far bloom. Workers drop off there, it grants vision, defends itself and carries your core's aura at a smaller radius.</p>
     <h3 style="color:${RACES.feral.col}">The wild</h3><p>Feral lairs guard rich blooms and keep spawning Gorgers, whose bodies are good eating. A destroyed lair leaves a huge carcass. Carrion Mites wander in to steal corpses, grow as they eat, and flee when attacked.</p>
+    <h3>Build points and speed</h3><p>Your core and every finished outpost can train units, each with its own queue. Tap a building and then the ground to set its rally point. <b>Quicken</b> at the core makes every building train 25% faster, up to two levels. Workers can help: select them and tap a building under construction to speed it up (each helper adds 60%, up to four), or tap a damaged building to repair it for free.</p>
+    <h3>Workers to warriors</h3><p><b>Muster</b> permanently turns selected workers into your tier 1 unit for the price difference. They stand still for 5 seconds while they change, so do it somewhere safe. <b>Call to arms</b> (at the core or from the worker panel) arms every worker near your buildings as militia for 25 seconds: triple damage and extra armor. It recharges in 70 seconds, then they go back to work.</p>
     <h3>Control groups</h3><p>Hold one of the three group buttons to save your selection, tap to recall it, and double-tap to jump the camera there. On a keyboard, Ctrl plus 1 to 3 saves and 1 to 3 recalls.</p>
     ${BASE_RACES.map(r => `<h3 style="color:${RACES[r].col}">${RACES[r].name}</h3><p>${RACES[r].blurb} ${RACES[r].core}</p><p><b>${RACES[r].ab.name}</b> (every ${RACES[r].ab.cd}s): ${RACES[r].ab.desc}</p>
       <div class="tbl"><table><tr><th>Unit</th><th>Cost</th><th>Supply</th><th>Health</th><th>Speed</th><th>Range</th><th>Role</th></tr>
@@ -3496,7 +3639,7 @@ function gameMenu() {
   show(`<div class="card"><h2>${App.tut ? 'Tutorial' : 'Match'}</h2>
     <button class="btn prime" data-go="close">Return to the match</button>
     <button class="btn" data-go="codex-in">Codex</button>
-    <button class="btn" data-go="sndtog">${SFX.on ? 'Turn sound off' : 'Turn sound on'}</button>
+    <div class="actions" style="margin-top:0"><button class="btn" data-go="mustog">${Music.on ? 'Music off' : 'Music on'}</button><button class="btn" data-go="sndtog">${SFX.on ? 'Effects off' : 'Effects on'}</button></div>
     ${App.tut ? '' : '<button class="btn" data-go="surrender">Surrender</button>'}
     <button class="btn ghost" data-go="quit">${App.returnTo === 'editor' ? 'Back to the designer' : 'Leave to main menu'}</button>
     ${App.role === 'solo' ? '<p class="fine">The match is paused while this menu is open.</p>' : '<p class="fine">Online matches keep running while this menu is open.</p>'}</div>`);
@@ -3531,6 +3674,8 @@ scr.addEventListener('click', e => {
     case 'menu': menuScreen(); break;
     case 'settings': settingsScreen(); break;
     case 'snd': SFX.set(v === '1'); settingsScreen(); break;
+    case 'mus': Music.set(v === '1'); settingsScreen(); break;
+    case 'mustog': Music.set(!Music.on); gameMenu(); break;
     case 'sndtog': SFX.set(!SFX.on); gameMenu(); break;
     case 'pick': pickScreen(v); break;
     case 'race': App.myRace = v; if (App.pickMode === 'host-lobby') { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
@@ -3572,7 +3717,7 @@ function startGame(seat) {
   centerOn(s[0] + (MAP_W / 2 - s[0]) * 0.12, s[1] + (MAP_H / 2 - s[1]) * 0.12);
   localFx = []; markers = []; fogDrawn = -1; UI.ctxDirty = true; UI.coreTab = 'train'; UI.lastUp = ''; UI.bar(); UI.netState(); Groups.reset();
   $('tut').classList.toggle('hide', !App.tut);
-  SFX.unlock();
+  SFX.unlock(); Music.setTheme(V.race(seat)); Music.target = 0.2;
   if (!App.tut && !LS.get('lc.hint3')) {
     const h = $('hint'); h.classList.remove('hide');
     h.innerHTML = `<b>Drag</b> to pan, <b>pinch</b> to zoom. <b>Tap</b> a unit, then tap the ground to move or an enemy to attack. <b>Hold and drag</b> to box-select. <b>Hold a group button</b> on the right to save a squad. Tap your <b>core</b> to train and evolve. Corpses give <b>Essence</b> for upgrades and elite units. New here? Try the Tutorials.<br><button class="tog" id="hintOk">Got it</button>`;
@@ -3953,14 +4098,14 @@ function tutAction(a, v) {
 const SFX = {
   ctx: null, master: null, noise: null, on: LS.get('nt.sound') !== 0, last: {},
   unlock() {
-    if (!this.on) return;
+    if (!this.on && !Music.on) return;
     if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
     const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
     try {
-      this.ctx = new AC(); this.master = this.ctx.createGain(); this.master.gain.value = 0.45; this.master.connect(this.ctx.destination);
+      this.ctx = new AC(); this.master = this.ctx.createGain(); this.master.gain.value = this.on ? 0.45 : 0; this.master.connect(this.ctx.destination);
       const len = this.ctx.sampleRate, buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate), d = buf.getChannelData(0);
       for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-      this.noise = buf; this.ambient();
+      this.noise = buf; Music.start();
     } catch (e) { this.ctx = null; }
   },
   set(on) { this.on = on; LS.set('nt.sound', on ? 1 : 0); if (on) this.unlock(); if (this.master) this.master.gain.value = on ? 0.45 : 0; },
@@ -4013,6 +4158,103 @@ const SFX = {
       case 'alert': this.tone(740, 0.15, 'square', 0.05); this.tone(554, 0.2, 'square', 0.05, 0, 0.17); break;
       case 'win': [392, 494, 587, 784].forEach((f, i) => this.tone(f, 0.5, 'triangle', 0.06, 0, i * 0.14)); break;
       case 'lose': [330, 262, 196].forEach((f, i) => this.tone(f, 0.6, 'sawtooth', 0.04, f * 0.8, i * 0.2)); break;
+    }
+  }
+};
+
+/* ================= MUSIC =================
+   A generative soundtrack synthesized live. Each race has its own scale, tempo, chord
+   cycle and instruments; a recurring motif keeps it recognisable. Intensity follows the
+   fighting you can see: calm pads and sparse melody, then bass, then drums and arpeggios. */
+const THEMES = {
+  menu: { root: 50, scale: [0, 2, 3, 5, 7, 9, 10], bpm: 70, prog: [0, 5, 3, 4], lead: 'bell', pad: 'sawtooth', perc: 'soft', bass: 'sine', cap: 0.55 },
+  necrosis: { root: 45, scale: [0, 1, 3, 5, 7, 8, 10], bpm: 78, prog: [0, 1, 0, 6], lead: 'choir', pad: 'sawtooth', perc: 'heavy', bass: 'sawtooth' },
+  kytinos: { root: 52, scale: [0, 3, 5, 7, 10], bpm: 104, prog: [0, 2, 3, 0], lead: 'pluck', pad: 'square', perc: 'click', bass: 'triangle' },
+  mechonized: { root: 48, scale: [0, 2, 3, 5, 7, 8, 11], bpm: 96, prog: [0, 5, 6, 4], lead: 'arp', pad: 'square', perc: 'electro', bass: 'square' },
+  huminodiz: { root: 55, scale: [0, 2, 4, 5, 7, 9, 10], bpm: 90, prog: [0, 6, 3, 4], lead: 'tri', pad: 'triangle', perc: 'tribal', bass: 'triangle' }
+};
+const Music = {
+  on: LS.get('nt.music') !== 0, bus: null, timer: 0, next: 0, step: 0, theme: THEMES.menu, key: 'menu', target: 0.1, level: 0.1, motif: [], last: 0,
+  start() {
+    const c = SFX.ctx; if (!c || this.bus) return;
+    this.bus = c.createGain(); this.bus.gain.value = this.on ? 0.32 : 0;
+    const comp = c.createDynamicsCompressor(); this.bus.connect(comp); comp.connect(c.destination);
+    this.next = c.currentTime + 0.1; this.makeMotif();
+    this.timer = setInterval(() => this.schedule(), 50);
+  },
+  set(on) { this.on = on; LS.set('nt.music', on ? 1 : 0); if (on) SFX.unlock(); if (this.bus) this.bus.gain.setTargetAtTime(on ? 0.32 : 0, SFX.ctx.currentTime, 0.3); },
+  setTheme(key) {
+    let k = key;
+    if (!THEMES[k] && RACES[k]) { const R = RACES[k]; k = R.aura === 'raise' || R.feat.undead ? 'necrosis' : R.cls === 'mech' ? 'mechonized' : R.feat.bog || R.feat.devour ? 'kytinos' : 'huminodiz'; }
+    if (!THEMES[k]) k = 'menu';
+    if (k === this.key) return;
+    this.key = k; this.theme = THEMES[k]; this.makeMotif(); this.step = 0; this.target = 0.15;
+  },
+  makeMotif() { const r = mulberry(this.key.length * 977 + 13); this.motif = Array.from({ length: 8 }, () => Math.floor(r() * 5) - 1); },
+  notice(f) {
+    if (f[0] !== 0 && f[0] !== 1 && f[0] !== 6 && f[0] !== 7) return;
+    const hw = vw / 2 / cam.z + 300, hh = vh / 2 / cam.z + 300;
+    if (Math.abs(f[1] - cam.x) > hw || Math.abs(f[2] - cam.y) > hh) return;
+    this.target = Math.min(1, this.target + (f[0] === 1 ? 0.06 : 0.025));
+  },
+  midi(m) { return 440 * Math.pow(2, (m - 69) / 12); },
+  note(deg, oct) { const sc = this.theme.scale, n = sc.length, d = ((deg % n) + n) % n, o = Math.floor(deg / n); return this.theme.root + sc[d] + 12 * (o + oct); },
+  voice(type, m, t, dur, vol, cut, vib) {
+    const c = SFX.ctx, o = c.createOscillator(), g = c.createGain(), f = c.createBiquadFilter();
+    o.type = type; o.frequency.value = this.midi(m);
+    if (vib) { const l = c.createOscillator(), lg = c.createGain(); l.frequency.value = 5; lg.gain.value = vib; l.connect(lg); lg.connect(o.frequency); l.start(t); l.stop(t + dur + 0.1); }
+    f.type = 'lowpass'; f.frequency.value = cut || 3000;
+    const a = Math.min(0.4, dur * 0.3);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + a); g.gain.setValueAtTime(vol, t + Math.max(a, dur - 0.15)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(f); f.connect(g); g.connect(this.bus); o.start(t); o.stop(t + dur + 0.05);
+  },
+  drum(kind, t, vol) {
+    const c = SFX.ctx;
+    if (kind === 'kick') { const o = c.createOscillator(), g = c.createGain(); o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.18); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3); o.connect(g); g.connect(this.bus); o.start(t); o.stop(t + 0.32); return; }
+    const s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(), dur = kind === 'hat' ? 0.05 : kind === 'click' ? 0.03 : 0.18;
+    s.buffer = SFX.noise; fl.type = kind === 'hat' || kind === 'click' ? 'highpass' : 'bandpass'; fl.frequency.value = kind === 'hat' ? 7000 : kind === 'click' ? 3000 : kind === 'tom' ? 220 : 1400;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(fl); fl.connect(g); g.connect(this.bus); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.02);
+  },
+  schedule() {
+    const c = SFX.ctx; if (!c || !this.bus || !this.on) return;
+    const base = App.inGame ? 0.15 : 0.08, cap = this.theme.cap || 1;
+    this.target = Math.max(base, this.target * 0.985);
+    this.level += (Math.min(cap, this.target) - this.level) * (this.target > this.level ? 0.03 : 0.008);
+    if (this.next < c.currentTime - 0.5) this.next = c.currentTime + 0.05;
+    const spb = 60 / (this.theme.bpm * (1 + this.level * 0.12)) / 4;
+    while (this.next < c.currentTime + 0.25) { this.play(this.step, this.next, spb); this.next += spb; this.step++; }
+  },
+  play(step, t, spb) {
+    const T = this.theme, I = this.level, s16 = step % 16, chordIdx = Math.floor(step / 32) % T.prog.length, deg = T.prog[chordIdx];
+    if (step % 32 === 0) {
+      const dur = spb * 32, cut = 500 + I * 1800;
+      for (const k of [0, 2, 4]) { this.voice(T.pad, this.note(deg + k, 1), t, dur, 0.035, cut, 1.5); this.voice('sine', this.note(deg + k, 1) + 0.07, t, dur, 0.02, cut); }
+    }
+    if (I > 0.25 && s16 % 4 === 0) this.voice(T.bass, this.note(deg, -1), t, spb * (I > 0.6 ? 2 : 3.5), 0.09, 400 + I * 600);
+    if (I > 0.6 && s16 % 4 === 2) this.voice(T.bass, this.note(deg, -1), t, spb * 1.5, 0.06, 500);
+    const m = this.motif[(step >> 1) % 8];
+    if (I < 0.5) {
+      if (s16 % 4 === 0 && Math.random() < 0.28 + I * 0.5) this.lead(deg + m + (s16 === 8 ? 2 : 0), t, spb * 4, 0.05);
+    } else if (step % 2 === 0) {
+      const arp = [0, 2, 4, 7][(step >> 1) % 4];
+      this.lead(deg + (Math.random() < 0.25 ? m : arp), t, spb * 2, 0.04);
+    }
+    if (I > 0.5) {
+      const p = T.perc, v = 0.18 * Math.min(1, (I - 0.4) * 2);
+      if (s16 === 0 || s16 === 8 || (I > 0.8 && s16 === 10)) this.drum(p === 'heavy' || p === 'tribal' ? 'tom' : 'kick', t, p === 'tribal' ? v * 1.2 : v * 1.4);
+      if (p !== 'soft' && (s16 === 4 || s16 === 12)) this.drum(p === 'tribal' ? 'tom' : 'snare', t, v * 0.6);
+      if (step % 2 === 1 || p === 'click') this.drum(p === 'click' ? 'click' : 'hat', t, v * (p === 'click' ? 0.35 : 0.25));
+    } else if (I > 0.3 && s16 === 0) this.drum(T.perc === 'click' ? 'click' : 'kick', t, 0.06);
+  },
+  lead(deg, t, dur, vol) {
+    const T = this.theme, n = this.note(deg, 2);
+    switch (T.lead) {
+      case 'bell': this.voice('sine', n, t, dur * 1.6, vol, 4000); this.voice('sine', n + 12, t, dur * 0.6, vol * 0.3, 5000); break;
+      case 'choir': this.voice('sawtooth', n - 12, t, dur * 1.8, vol * 0.7, 900, 3); this.voice('sine', n, t, dur * 1.8, vol * 0.6, 2000, 4); break;
+      case 'pluck': this.voice('square', n, t, Math.min(dur, 0.18), vol * 0.7, 1800); break;
+      case 'arp': this.voice('sawtooth', n, t, Math.min(dur, 0.22), vol * 0.7, 2600); break;
+      default: this.voice('triangle', n, t, dur * 1.2, vol * 1.2, 2500); this.voice('sine', n + 7, t, dur * 0.8, vol * 0.25, 2500);
     }
   }
 };

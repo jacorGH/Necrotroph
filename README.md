@@ -32,14 +32,16 @@ Each race has a worker, three combat units, an outpost, a core with its own aura
 
 - **Fog of war with line of sight.** Rock and thickets block vision. Teammates share sight.
 - **Terrain that matters.** Rock blocks movement, chasms block movement but not shots, bog slows, and thickets hide ambushes. Ground where many die rots into bog as the match goes on.
-- **Outposts.** Expand to far blooms for drop-off points, vision and a smaller copy of your core's aura.
+- **Outposts and build points.** Expand to far blooms for drop-off points, vision and a smaller copy of your core's aura. Every finished outpost is also a second place to train units, with its own queue and rally point.
+- **Faster builds.** *Quicken* at the core makes every building train 25% faster, up to two levels. Workers can help raise an outpost (each helper adds 60% speed, up to four) or repair a damaged building for free.
+- **Workers to warriors.** *Muster* permanently transforms selected workers into your tier 1 unit for the price difference. *Call to arms* turns every worker near your buildings into militia for 25 seconds.
 - **The wild.** Feral lairs guard rich blooms and keep spawning Gorgers. Carrion Mites compete for the dead.
 - **An AI that plays fair.** It sees only through its own fog, scouts to find you, expands, evolves, counters what it has seen, masses before attacking and retreats when a push fails. Easy, Normal and Hard.
 - **1v1, 2v2 and free-for-all**, against the AI or online, with up to four players.
 - **Tutorials**, one per race, teaching the corpse cycle step by step.
 - **Map designer.** Paint terrain, place blooms, bases and lairs, with rotate, mirror and four-way symmetry. Undo, validation, and export and import. Test-play your map instantly.
 - **Race builder.** Design your own lifeform (see below).
-- **Sound** synthesized live in the browser, with an ambient drone.
+- **Adaptive music.** A soundtrack generated live, with its own scale, tempo and instruments for each race and the menu. It builds from calm pads to bass, drums and racing arpeggios as fighting heats up on screen. Music and sound effects can be toggled separately.
 - **Resume.** Reload or get interrupted mid-match and pick up where you left off.
 
 ## Race builder
@@ -87,7 +89,8 @@ The host runs the simulation. Each guest only receives what their team can see, 
 | Move, attack, harvest or scavenge | Tap the ground, an enemy, a bloom or a corpse |
 | Save a control group | Hold a group button (1–3) |
 | Recall a control group | Tap a group button; double-tap to jump the camera there |
-| Train, evolve, set a rally point | Tap your core |
+| Train, evolve, set a rally point | Tap your core or an outpost |
+| Help build or repair | Select workers, then tap your building |
 
 **Keyboard and mouse**
 
@@ -129,7 +132,7 @@ Saved maps, races, settings and in-progress matches are stored in the browser's 
 - Fixed 20 Hz simulation running separately from rendering, so a host whose tab loses focus keeps the match alive.
 - Pathfinding uses cached flow fields with line-of-sight smoothing.
 - Fog of war is computed per team on a tile grid with sight-blocking terrain.
-- All sound is synthesized with WebAudio. There are no audio files.
+- All music and sound is synthesized with WebAudio. There are no audio files.
 
 ## Credits
 
