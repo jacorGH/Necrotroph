@@ -2,7 +2,15 @@
 
 **Every death feeds something.**
 
-Necrotroph is a mobile-first real-time strategy game where four alien lifeforms fight over a world that runs on corpses. Every unit that falls leaves a body behind, and what each race can do with the dead decides who grows strongest. It runs in the browser as a single HTML file, with peer-to-peer online play for up to four players.
+Necrotroph is a mobile-first real-time strategy game set inside **Varuun**, a dying star-leviathan drifting between galaxies. Four lifeforms, too small for Varuun to see, fight across its organs for every scrap of flesh and every corpse. Whoever holds the most of Varuun when it draws its last breath inherits the body, and in the dark, a leviathan's corpse is a seed.
+
+Every unit that falls leaves a body behind, and what each lifeform can do with the dead decides who grows strongest. It runs in the browser as a single HTML file, with peer-to-peer online play for up to four players.
+
+## The story
+
+Varuun swallowed three things it should not have: a comet laced with ancient spores, the carcass of an older leviathan, and a derelict starship, the *Hesper*. Each carried something that woke up inside it. Varuun's own cells rose to fight back. Now four lifeforms war across its organs, while Varuun's hunter cells, the Wardens, attack them all.
+
+The full story is in the game under **The story** on the main menu.
 
 ▶ **Play:** `https://<your-username>.github.io/<repo-name>/`
 
@@ -12,47 +20,48 @@ Necrotroph is a mobile-first real-time strategy game where four alien lifeforms 
 
 There are two resources:
 
-- **Matter** comes from pink blooms on the map and from scavenging the dead.
-- **Essence** comes *only* from corpses. It pays for elite units and every upgrade, so the side that feeds best evolves first.
+- **Nutrient** comes from pink nutrient wells in Varuun's tissue and from scavenging the dead.
+- **Essence** comes *only* from corpses. It pays for elite units and every mutation, so the side that feeds best evolves first.
 
-A corpse is worth half the cost of the unit that died, multiplied by how well your race digests that kind of body. Bodies rot away after 75 seconds, and Carrion Mites wander in to steal them if nobody claims them first.
+A corpse is worth half the cost of the unit that died, multiplied by how well your lifeform digests that kind of body. Bodies rot away after 75 seconds, and Lumen Lice drift in to steal them if nobody claims them first.
 
 ## The lifeforms
 
-| Race | Nature | Feeds by | Ability |
+| Lifeform | Nature | Feeds by | Ability |
 |---|---|---|---|
-| **NecrosisPhagi** | An undead plague. Combat units take less damage, and Shamblers often get back up. | Raising organic and hybrid corpses as Husks, including your enemies' fallen | Mass Raise |
-| **Kytinos** | Giant insects. Fast hatching, fast legs, regenerating, and bog doesn't slow them. | Devouring flesh to heal, and turning it into rich biomass | Frenzy |
-| **Mechonized** | Inorganic minds with shields and long range. | Salvaging wrecks for huge yields, and burning flesh before it can rise | Overcharge |
-| **Huminodiz** | Part flesh, part machine. Adaptable generalists. | Digesting every corpse type reasonably well | Stim Graft |
+| **NecrosisPhagi**, the Quiet Choir | A plague from a dead leviathan's corpse. Combat units take less damage, and Shamblers often get back up. | Raising organic and hybrid corpses as Husks, including your enemies' fallen | Mass Raise |
+| **Kytinos**, the Brood | Chitin-walled parasites that ride leviathans from host to host. Fast hatching, fast legs, regenerating, and mucus doesn't slow them. | Devouring flesh to heal, and turning it into rich biomass | Frenzy |
+| **Mechonized**, the Restoration | The *Hesper*'s repair swarm, rebuilding Varuun's flesh into a ship. Shields and long range. | Salvaging wrecks for huge yields, and burning flesh before it can rise | Overcharge |
+| **Huminodiz**, the Grafted | Varuun's own cells fused with nanotech and the dead crew's memories. Adaptable generalists. | Digesting every corpse type reasonably well | Stim Graft |
 
-Each race has a worker, three combat units, an outpost, a core with its own aura, and six upgrades: three shared and three of its own.
+Each lifeform has a worker, three combat units, a foothold, a core with its own aura, and six mutations: three shared and three of its own.
 
 ## Features
 
 - **Fog of war with line of sight.** Rock and thickets block vision. Teammates share sight.
-- **Terrain that matters.** Rock blocks movement, chasms block movement but not shots, bog slows, and thickets hide ambushes. Ground where many die rots into bog as the match goes on.
-- **Outposts and build points.** Expand to far blooms for drop-off points, vision and a smaller copy of your core's aura. Every finished outpost is also a second place to train units, with its own queue and rally point.
-- **Faster builds.** *Quicken* at the core makes every building train 25% faster, up to two levels. Workers can help raise an outpost (each helper adds 60% speed, up to four) or repair a damaged building for free.
+- **Varuun's flesh as terrain.** Bone blocks movement, Lumen channels (rivers of glowing blood) block movement but not shots, mucus marsh slows, and villi forests hide ambushes. Tissue where many die rots into marsh as the match goes on.
+- **Footholds and build points.** Expand to far nutrient wells for drop-off points, vision and a smaller copy of your core's aura. Every finished foothold is also a second place to train units, with its own queue and rally point.
+- **Faster builds.** *Quicken* at the core makes every building train 25% faster, up to two levels. Workers can help a foothold take root (each helper adds 60% speed, up to four) or repair a damaged building for free.
 - **Workers to warriors.** *Muster* permanently transforms selected workers into your tier 1 unit for the price difference. *Call to arms* turns every worker near your buildings into militia for 25 seconds.
-- **The wild.** Feral lairs guard rich blooms and keep spawning Gorgers. Carrion Mites compete for the dead.
-- **An AI that plays fair.** It sees only through its own fog, scouts to find you, expands, evolves, counters what it has seen, masses before attacking and retreats when a push fails. Easy, Normal and Hard.
+- **Varuun's defences.** Warden Nests guard rich nutrient wells and keep hatching Wardens, which attack every lifeform. Lumen Lice compete for the dead.
+- **An AI that plays fair.** It sees only through its own fog, scouts to find you, expands, mutates, counters what it has seen, masses before attacking and retreats when a push fails. Easy, Normal and Hard.
 - **1v1, 2v2 and free-for-all**, against the AI or online, with up to four players.
-- **Tutorials**, one per race, teaching the corpse cycle step by step.
-- **Map designer.** Paint terrain, place blooms, bases and lairs, with rotate, mirror and four-way symmetry. Undo, validation, and export and import. Test-play your map instantly.
+- **Tutorials**, one per lifeform, teaching the cycle of feeding step by step.
+- **Maps set in Varuun's organs:** the Furnace Gut, the Baleen Reefs, the Heart Choir (four players), and Uncharted Tissue, a new random region every match.
+- **Map designer.** Paint tissue, bone, channels, mucus and villi, place nutrient wells, bases and Warden Nests, with rotate, mirror and four-way symmetry. Undo, validation, and export and import. Test-play your map instantly.
 - **Race builder.** Design your own lifeform (see below).
 - **Adaptive music.** A soundtrack generated live, with its own scale, tempo and instruments for each race and the menu. It builds from calm pads to bass, drums and racing arpeggios as fighting heats up on screen. Music and sound effects can be toggled separately.
 - **Resume.** Reload or get interrupted mid-match and pick up where you left off.
 
 ## Race builder
 
-Create a lifeform with its own name, background story, colors and four units.
+Create a new strain that rode into Varuun on something else it swallowed, with its own name, background story, colors and four units.
 
 - **Ecology:** what your dead leave behind, how well you digest each corpse type (within a fixed budget), plus one passive, one core aura and one ability.
 - **Units:** a worker and three troop tiers, each with health, armor, damage, attack speed, range, speed and up to two traits: Splash, Medic, Shield, Regrowth, Undying, Necromancy, Burst or Leech.
 - **Art:** each unit is built from parts (body, limbs, weapon, eyes), with a live animated preview.
 
-**No overpowered builds.** You never set a price. Every unit is costed from its stats and traits, so stronger troops simply cost more Matter, and each tier has a ceiling. A few extreme combinations are blocked outright, such as very long range on a fast or tanky unit. In online play the host re-checks every guest's race, so editing the exported file won't get past the limits.
+**No overpowered builds.** You never set a price. Every unit is costed from its stats and traits, so stronger troops simply cost more Nutrient, and each tier has a ceiling. A few extreme combinations are blocked outright, such as very long range on a fast or tanky unit. In online play the host re-checks every guest's race, so editing the exported file won't get past the limits.
 
 **Test balance** runs eight hidden AI matches against the built-in races and reports a win rate.
 
@@ -86,10 +95,10 @@ The host runs the simulation. Each guest only receives what their team can see, 
 | Select a unit | Tap |
 | Select all of one type on screen | Double-tap |
 | Box select | Hold, then drag |
-| Move, attack, harvest or scavenge | Tap the ground, an enemy, a bloom or a corpse |
+| Move, attack, harvest or scavenge | Tap the ground, an enemy, a nutrient well or a corpse |
 | Save a control group | Hold a group button (1–3) |
 | Recall a control group | Tap a group button; double-tap to jump the camera there |
-| Train, evolve, set a rally point | Tap your core or an outpost |
+| Train, mutate, set a rally point | Tap your core or a foothold |
 | Help build or repair | Select workers, then tap your building |
 
 **Keyboard and mouse**
@@ -104,7 +113,7 @@ The host runs the simulation. Each guest only receives what their team can see, 
 | `Q` | Select army |
 | `W` | Select workers |
 | `E` | Use race ability |
-| `B` | Build outpost |
+| `B` | Grow a foothold |
 | `Space` | Jump to core |
 | `Esc` | Clear selection |
 | `1`–`3` | Recall group |
@@ -133,6 +142,12 @@ Saved maps, races, settings and in-progress matches are stored in the browser's 
 - Pathfinding uses cached flow fields with line-of-sight smoothing.
 - Fog of war is computed per team on a tile grid with sight-blocking terrain.
 - All music and sound is synthesized with WebAudio. There are no audio files.
+
+## Roadmap
+
+1. **The Atlas.** A campaign map of Varuun's organs joined by Lumen channels, where each organ you invade opens a battle, and a story campaign for each lifeform.
+2. **Drift mode.** Real-time battles in the Lumen Sea, where currents carry blood cells, spore rafts and wreckage as moving islands to build on and jump between.
+3. **The Deep Lumen.** A 3D mode: steer through glowing vessel tunnels and dock with floating bodies, then fight for them.
 
 ## Credits
 

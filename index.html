@@ -219,7 +219,7 @@ input[type=color]{width:56px;height:40px;border:1px solid var(--line);border-rad
 <div id="hud" class="hide">
   <div id="top">
     <button class="ib" id="bMenu" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-    <div class="stat" title="Matter"><i class="gem"></i><b id="tMat">0</b></div>
+    <div class="stat" title="Nutrient"><i class="gem"></i><b id="tMat">0</b></div>
     <div class="stat" title="Essence"><i class="ess"></i><b id="tEss">0</b></div>
     <div class="stat" title="Supply"><i class="supi"></i><b id="tSup">0/0</b></div>
     <div id="tRace"></div>
@@ -268,7 +268,7 @@ const TAU = Math.PI * 2, TILE = 40, STEP = 0.05;
 let MAP_W = 2560, MAP_H = 2560;
 const GROW_COST = 100, CAP_START = 12, CAP_MAX = 72, HUSK_MAX = 24, CORPSE_LIFE = 75, POST_COST = 150, MAXP = 4, FER = 4;
 const T_GROUND = 0, T_ROCK = 1, T_CHASM = 2, T_BOG = 3, T_THICK = 4;
-const T_NAMES = ['Ground', 'Rock', 'Chasm', 'Bog', 'Thicket'];
+const T_NAMES = ['Tissue', 'Bone', 'Lumen channel', 'Mucus marsh', 'Villi forest'];
 const T_WALK = [1, 0, 0, 1, 1], T_SEE = [1, 0, 1, 1, 0];
 const BASE_RACES = ['necrosis', 'kytinos', 'mechonized', 'huminodiz'];
 const COLK = ['necrosis', 'kytinos', 'mechonized', 'huminodiz', 'feral'];
@@ -284,48 +284,52 @@ const ABIL = {
   stim: { name: 'Stim Graft', cd: 45, dur: 8, desc: 'Selected units heal 35% and attack 40% faster for 8 seconds.' }
 };
 const AURAS = {
-  raise: { name: 'Necropolis', desc: 'Core and outposts raise organic and hybrid corpses nearby as Husks.' },
-  heal: { name: 'Brood Heal', desc: 'Core and outposts heal your units nearby.' },
-  mend: { name: 'Mending', desc: 'Core and outposts heal units nearby and repair themselves.' },
-  salvage: { name: 'Salvage Field', desc: 'Core and outposts consume every corpse nearby for Matter and Essence.' },
-  fort: { name: 'Fortified', desc: 'Core and outposts reach 40 further and hit harder.' }
+  raise: { name: 'Necropolis', desc: 'Core and footholds raise organic and hybrid corpses nearby as Husks.' },
+  heal: { name: 'Brood Heal', desc: 'Core and footholds heal your units nearby.' },
+  mend: { name: 'Mending', desc: 'Core and footholds heal units nearby and repair themselves.' },
+  salvage: { name: 'Salvage Field', desc: 'Core and footholds consume every corpse nearby for Nutrient and Essence.' },
+  fort: { name: 'Fortified', desc: 'Core and footholds reach 40 further and hit harder.' }
 };
 const PASSIVES = {
   undead: { name: 'Undead', desc: 'Combat units take 10% less damage.' },
   regen: { name: 'Regeneration', desc: 'Units slowly heal out of combat.' },
   swift: { name: 'Swift', desc: 'Units move 10% faster and ignore bog.' },
   plated: { name: 'Plated', desc: 'Combat units gain 1 armor.' },
-  harvester: { name: 'Harvester', desc: '25% more Matter and Essence from corpses.' },
+  harvester: { name: 'Harvester', desc: '25% more Nutrient and Essence from corpses.' },
   devour: { name: 'Devourers', desc: 'Hurt combat units eat nearby corpses to heal.' }
 };
 const RACES = {
   necrosis: { name: 'NecrosisPhagi', col: '#9b5de5', col2: '#9dff6a', cls: 'rot', grow: 'Spread Blight', post: 'Blight Pustule', builtin: 1,
-    blurb: 'An undead plague. Raises the organic dead, including your enemies, as Husks.',
+    blurb: 'The Quiet Choir. A plague that only lives in death, carried in from the corpse of the leviathan Ohm-Tessaral. It raises the fallen, including your enemies, as Husks.',
+    lore: 'Every cell they take adds a voice to a choir that sings in a dead leviathan\'s song. They want Varuun dead, so they can wake inside the corpse as Ohm-Tessaral reborn.',
     core: 'Undead units take 10% less damage. Blight Core and Pustules raise organic and hybrid corpses nearby.',
     scav: { organic: 0.4, mech: 0.15, hybrid: 0.35, rot: 0.3 }, feat: { undead: 1 }, aura: 'raise', ability: 'raise',
     upg: ['armor', 'dmg', 'yield', 'n_rot', 'n_plague', 'n_volatile'] },
   kytinos: { name: 'Kytinos', col: '#e3a32b', col2: '#ffe08a', cls: 'organic', grow: 'Expand Hive', post: 'Brood Chamber', builtin: 1,
-    blurb: 'Giant chitinous swarm. Fast hatching, fast legs, regenerating, and they eat the fallen.',
+    blurb: 'The Brood. Ancient chitin-walled parasites that ride leviathans from host to host. Fast hatching, fast legs, regenerating, and they eat the fallen.',
+    lore: 'They came in on a comet Varuun swallowed centuries ago. They mean no malice: hosts are seasons. They must spread before Varuun dies, or die with it.',
     core: 'Broods heal units nearby. All Kytinos regenerate, ignore bog, and devour corpses to heal.',
     scav: { organic: 1.0, mech: 0, hybrid: 0.6, rot: 0.5 }, feat: { regen: 1, devour: 1, bog: 1 }, aura: 'heal', ability: 'frenzy',
     upg: ['armor', 'dmg', 'yield', 'k_chitin', 'k_adrenal', 'k_brood'] },
   mechonized: { name: 'Mechonized', col: '#36d6e7', col2: '#d4fbff', cls: 'mech', grow: 'Fabricate Capacity', post: 'Relay Pylon', builtin: 1,
-    blurb: 'Advanced inorganic minds that despise flesh. Shields, range and salvage.',
+    blurb: 'The Restoration. The repair swarm of the swallowed starship Hesper, still trying to fix a hull that is now Varuun\'s flesh. Shields, range and salvage.',
+    lore: 'Its logs call the organs decks and the flesh contamination. It is rebuilding Varuun into the Hesper, organ by organ, for a crew that is long dead.',
     core: 'Forge and Pylons salvage every wreck nearby and burn flesh before it can rise.',
     scav: { organic: 0.25, mech: 1.2, hybrid: 0.6, rot: 0.25 }, feat: {}, aura: 'salvage', ability: 'overcharge',
     upg: ['armor', 'dmg', 'yield', 'm_matrix', 'm_target', 'm_recycle'] },
   huminodiz: { name: 'Huminodiz', col: '#ff7a45', col2: '#ffd9c4', cls: 'hybrid', grow: 'Raise Barracks', post: 'Field Post', builtin: 1,
-    blurb: 'Part flesh, part machine. Adaptable generalists who waste nothing.',
+    blurb: 'The Grafted. Varuun\'s own cells, fused with the Hesper\'s nanotech and its dead crew\'s memories. Adaptable generalists who waste nothing.',
+    lore: 'The only lifeform that belongs here. Led by Sela, who remembers being the Hesper\'s captain, they fight to keep Varuun alive.',
     core: 'Citadel and Field Posts heal units nearby and repair themselves.',
     scav: { organic: 0.6, mech: 0.6, hybrid: 0.9, rot: 0.2 }, feat: {}, aura: 'mend', ability: 'stim',
     upg: ['armor', 'dmg', 'yield', 'h_medic', 'h_stim', 'h_plate'] },
-  feral: { name: 'Feral', col: '#c0573e', col2: '#ffb08a', cls: 'organic', scav: { organic: 0, mech: 0, hybrid: 0, rot: 0 }, feat: {}, upg: [] }
+  feral: { name: 'Wardens', col: '#c0573e', col2: '#ffb08a', cls: 'organic', scav: { organic: 0, mech: 0, hybrid: 0, rot: 0 }, feat: {}, upg: [] }
 };
 for (const k in RACES) RACES[k].ab = ABIL[RACES[k].ability];
 const UPG = {
   armor: { name: 'Hardened Hides', cost: 100, ess: 35, t: 40, desc: '+1 armor for all combat units.' },
   dmg: { name: 'Honed Weapons', cost: 120, ess: 45, t: 45, desc: '+12% damage for all combat units.' },
-  yield: { name: 'Efficient Digestion', cost: 80, ess: 20, t: 30, desc: '25% more Matter and Essence from corpses.' },
+  yield: { name: 'Efficient Digestion', cost: 80, ess: 20, t: 30, desc: '25% more Nutrient and Essence from corpses.' },
   n_rot: { name: 'Lingering Rot', cost: 90, ess: 40, t: 40, desc: 'Husks rot half as fast and 8 more can stand.' },
   n_plague: { name: 'Plague Bolts', cost: 120, ess: 50, t: 45, desc: 'Plaguecaster bolts splash nearby enemies.' },
   n_volatile: { name: 'Volatile Bloat', cost: 110, ess: 45, t: 40, desc: 'Bloat bursts deal 50% more damage.' },
@@ -346,33 +350,33 @@ const GENERIC_UPG = ['armor', 'dmg', 'yield', 'g_vital', 'g_speed', 'g_prod'];
 
 const U = {
   n_core: { core: 1, struct: 1, name: 'Blight Core', hp: 2200, ar: 3, rng: 150, dmg: 12, cd: 1, r: 42, vis: 340 },
-  n_work: { worker: 1, name: 'Gnawer', cost: 45, hp: 58, spd: 60, rng: 14, dmg: 4, cd: 1, r: 8, bt: 8, s: 1, vis: 210, desc: 'Harvests Matter, builds Pustules. Gnaws rot and scrap, leaving fresh flesh for raising.' },
+  n_work: { worker: 1, name: 'Gnawer', cost: 45, hp: 58, spd: 60, rng: 14, dmg: 4, cd: 1, r: 8, bt: 8, s: 1, vis: 210, desc: 'Harvests Nutrient, builds Pustules. Gnaws rot and scrap, leaving fresh flesh for raising.' },
   n_sham: { name: 'Shambler', cost: 55, hp: 155, ar: 1, spd: 44, rng: 14, dmg: 12, cd: 1, r: 10, bt: 12, s: 1, rise: 0.3, desc: 'Cheap, sturdy melee mass. Often gets back up once after being killed.' },
   n_cast: { name: 'Plaguecaster', cost: 100, hp: 105, ar: 1, spd: 46, rng: 130, dmg: 12, cd: 1.4, r: 9, bt: 18, s: 2, raise: 1, vis: 280, desc: 'Ranged plague bolts. Raises nearby organic and hybrid corpses as Husks.' },
   n_bloat: { name: 'Bloat', cost: 130, ess: 20, hp: 380, ar: 2, spd: 34, rng: 18, dmg: 14, cd: 1.2, r: 15, bt: 22, s: 2, splash: 30, boom: { dmg: 80, rad: 78 }, desc: 'Bloated tank that sprays corrosive bile on groups and bursts when killed.' },
   n_husk: { husk: 1, name: 'Husk', hp: 60, spd: 42, rng: 14, dmg: 7, cd: 1.1, r: 9, s: 0, desc: 'Raised dead with a shadow of its old strength. Slowly rots away.' },
-  n_post: { post: 1, struct: 1, name: 'Blight Pustule', cost: POST_COST, hp: 700, ar: 2, rng: 120, dmg: 8, cd: 1.2, r: 24, bt: 22, vis: 320, desc: 'Outpost. Drop-off point, vision, and raises corpses nearby.' },
+  n_post: { post: 1, struct: 1, name: 'Blight Pustule', cost: POST_COST, hp: 700, ar: 2, rng: 120, dmg: 8, cd: 1.2, r: 24, bt: 22, vis: 320, desc: 'Foothold. Drop-off point, vision, and raises corpses nearby.' },
   k_core: { core: 1, struct: 1, name: 'Brood Mound', hp: 2400, ar: 3, rng: 140, dmg: 12, cd: 1, r: 44, vis: 340 },
-  k_work: { worker: 1, name: 'Larva', cost: 50, hp: 55, spd: 70, rng: 14, dmg: 4, cd: 1, r: 8, bt: 8, s: 1, vis: 210, desc: 'Harvests Matter, builds Chambers. Turns organic dead into rich biomass.' },
+  k_work: { worker: 1, name: 'Larva', cost: 50, hp: 55, spd: 70, rng: 14, dmg: 4, cd: 1, r: 8, bt: 8, s: 1, vis: 210, desc: 'Harvests Nutrient, builds Chambers. Turns organic dead into rich biomass.' },
   k_skit: { name: 'Skitter', cost: 55, hp: 96, ar: 1, spd: 96, rng: 14, dmg: 8, cd: 0.7, r: 9, bt: 9, s: 1, desc: 'Very fast swarming melee.' },
   k_spit: { name: 'Spitter', cost: 100, hp: 115, ar: 1, spd: 62, rng: 135, dmg: 16, cd: 1.5, r: 11, bt: 13, s: 2, splash: 22, vis: 270, desc: 'Acid artillery with splash.' },
   k_cara: { name: 'Carapace', cost: 220, ess: 30, hp: 600, ar: 4, spd: 42, rng: 22, dmg: 30, cd: 1.6, r: 21, bt: 24, s: 4, desc: 'Colossal armored tank. Very hard to kill.' },
-  k_post: { post: 1, struct: 1, name: 'Brood Chamber', cost: POST_COST, hp: 760, ar: 2, rng: 110, dmg: 8, cd: 1.2, r: 24, bt: 18, vis: 320, desc: 'Outpost. Drop-off point, vision, and heals units nearby.' },
+  k_post: { post: 1, struct: 1, name: 'Brood Chamber', cost: POST_COST, hp: 760, ar: 2, rng: 110, dmg: 8, cd: 1.2, r: 24, bt: 18, vis: 320, desc: 'Foothold. Drop-off point, vision, and heals units nearby.' },
   m_core: { core: 1, struct: 1, name: 'Nexus Forge', hp: 2200, ar: 3, rng: 150, dmg: 12, cd: 1, r: 42, vis: 340 },
-  m_work: { worker: 1, name: 'Salvager', cost: 55, hp: 60, ar: 1, spd: 60, rng: 14, dmg: 4, cd: 1, r: 8, bt: 9, s: 1, vis: 210, desc: 'Harvests Matter, builds Pylons. Strips machine wrecks for huge yields.' },
+  m_work: { worker: 1, name: 'Salvager', cost: 55, hp: 60, ar: 1, spd: 60, rng: 14, dmg: 4, cd: 1, r: 8, bt: 9, s: 1, vis: 210, desc: 'Harvests Nutrient, builds Pylons. Strips machine wrecks for huge yields.' },
   m_sent: { name: 'Sentry', cost: 75, hp: 105, ar: 2, spd: 58, rng: 115, dmg: 11, cd: 1, r: 10, bt: 12, s: 1, desc: 'Reliable laser infantry.' },
   m_lanc: { name: 'Lancer', cost: 160, hp: 80, spd: 40, rng: 210, dmg: 28, cd: 3, r: 12, bt: 22, s: 2, splash: 30, vis: 290, desc: 'Extreme-range siege lance with splash.' },
   m_bast: { name: 'Bastion', cost: 240, ess: 30, hp: 380, ar: 3, spd: 36, rng: 90, dmg: 18, cd: 0.9, r: 19, bt: 32, s: 4, shield: 200, desc: 'Heavy walker with a regenerating shield.' },
-  m_post: { post: 1, struct: 1, name: 'Relay Pylon', cost: POST_COST, hp: 650, ar: 3, rng: 140, dmg: 9, cd: 1.1, r: 24, bt: 22, vis: 360, desc: 'Outpost. Drop-off point, long sight, and salvages wrecks nearby.' },
+  m_post: { post: 1, struct: 1, name: 'Relay Pylon', cost: POST_COST, hp: 650, ar: 3, rng: 140, dmg: 9, cd: 1.1, r: 24, bt: 22, vis: 360, desc: 'Foothold. Drop-off point, long sight, and salvages wrecks nearby.' },
   h_core: { core: 1, struct: 1, name: 'Graft Citadel', hp: 2200, ar: 3, rng: 150, dmg: 13, cd: 1, r: 42, vis: 340 },
-  h_work: { worker: 1, name: 'Tech', cost: 50, hp: 55, spd: 62, rng: 14, dmg: 4, cd: 1, r: 8, bt: 9, s: 1, vis: 210, desc: 'Harvests Matter, builds Field Posts. Scavenges every corpse type.' },
+  h_work: { worker: 1, name: 'Tech', cost: 50, hp: 55, spd: 62, rng: 14, dmg: 4, cd: 1, r: 8, bt: 9, s: 1, vis: 210, desc: 'Harvests Nutrient, builds Field Posts. Scavenges every corpse type.' },
   h_troo: { name: 'Trooper', cost: 60, hp: 96, ar: 1, spd: 62, rng: 105, dmg: 10, cd: 0.8, r: 9, bt: 11, s: 1, desc: 'Fast-firing rifle infantry.' },
   h_graf: { name: 'Grafter', cost: 120, hp: 110, ar: 1, spd: 56, rng: 80, dmg: 6, cd: 1, r: 10, bt: 18, s: 2, heal: 10, desc: 'Field medic. Heals any ally, flesh or machine.' },
   h_exo:  { name: 'Exoframe', cost: 200, ess: 25, hp: 340, ar: 3, spd: 46, rng: 60, dmg: 24, cd: 1, r: 17, bt: 26, s: 3, splash: 24, desc: 'Armored exoframe with splash melee.' },
-  h_post: { post: 1, struct: 1, name: 'Field Post', cost: POST_COST, hp: 700, ar: 2, rng: 130, dmg: 9, cd: 1, r: 24, bt: 20, vis: 320, desc: 'Outpost. Drop-off point, vision, and heals units nearby.' },
-  f_beast: { feral: 1, name: 'Gorger', cost: 70, hp: 150, ar: 1, spd: 62, rng: 14, dmg: 11, cd: 1, r: 12, vis: 220, desc: 'Feral predator that guards its lair. Its body is good eating.' },
-  f_mite: { feral: 1, mite: 1, name: 'Carrion Mite', cost: 24, hp: 40, spd: 74, rng: 12, dmg: 3, cd: 1, r: 7, vis: 200, desc: 'Scavenger that steals corpses and grows as it eats. Flees when attacked.' },
-  f_lair: { struct: 1, lair: 1, name: 'Feral Lair', hp: 900, ar: 2, r: 26, vis: 200, desc: 'Spawns Gorgers. Leaves a huge carcass when destroyed.' }
+  h_post: { post: 1, struct: 1, name: 'Field Post', cost: POST_COST, hp: 700, ar: 2, rng: 130, dmg: 9, cd: 1, r: 24, bt: 20, vis: 320, desc: 'Foothold. Drop-off point, vision, and heals units nearby.' },
+  f_beast: { feral: 1, name: 'Warden', cost: 70, hp: 150, ar: 1, spd: 62, rng: 14, dmg: 11, cd: 1, r: 12, vis: 220, desc: 'One of Varuun\'s hunter cells. It guards its nest and attacks every invader. Its body is good eating.' },
+  f_mite: { feral: 1, mite: 1, name: 'Lumen Louse', cost: 24, hp: 40, spd: 74, rng: 12, dmg: 3, cd: 1, r: 7, vis: 200, desc: 'Drifts in on the Lumen Sea to steal corpses, and grows as it eats. Flees when attacked.' },
+  f_lair: { struct: 1, lair: 1, name: 'Warden Nest', hp: 900, ar: 2, r: 26, vis: 200, desc: 'A knot of Varuun\'s defences that keeps hatching Wardens. Leaves a huge carcass when destroyed.' }
 };
 let TYPES = [], TI = {};
 const ROSTER = {};
@@ -461,7 +465,7 @@ const ART = {
 const HEX = /^#[0-9a-f]{6}$/i;
 function defaultRace() {
   return { v: 1, id: uid(), name: 'New Lifeform', lore: 'Describe where they come from and what they hunger for.', col: '#5fd3a0', col2: '#f7f3a1', cls: 'organic',
-    scav: { organic: 0.7, mech: 0.3, hybrid: 0.6, rot: 0.4 }, passive: 'regen', aura: 'heal', ability: 'frenzy', grow: 'Grow', postName: 'Outpost',
+    scav: { organic: 0.7, mech: 0.3, hybrid: 0.6, rot: 0.4 }, passive: 'regen', aura: 'heal', ability: 'frenzy', grow: 'Grow', postName: 'Foothold',
     art: { core: 'k_core', post: 'k_post' },
     units: [
       { name: 'Drone', hp: 55, spd: 62, art: { body: 'oval', limbs: 'legs', weapon: 'claws', eyes: 'pair' } },
@@ -486,7 +490,7 @@ function validateRace(def) {
   if (!PASSIVES[def.passive]) errs.push('Pick a passive');
   if (!AURAS[def.aura]) errs.push('Pick a core aura');
   if (!ABIL[def.ability]) errs.push('Pick an ability');
-  if (!def.art || !ART.core.includes(def.art.core) || !ART.post.includes(def.art.post)) errs.push('Pick a core and outpost look');
+  if (!def.art || !ART.core.includes(def.art.core) || !ART.post.includes(def.art.post)) errs.push('Pick a core and foothold look');
   if (!Array.isArray(def.units) || def.units.length !== 4) { errs.push('A race needs a worker and three units'); return { ok: false, errs }; }
   const units = def.units, w = units[0], prices = [null];
   if (!str(w.name, 20)) errs.push('Worker needs a name up to 20 characters');
@@ -505,13 +509,13 @@ function compileRace(def, key) {
   const v = validateRace(def);
   if (!v.ok) return v;
   const feat = {}; feat[def.passive] = 1; if (def.passive === 'swift') feat.bog = 1;
-  const race = { name: def.name.trim(), col: def.col, col2: def.col2, cls: def.cls, custom: 1, def, grow: (def.grow || 'Grow').slice(0, 20), post: (def.postName || 'Outpost').slice(0, 20),
+  const race = { name: def.name.trim(), col: def.col, col2: def.col2, cls: def.cls, custom: 1, def, grow: (def.grow || 'Grow').slice(0, 20), post: (def.postName || 'Foothold').slice(0, 20),
     blurb: def.lore.slice(0, 160), core: `${PASSIVES[def.passive].desc} ${AURAS[def.aura].desc}`,
     scav: Object.assign({}, def.scav), feat, aura: def.aura, ability: def.ability, ab: ABIL[def.ability], upg: GENERIC_UPG };
   const units = {}, w = def.units[0];
   units[key + '_core'] = { core: 1, struct: 1, name: def.name.trim().slice(0, 18) + ' Core', hp: 2200, ar: 3, rng: 150, dmg: 12, cd: 1, r: 42, vis: 340, art: { shape: def.art.core } };
   units[key + '_work'] = { worker: 1, name: w.name, cost: 50, hp: Math.round(w.hp), spd: Math.round(w.spd), rng: 14, dmg: 4, cd: 1, r: 8, bt: 9, s: 1, vis: 210,
-    desc: `Harvests Matter, builds ${race.post}s and scavenges corpses.`, art: w.art };
+    desc: `Harvests Nutrient, builds ${race.post}s and scavenges corpses.`, art: w.art };
   for (let i = 1; i < 4; i++) {
     const u = def.units[i], p = v.prices[i], tr = u.traits || [];
     const d = { name: u.name, cost: p.cost, ess: p.ess, hp: Math.round(u.hp), ar: Math.round(u.ar), dmg: +u.dmg, cd: +u.cd, rng: Math.round(u.rng), spd: Math.round(u.spd),
@@ -528,7 +532,7 @@ function compileRace(def, key) {
     units[key + ['', '_u1', '_u2', '_u3'][i]] = d;
   }
   units[key + '_post'] = { post: 1, struct: 1, name: race.post, cost: POST_COST, hp: 700, ar: 2, rng: 125, dmg: 8.5, cd: 1.1, r: 24, bt: 20, vis: 320,
-    desc: `Outpost. Drop-off point, vision, and ${AURAS[def.aura].name.toLowerCase()} nearby.`, art: { shape: def.art.post } };
+    desc: `Foothold. Drop-off point, vision, and ${AURAS[def.aura].name.toLowerCase()} nearby.`, art: { shape: def.art.post } };
   for (const k in units) { units[k].custom = 1; }
   return { ok: true, race, units };
 }
@@ -797,8 +801,8 @@ function validateMap(m) {
   const R = floodWalk(m, m.starts[0][0], m.starts[0][1]);
   m.starts.forEach((s, i) => { if (i && !R[reachIdx(m, s[0], s[1])]) out.push({ fatal: 1, msg: `Base ${i + 1} is not connected to base 1 by a walkable path.` }); });
   const lost = m.blooms.filter(b => !R[reachIdx(m, b[0], b[1])]).length;
-  if (lost) out.push({ msg: `${lost} bloom${lost > 1 ? 's are' : ' is'} unreachable.` });
-  m.starts.forEach((s, i) => { const near = m.blooms.filter(b => Math.hypot(b[0] - s[0], b[1] - s[1]) < 600).length; if (near < 2) out.push({ msg: `Base ${i + 1} has ${near ? 'only one bloom' : 'no blooms'} nearby.` }); });
+  if (lost) out.push({ msg: `${lost} nutrient well${lost > 1 ? 's are' : ' is'} unreachable.` });
+  m.starts.forEach((s, i) => { const near = m.blooms.filter(b => Math.hypot(b[0] - s[0], b[1] - s[1]) < 600).length; if (near < 2) out.push({ msg: `Base ${i + 1} has ${near ? 'only one nutrient well' : 'no nutrient wells'} nearby.` }); });
   for (let i = 0; i < m.starts.length; i++) for (let j = i + 1; j < m.starts.length; j++)
     if (Math.hypot(m.starts[i][0] - m.starts[j][0], m.starts[i][1] - m.starts[j][1]) < 900) out.push({ msg: `Bases ${i + 1} and ${j + 1} are very close together.` });
   return out;
@@ -815,13 +819,13 @@ function builtinMap(id, players) {
   return mapBasin();
 }
 const BUILTIN_MAPS = [
-  { id: 'basin', name: 'Carrion Basin', note: 'Chokepoints and a chasm with three bridges', max: 2 },
-  { id: 'plains', name: 'Open Plains', note: 'Wide open, few obstacles', max: 2 },
-  { id: 'cross', name: 'Crossroads', note: 'Four corners around a moated heart. Built for 2v2 and free-for-all', max: 4 },
-  { id: 'random', name: 'Random', note: 'A new symmetric map every match, sized for the player count', max: 4 }
+  { id: 'basin', name: 'The Furnace Gut', note: 'Where Varuun digests dead suns. Bone ridges with chokepoints and a Lumen channel with three crossings', max: 2 },
+  { id: 'plains', name: 'The Baleen Reefs', note: 'Varuun\'s open feeding grounds. Wide and fast, few obstacles', max: 2 },
+  { id: 'cross', name: 'The Heart Choir', note: 'Four chambers around a channel-ringed heart. Built for 2v2 and free-for-all', max: 4 },
+  { id: 'random', name: 'Uncharted Tissue', note: 'A new symmetric region of Varuun every match, sized for the player count', max: 4 }
 ];
 function mapBasin() {
-  const m = blankMap(64, 'Carrion Basin'); m.id = 'basin';
+  const m = blankMap(64, 'The Furnace Gut'); m.id = 'basin';
   const sym = 'rot', A = [420, 2140];
   paintLine(m, [[0, 1480], [360, 1460], [540, 1530]], 1.15, T_ROCK, sym);
   paintLine(m, [[730, 1670], [880, 1830], [960, 1990]], 1.15, T_ROCK, sym);
@@ -848,7 +852,7 @@ function mapBasin() {
   return m;
 }
 function mapPlains() {
-  const m = blankMap(64, 'Open Plains'); m.id = 'plains';
+  const m = blankMap(64, 'The Baleen Reefs'); m.id = 'plains';
   const sym = 'rot', A = [430, 2130];
   paintDisc(m, 900, 1500, 2, T_THICK, sym);
   paintDisc(m, 1500, 2000, 1.8, T_THICK, sym);
@@ -865,7 +869,7 @@ function mapPlains() {
   return m;
 }
 function mapCross() {
-  const m = blankMap(72, 'Crossroads'); m.id = 'cross';
+  const m = blankMap(72, 'The Heart Choir'); m.id = 'cross';
   const sym = 'quad', S = 72 * TILE, C = S / 2, A = [440, S - 440];
   // moat around the heart with a bridge toward each base
   const ring = [];
@@ -891,7 +895,7 @@ function mapCross() {
 function genRandomMap(seed, n, players) {
   n = n || 64;
   const quad = players > 2;
-  const R = mulberry(seed), m = blankMap(n, 'Random ' + (seed % 10000)), S = n * TILE, sym = quad ? 'quad' : 'rot';
+  const R = mulberry(seed), m = blankMap(n, 'Uncharted Tissue ' + (seed % 10000)), S = n * TILE, sym = quad ? 'quad' : 'rot';
   const A = [380 + R() * 140, S - 380 - R() * 140];
   for (let i = 0; i < (quad ? 5 : 7); i++) {
     let x = R() * S, y = R() * S, a = R() * TAU;
@@ -2252,7 +2256,7 @@ const App = { inGame: false, editing: false, testing: false, role: 'demo', seat:
     if (!n) { const A = ['Rot', 'Spore', 'Chitin', 'Ichor', 'Marrow', 'Blight', 'Husk', 'Graft'], B = ['eater', 'mother', 'king', 'feeder', 'walker', 'smith', 'caller', 'drinker']; n = A[Math.random() * 8 | 0] + B[Math.random() * 8 | 0]; LS.set('lc.name', n); }
     return String(n).slice(0, 16);
   },
-  mapName() { const e = mapList().find(m => m.id === this.mapId); return e ? e.name : 'Carrion Basin'; } };
+  mapName() { const e = mapList().find(m => m.id === this.mapId); return e ? e.name : 'The Furnace Gut'; } };
 const LS = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
@@ -2364,15 +2368,23 @@ let decor = [], decorSeed = -1, decorVer = -1, groundPat = null;
 function makeGround() {
   const S = 512, t = document.createElement('canvas'); t.width = t.height = S;
   const g = t.getContext('2d'), R = mulberry(7);
-  g.fillStyle = '#1c1812'; g.fillRect(0, 0, S, S);
+  g.fillStyle = '#22141a'; g.fillRect(0, 0, S, S);
   // soft blotches drawn with wrap-around so the tile seams disappear
   for (let i = 0; i < 18; i++) {
-    const x = R() * S, y = R() * S, rx = 30 + R() * 70, ry = 20 + R() * 50, a = R() * 3, col = R() < .5 ? '58,46,30' : '30,36,26', al = 0.10 + R() * 0.12;
+    const x = R() * S, y = R() * S, rx = 30 + R() * 70, ry = 20 + R() * 50, a = R() * 3, col = R() < .5 ? '82,36,46' : '44,22,34', al = 0.12 + R() * 0.14;
     for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) {
       const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, rx);
       gr.addColorStop(0, `rgba(${col},${al})`); gr.addColorStop(1, `rgba(${col},0)`);
       g.fillStyle = gr; g.beginPath(); g.ellipse(x + ox, y + oy, rx, ry, a, 0, TAU); g.fill();
     }
+  }
+  g.lineCap = 'round';
+  for (let i = 0; i < 9; i++) {
+    let x = R() * S, y = R() * S, a = R() * TAU;
+    g.strokeStyle = `rgba(${R() < .5 ? '120,30,50' : '70,20,40'},${0.18 + R() * 0.16})`; g.lineWidth = 1 + R() * 2.2;
+    g.beginPath(); g.moveTo(x, y);
+    for (let k = 0; k < 14; k++) { a += (R() - 0.5) * 0.9; x += Math.cos(a) * 22; y += Math.sin(a) * 22; g.lineTo(x, y); }
+    g.stroke();
   }
   for (let i = 0; i < 1400; i++) { g.fillStyle = `rgba(${R() < .5 ? '236,227,208' : '8,6,4'},${R() * 0.07})`; g.fillRect(R() * S, R() * S, 1 + R() * 2, 1 + R() * 2); }
   groundPat = ctx.createPattern(t, 'repeat');
@@ -2562,7 +2574,7 @@ onTerrain = () => { terrDirty = true; };
 function buildTerrain() {
   terrDirty = false;
   const n = TER.n, t = TER.t, R = mulberry(n * 7 + 3);
-  const P = { rb: new Path2D(), rt: new Path2D(), rh: new Path2D(), ch: new Path2D(), ce: new Path2D(), bg: new Path2D(), bb: new Path2D(), th: new Path2D(), th2: new Path2D() };
+  const P = { rb: new Path2D(), rt: new Path2D(), rh: new Path2D(), ch: new Path2D(), ce: new Path2D(), cg: new Path2D(), bg: new Path2D(), bb: new Path2D(), th: new Path2D(), th2: new Path2D() };
   const at = (x, y) => (x < 0 || y < 0 || x >= n || y >= n) ? -1 : t[y * n + x];
   const arc = (p, x, y, r) => { p.moveTo(x + r, y); p.arc(x, y, r, 0, TAU); };
   for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
@@ -2572,11 +2584,9 @@ function buildTerrain() {
       arc(P.rt, X + 20 + (j1 - .5) * 6, Y + 17 + (j2 - .5) * 6, 24 + j3 * 4);
       if (at(x, y - 1) !== T_ROCK) arc(P.rh, X + 14 + j1 * 12, Y + 6 + j2 * 4, 6 + j3 * 5);
     } else if (v === T_CHASM) {
-      P.ch.rect(X - 1, Y - 1, TILE + 2, TILE + 2);
-      if (at(x, y - 1) !== T_CHASM) { P.ce.moveTo(X, Y); P.ce.lineTo(X + TILE, Y); }
-      if (at(x, y + 1) !== T_CHASM) { P.ce.moveTo(X, Y + TILE); P.ce.lineTo(X + TILE, Y + TILE); }
-      if (at(x - 1, y) !== T_CHASM) { P.ce.moveTo(X, Y); P.ce.lineTo(X, Y + TILE); }
-      if (at(x + 1, y) !== T_CHASM) { P.ce.moveTo(X + TILE, Y); P.ce.lineTo(X + TILE, Y + TILE); }
+      arc(P.cg, X + 20, Y + 20, 33);
+      arc(P.ch, X + 20, Y + 20, 26);
+      if (j1 < .35) arc(P.ce, X + 8 + j2 * 24, Y + 8 + j3 * 24, 2 + j1 * 6);
     } else if (v === T_BOG) {
       arc(P.bg, X + 20, Y + 20, 28);
       if (j1 < .5) arc(P.bb, X + 8 + j2 * 24, Y + 8 + j3 * 24, 2 + j1 * 4);
@@ -2586,24 +2596,27 @@ function buildTerrain() {
   }
   TP = P;
   const c = document.createElement('canvas'); c.width = c.height = n;
-  const g = c.getContext('2d'), img = g.createImageData(n, n), COLS = [[38, 32, 24], [92, 80, 64], [10, 6, 16], [52, 64, 34], [30, 62, 46]];
+  const g = c.getContext('2d'), img = g.createImageData(n, n), COLS = [[44, 24, 30], [150, 138, 118], [96, 16, 46], [118, 130, 58], [120, 46, 68]];
   for (let i = 0; i < n * n; i++) { const k = COLS[t[i]] || COLS[0]; img.data.set([k[0], k[1], k[2], 255], i * 4); }
   g.putImageData(img, 0, 0); terrMini = c;
 }
 function drawTerrainBase(c) {
   if (terrDirty || !TP) buildTerrain();
-  c.fillStyle = 'rgba(58,72,34,.72)'; c.fill(TP.bg);
-  c.fillStyle = 'rgba(92,108,52,.6)'; c.fill(TP.bb);
-  c.fillStyle = '#07040b'; c.fill(TP.ch);
-  c.strokeStyle = 'rgba(155,93,229,.45)'; c.lineWidth = 3; c.stroke(TP.ce);
+  const tt = performance.now() / 1000;
+  c.fillStyle = 'rgba(175,190,95,.27)'; c.fill(TP.bg);
+  c.fillStyle = 'rgba(235,245,170,.38)'; c.fill(TP.bb);
+  c.fillStyle = `rgba(255,94,138,${0.28 + 0.1 * Math.sin(tt * 1.3)})`; c.fill(TP.cg);
+  c.fillStyle = '#3a0818'; c.fill(TP.ch);
+  c.fillStyle = `rgba(255,70,120,${0.08 + 0.06 * Math.sin(tt * 1.3)})`; c.fill(TP.ch);
+  c.fillStyle = `rgba(255,190,215,${0.25 + 0.15 * Math.sin(tt * 2.1)})`; c.fill(TP.ce);
 }
 function drawTerrainTop(c, units) {
-  c.fillStyle = '#0d0a07'; c.fill(TP.rb);
-  c.fillStyle = '#3e352b'; c.fill(TP.rt);
-  c.fillStyle = 'rgba(120,104,84,.35)'; c.fill(TP.rh);
+  c.fillStyle = '#1a1210'; c.fill(TP.rb);
+  c.fillStyle = '#8d8070'; c.fill(TP.rt);
+  c.fillStyle = 'rgba(236,226,204,.32)'; c.fill(TP.rh);
 }
 function drawCanopy(c) {
-  c.globalAlpha = 0.86; c.fillStyle = '#1d3a2c'; c.fill(TP.th2); c.fillStyle = '#28503b'; c.fill(TP.th); c.globalAlpha = 1;
+  c.globalAlpha = 0.86; c.fillStyle = '#4c1a2c'; c.fill(TP.th2); c.fillStyle = '#6e2a40'; c.fill(TP.th); c.globalAlpha = 1;
 }
 
 /* ---------- Fog ---------- */
@@ -2725,6 +2738,19 @@ function worldTransform() {
   ctx.setTransform(dpr * z, 0, 0, dpr * z, dpr * (vw / 2 - cam.x * z), dpr * (vh / 2 - cam.y * z));
   return [cam.x - vw / 2 / z, cam.y - vh / 2 / z, cam.x + vw / 2 / z, cam.y + vh / 2 / z];
 }
+// Slow, translucent cells drifting through Varuun's tissue: atmosphere only, never gameplay.
+const DRIFT = (() => { const R = mulberry(99), a = []; for (let i = 0; i < 46; i++) a.push({ x: R(), y: R(), r: 26 + R() * 70, vx: (R() - 0.5) * 7, vy: (R() - 0.5) * 7, k: R() }); return a; })();
+function drawDrift(c, x0, y0, x1, y1, t) {
+  for (const d of DRIFT) {
+    const x = (((d.x * MAP_W + d.vx * t) % MAP_W) + MAP_W) % MAP_W, y = (((d.y * MAP_H + d.vy * t) % MAP_H) + MAP_H) % MAP_H;
+    if (x < x0 - d.r || x > x1 + d.r || y < y0 - d.r || y > y1 + d.r) continue;
+    const w = 1 + 0.04 * Math.sin(t * 0.7 + d.k * 9);
+    c.fillStyle = d.k < 0.5 ? 'rgba(255,120,150,.035)' : 'rgba(180,140,255,.03)';
+    c.beginPath(); c.ellipse(x, y, d.r * w, d.r / w * 0.86, d.k * 3, 0, TAU); c.fill();
+    c.strokeStyle = d.k < 0.5 ? 'rgba(255,150,180,.08)' : 'rgba(200,170,255,.07)'; c.lineWidth = 2; c.stroke();
+    c.fillStyle = 'rgba(255,190,210,.06)'; circ(c, x + d.r * 0.25, y - d.r * 0.1, d.r * 0.22); c.fill();
+  }
+}
 function drawGround(x0, y0, x1, y1) {
   if (!groundPat) makeGround();
   ctx.fillStyle = groundPat;
@@ -2738,9 +2764,10 @@ function render(now, alpha) {
   const t = now / 1000;
   const units = prepUnits(alpha, now);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.fillStyle = '#0e0c09'; ctx.fillRect(0, 0, vw, vh);
+  ctx.fillStyle = '#07060c'; ctx.fillRect(0, 0, vw, vh);
   const [x0, y0, x1, y1] = worldTransform(), z = cam.z;
   drawGround(x0, y0, x1, y1);
+  drawDrift(ctx, x0, y0, x1, y1, t);
   drawTerrainBase(ctx);
   drawDecor(ctx, x0, y0, x1, y1);
   V.nodes().forEach((n, i) => { if (n.x > x0 - 80 && n.x < x1 + 80 && n.y > y0 - 80 && n.y < y1 + 80) drawNode(ctx, n, t, i); });
@@ -2801,9 +2828,10 @@ function render(now, alpha) {
 function renderEditor(now) {
   const t = now / 1000, m = ED.map;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.fillStyle = '#0e0c09'; ctx.fillRect(0, 0, vw, vh);
+  ctx.fillStyle = '#07060c'; ctx.fillRect(0, 0, vw, vh);
   const [x0, y0, x1, y1] = worldTransform(), z = cam.z;
   drawGround(x0, y0, x1, y1);
+  drawDrift(ctx, x0, y0, x1, y1, t);
   drawTerrainBase(ctx);
   m.blooms.forEach((b, i) => drawNode(ctx, { x: b[0], y: b[1], r: b[2] >= 3000 ? 34 : 26, amt: b[2], max: b[2] }, t, i));
   drawTerrainTop(ctx);
@@ -2991,19 +3019,19 @@ function boxSelect() {
 function centerOn(x, y) { cam.x = x; cam.y = y; clampCam(); }
 function startPlace() {
   const me = V.player(App.seat), ws = selMovable().filter(u => U[u.type].worker);
-  if (!ws.length) { toast('Select a worker to build an outpost'); return; }
-  if (me.matter < POST_COST) { toast(`An outpost costs ${POST_COST} Matter`); return; }
+  if (!ws.length) { toast('Select a worker to build a foothold'); return; }
+  if (me.matter < POST_COST) { toast(`A foothold costs ${POST_COST} Nutrient`); return; }
   App.place = true; App.amove = false; toast(`Tap open ground to place a ${RACES[me.race].post}`);
 }
 function placeAt(x, y) {
   const ws = selMovable().filter(u => U[u.type].worker);
   if (!ws.length) { App.place = false; return; }
   if (!V.expAt(x, y)) { toast('You can only build on ground you have explored'); return; }
-  if (!canPlace(x, y, V.units(), V.nodes())) { toast('Too close to a building, bloom or blocked ground. Try another spot.'); return; }
+  if (!canPlace(x, y, V.units(), V.nodes())) { toast('Too close to a building, a nutrient well or blocked ground. Try another spot.'); return; }
   let bw = ws[0], bd = Infinity;
   for (const w of ws) { const q = (w.rx - x) ** 2 + (w.ry - y) ** 2; if (q < bd) { bd = q; bw = w; } }
   const r = issue({ k: 'build', ids: [bw.id], x, y });
-  if (r === 'matter') toast('Not enough Matter'); else if (r === 'place') toast('That spot is blocked');
+  if (r === 'matter') toast('Not enough Nutrient'); else if (r === 'place') toast('That spot is blocked');
   else { mark(x, y, '#ece3d0'); App.place = false; UI.ctxDirty = true; SFX.ui('order'); }
 }
 function useAbility() {
@@ -3017,7 +3045,7 @@ function doMuster() {
   const me = V.player(App.seat), ws = selMovable().filter(u => U[u.type].worker && !u.morph);
   if (!ws.length) { toast('Select workers to muster'); return; }
   const r = issue({ k: 'muster', ids: ws.map(u => u.id) });
-  if (r === 'matter') toast(`Mustering costs ${musterCost(me.race)} Matter each`); else if (r === 'supply') toast(`Supply full. Use ${RACES[me.race].grow}.`);
+  if (r === 'matter') toast(`Mustering costs ${musterCost(me.race)} Nutrient each`); else if (r === 'supply') toast(`Supply full. Use ${RACES[me.race].grow}.`);
   else toast(`Transforming into ${U[ROSTER[me.race][1]].name}s. They can't move for 5 seconds.`);
 }
 function doArms() {
@@ -3175,7 +3203,7 @@ const UI = {
       const ib = $('idleB'); ib.textContent = idle; ib.classList.toggle('hide', !idle);
     }
     const upKey = Object.keys(me.up || {}).join(',');
-    if (UI.lastUp && upKey !== UI.lastUp) { const n = Object.keys(me.up).find(k => !UI.lastUp.split(',').includes(k)); if (n) { toast(`Evolved: ${UPG[n].name}`); SFX.ui('evolve'); } UI.ctxDirty = true; }
+    if (UI.lastUp && upKey !== UI.lastUp) { const n = Object.keys(me.up).find(k => !UI.lastUp.split(',').includes(k)); if (n) { toast(`Mutated: ${UPG[n].name}`); SFX.ui('evolve'); } UI.ctxDirty = true; }
     UI.lastUp = upKey;
     UI.ctx(me);
     Groups.render();
@@ -3198,7 +3226,7 @@ const UI = {
       UI.ctxSig = sig; UI.ctxDirty = false;
       if (mode === 'core') {
         const isCore = !!U[one.type].core, tab = isCore ? UI.coreTab : 'train';
-        const tabs = isCore ? `<div class="tabs"><button data-act="tab" data-t="train" class="${tab === 'train' ? 'on' : ''}">Train</button><button data-act="tab" data-t="evolve" class="${tab === 'evolve' ? 'on' : ''}">Evolve</button></div>`
+        const tabs = isCore ? `<div class="tabs"><button data-act="tab" data-t="train" class="${tab === 'train' ? 'on' : ''}">Train</button><button data-act="tab" data-t="evolve" class="${tab === 'evolve' ? 'on' : ''}">Mutate</button></div>`
           : `<div class="tabs"><button class="on">${esc(R.post)}: train here</button></div>`;
         const qk = QUICKEN[me.prod || 0];
         if (tab === 'train') el.innerHTML = tabs + `<div class="prow">${ROSTER[me.race].map(t => `<button class="pb" data-act="train" data-t="${t}" title="${esc(U[t].desc)}">
@@ -3216,8 +3244,8 @@ const UI = {
         const first = su[0];
         const line = Object.entries(counts).map(([k, n]) => { const [t, rv] = k.split('|'); return `${n > 1 ? n + ' ' : ''}${rv && U[rv] ? 'raised ' + U[rv].name : U[t].name}`; }).join(', ');
         const hasW = su.some(u => U[u.type].worker), hasA = su.some(u => !U[u.type].worker && !U[u.type].struct);
-        const tip = App.place ? 'Tap open, explored ground at least a short walk from other buildings.' : mode === 'struct' ? (first.build != null ? 'Under construction. Select workers and tap it to help build faster.' : U[first.type].desc) :
-          R.feat.devour && !hasW ? 'Tap a corpse to devour it and heal.' : hasW ? 'Tap a bloom to harvest, a corpse to scavenge, or your building to help build or repair it.' :
+        const tip = App.place ? 'Tap open, explored ground at least a short walk from other buildings.' : mode === 'struct' ? (first.build != null ? 'Taking root. Select workers and tap it to help it grow faster.' : U[first.type].desc) :
+          R.feat.devour && !hasW ? 'Tap a corpse to devour it and heal.' : hasW ? 'Tap a nutrient well to harvest, a corpse to scavenge, or your building to help build or repair it.' :
           raiser(me.race) ? 'Corpses near your raisers rise as Husks.' : 'Tap an enemy to attack, or use A-Move.';
         el.innerHTML = `<div class="uinfo"><img src="${iconFor(first.type, first.rv)}" alt=""><div class="t"><b style="color:${R.col}">${esc(line)}</b><br><span>${esc(one && !hasW && mode === 'units' ? U[one.type].desc : tip)}</span></div></div>
           ${hasW || hasA ? `<div class="uacts">${hasW ? `<button class="tog ${App.place ? 'on' : ''}" data-act="place" id="placeB">Build ${esc(R.post)} · ${POST_COST}</button>
@@ -3250,10 +3278,10 @@ const UI = {
         const id = b.dataset.id, g = UPG[id], done = me.up && me.up[id], busy = me.res && me.res.id === id;
         b.disabled = !!done || !!me.res || me.matter < g.cost || (me.ess || 0) < g.ess;
         b.classList.toggle('done', !!done); b.classList.toggle('busy', !!busy);
-        const c = b.querySelector('[data-c]'); if (c) c.innerHTML = done ? 'Evolved' : busy ? `${Math.round(me.res.p * 100)}%` : cost(g.cost, g.ess);
+        const c = b.querySelector('[data-c]'); if (c) c.innerHTML = done ? 'Mutated' : busy ? `${Math.round(me.res.p * 100)}%` : cost(g.cost, g.ess);
       });
       const rl = $('reslab'), rx = $('resX');
-      if (rl) rl.textContent = me.res ? `Evolving ${UPG[me.res.id].name}: ${Math.round(me.res.p * 100)}%` : 'Upgrades cost Essence, which only comes from corpses.';
+      if (rl) rl.textContent = me.res ? `Mutating ${UPG[me.res.id].name}: ${Math.round(me.res.p * 100)}%` : 'Mutations cost Essence, which only comes from the dead.';
       if (rx) rx.classList.toggle('hide', !me.res);
     }
     const ab3 = $('armsB'); if (ab3) ab3.textContent = me.armsCd > 0 ? `Call to arms ${Math.ceil(me.armsCd)}s` : 'Call to arms';
@@ -3268,7 +3296,7 @@ $('ctx').addEventListener('click', e => {
   SFX.ui('click');
   if (a === 'train') {
     const d = U[b.dataset.t];
-    if (me.matter < d.cost) return toast('Not enough Matter');
+    if (me.matter < d.cost) return toast('Not enough Nutrient');
     if ((me.ess || 0) < d.ess) return toast('Not enough Essence. Scavenge corpses to get more.');
     if (me.sup + d.s > me.cap) return toast(`Supply full. Use ${RACES[me.race].grow}.`);
     const st = selUnits()[0];
@@ -3276,11 +3304,11 @@ $('ctx').addEventListener('click', e => {
     if (r === 'queue') toast('Queue is full');
   } else if (a === 'grow') { const r = issue({ k: 'grow' }); if (r === 'ok') toast('Supply cap +10'); }
   else if (a === 'cancel') { const st = selUnits()[0]; issue({ k: 'cancel', sid: st && st.id }); }
-  else if (a === 'quicken') { const r = issue({ k: 'quicken' }); if (r === 'ok' || r === 'sent') toast('Training is now faster at every building'); else if (r === 'ess') toast('Not enough Essence'); else if (r === 'matter') toast('Not enough Matter'); }
+  else if (a === 'quicken') { const r = issue({ k: 'quicken' }); if (r === 'ok' || r === 'sent') toast('Training is now faster at every building'); else if (r === 'ess') toast('Not enough Essence'); else if (r === 'matter') toast('Not enough Nutrient'); }
   else if (a === 'muster') doMuster();
   else if (a === 'arms') doArms();
   else if (a === 'tab') { UI.coreTab = b.dataset.t; UI.ctxDirty = true; }
-  else if (a === 'research') { const r = issue({ k: 'research', id: b.dataset.id }); if (r === 'ess') toast('Not enough Essence'); else if (r === 'matter') toast('Not enough Matter'); else if (r === 'busy') toast('Already evolving something'); }
+  else if (a === 'research') { const r = issue({ k: 'research', id: b.dataset.id }); if (r === 'ess') toast('Not enough Essence'); else if (r === 'matter') toast('Not enough Nutrient'); else if (r === 'busy') toast('Already mutating something'); }
   else if (a === 'cancelres') issue({ k: 'cancelres' });
   else if (a === 'auto') { issue({ k: 'auto', v: !me.auto }); toast(me.auto ? 'Workers will ignore corpses' : 'Workers will scavenge nearby corpses'); }
   else if (a === 'place') { if (App.place) App.place = false; else startPlace(); UI.ctxDirty = true; }
@@ -3297,15 +3325,15 @@ setInterval(UI.refresh, 200);
 /* ================= MAP DESIGNER ================= */
 const ED_TOOLS = [
   { id: 'pan', name: 'Pan', sw: 'transparent' },
-  { id: 'ground', name: 'Ground', isPaint: 1, v: T_GROUND, sw: '#3a3024' },
-  { id: 'rock', name: 'Rock', isPaint: 1, v: T_ROCK, sw: '#6a5c49' },
-  { id: 'chasm', name: 'Chasm', isPaint: 1, v: T_CHASM, sw: '#1a0d2a' },
-  { id: 'bog', name: 'Bog', isPaint: 1, v: T_BOG, sw: '#55682e' },
-  { id: 'thick', name: 'Thicket', isPaint: 1, v: T_THICK, sw: '#2c5a41' },
-  { id: 'bloom', name: 'Bloom', sw: '#ff5e8a' },
-  { id: 'rich', name: 'Rich bloom', sw: '#ff9cbb' },
+  { id: 'ground', name: 'Tissue', isPaint: 1, v: T_GROUND, sw: '#3a1f22' },
+  { id: 'rock', name: 'Bone', isPaint: 1, v: T_ROCK, sw: '#b9ab92' },
+  { id: 'chasm', name: 'Channel', isPaint: 1, v: T_CHASM, sw: '#5a0f2c' },
+  { id: 'bog', name: 'Mucus', isPaint: 1, v: T_BOG, sw: '#8d9a3c' },
+  { id: 'thick', name: 'Villi', isPaint: 1, v: T_THICK, sw: '#8c3a4e' },
+  { id: 'bloom', name: 'Well', sw: '#ff5e8a' },
+  { id: 'rich', name: 'Rich well', sw: '#ff9cbb' },
   { id: 'base', name: 'Bases', sw: '#8fe388' },
-  { id: 'lair', name: 'Lair', sw: '#c0573e' },
+  { id: 'lair', name: 'Nest', sw: '#c0573e' },
   { id: 'erase', name: 'Erase', sw: '#ece3d0' }
 ];
 const SYM_LABEL = { off: 'Mirror: off', rot: 'Mirror: rotate', mx: 'Mirror: left-right', my: 'Mirror: top-bottom', quad: 'Mirror: four-way' };
@@ -3313,7 +3341,7 @@ const ED = { map: null, tool: 'rock', brush: 2, sym: 'rot', undo: [], cursor: nu
   toolInfo() { return ED_TOOLS.find(t => t.id === this.tool) || ED_TOOLS[0]; } };
 function mapThumb(m) {
   const n = m.n, c = document.createElement('canvas'); c.width = c.height = n * 2;
-  const g = c.getContext('2d'), COLS = ['#2a231a', '#6a5c49', '#0b0612', '#4a5c2a', '#244a37'];
+  const g = c.getContext('2d'), COLS = ['#3a1f22', '#b9ab92', '#5a0f2c', '#8d9a3c', '#8c3a4e'];
   for (let i = 0; i < n * n; i++) { g.fillStyle = COLS[m.t[i]] || COLS[0]; g.fillRect((i % n) * 2, ((i / n) | 0) * 2, 2, 2); }
   const s = 2 / TILE;
   g.fillStyle = '#ff5e8a'; for (const b of m.blooms) g.fillRect(b[0] * s - 2, b[1] * s - 2, 4, 4);
@@ -3345,7 +3373,7 @@ function edBuildUI() {
   $('edTools').innerHTML = ED_TOOLS.map(t => `<button class="et ${ED.tool === t.id ? 'on' : ''}" data-tool="${t.id}"><i style="background:${t.sw};${t.id === 'pan' ? 'border:1.5px dashed var(--mute)' : ''}"></i>${t.name}</button>`).join('');
   $('edBrush').innerHTML = [1, 2, 3, 5].map(b => `<button data-brush="${b}" class="${ED.brush === b ? 'on' : ''}">${b}</button>`).join('');
   const m = ED.map;
-  $('edInfo').textContent = `${m.n}×${m.n} · ${m.starts.length} bases · ${m.blooms.length} blooms · ${m.lairs.length} lairs`;
+  $('edInfo').textContent = `${m.n}×${m.n} · ${m.starts.length} bases · ${m.blooms.length} wells · ${m.lairs.length} nests`;
 }
 $('edTools').addEventListener('click', e => { const b = e.target.closest('[data-tool]'); if (b) { ED.tool = b.dataset.tool; edBuildUI(); } });
 $('edBrush').addEventListener('click', e => { const b = e.target.closest('[data-brush]'); if (b) { ED.brush = +b.dataset.brush; edBuildUI(); } });
@@ -3386,8 +3414,8 @@ function edTap(sx, sy) {
   if (ti.isPaint || ti.id === 'pan') return;
   const x = Math.round(Math.max(40, Math.min(MAP_W - 40, w.x))), y = Math.round(Math.max(40, Math.min(MAP_H - 40, w.y)));
   edPush();
-  if (ti.id === 'bloom' || ti.id === 'rich') { if (m.blooms.length >= 58) { toast('That is plenty of blooms'); return; } addSym(m.blooms, m, [x, y, ti.id === 'rich' ? 3200 : 1800], sym); }
-  else if (ti.id === 'lair') { if (m.lairs.length >= 10) { toast('Ten lairs is the limit'); return; } addSym(m.lairs, m, [x, y], sym); }
+  if (ti.id === 'bloom' || ti.id === 'rich') { if (m.blooms.length >= 58) { toast('That is plenty of nutrient wells'); return; } addSym(m.blooms, m, [x, y, ti.id === 'rich' ? 3200 : 1800], sym); }
+  else if (ti.id === 'lair') { if (m.lairs.length >= 10) { toast('Ten Warden Nests is the limit'); return; } addSym(m.lairs, m, [x, y], sym); }
   else if (ti.id === 'base') {
     const S = m.n * TILE, bx = Math.max(220, Math.min(S - 220, x)), by = Math.max(220, Math.min(S - 220, y));
     if (bx !== x || by !== y) { const x2 = bx, y2 = by; return edPlaceBase(m, x2, y2, sym); }
@@ -3399,7 +3427,7 @@ function edTap(sx, sy) {
     const before = m.blooms.length + m.lairs.length;
     m.blooms = m.blooms.filter(b => !near(b)); m.lairs = m.lairs.filter(l => !near(l));
     if (m.starts.length > 2) { const keep = m.starts.filter(st => !near(st)); if (keep.length >= 2 && keep.length < m.starts.length) { m.starts = keep; ED.nextStart = keep.length % 4; toast('Base removed'); } }
-    if (before === m.blooms.length + m.lairs.length && !/Base removed/.test($('toast').textContent)) { ED.undo.pop(); toast('Tap a bloom or lair to erase it. Paint Ground to clear terrain.'); }
+    if (before === m.blooms.length + m.lairs.length && !/Base removed/.test($('toast').textContent)) { ED.undo.pop(); toast('Tap a well or nest to erase it. Paint Tissue to clear terrain.'); }
   }
   edBuildUI();
 }
@@ -3526,15 +3554,25 @@ function menuScreen() {
   if (App.role !== 'demo' || !W) startDemo();
   const res = resumeAvailable();
   show(`<div class="card">
-    <div class="logo"><img src="icon.png" alt="" onerror="this.remove()"><h1>Necrotroph</h1><p class="tag">Every death feeds something.</p></div>
+    <div class="logo"><img src="icon.png" alt="" onerror="this.remove()"><h1>Necrotroph</h1><p class="tag">Every death feeds something.</p><p class="fine" style="margin-top:4px">Inside the dying star-leviathan Varuun</p></div>
     ${res ? `<button class="btn prime" data-go="resume">Resume ${res.role === 'solo' ? 'skirmish' : 'online match'}</button>` : ''}
     <button class="btn ${res ? '' : 'prime'}" data-go="pick:solo">Skirmish against the AI</button>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="pick:host">Host online</button><button class="btn" data-go="pick:join">Join online</button></div>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="tutorials">Tutorials</button><button class="btn" data-go="races">Race builder</button></div>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="designer">Map designer</button><button class="btn" data-go="codex">Codex</button></div>
-    <button class="btn ghost" data-go="settings">Settings</button>
+    <div class="actions" style="margin-top:0"><button class="btn ghost" data-go="story">The story</button><button class="btn ghost" data-go="settings">Settings</button></div>
     <p class="fine">Online play is peer to peer for up to four players. The PeerJS server is only used to find each other, then released.</p>
     <p class="fine" style="margin-top:6px">© 2026 Jacor. All rights reserved.</p></div>`);
+}
+function storyScreen() {
+  show(`<div class="card wide codex story"><h2>Varuun</h2>
+    <p>Between the galaxies drifts Varuun, one of the last star-leviathans: a living world larger than a moon, grazing on comet tails and the dust of dead suns. It has swum the dark for longer than most stars have burned, singing to its own kind across light-years. Its song is getting quieter.</p>
+    <p>Varuun is dying, because it swallowed three things it should not have. A comet laced with ancient spores. The carcass of an older leviathan, Ohm-Tessaral. And a derelict starship, the <i>Hesper</i>. Each carried something that woke up inside it.</p>
+    <p>Now its body is a battlefield too small to see. Four lifeforms fight across its organs for every scrap of flesh, every pool of nourishment and every corpse, because whoever holds the most of Varuun when it draws its last breath inherits the body. And in the dark, a leviathan's corpse is a seed.</p>
+    ${BASE_RACES.map(r => `<h3 style="color:${RACES[r].col}">${RACES[r].name}</h3><p>${esc(RACES[r].blurb)} ${esc(RACES[r].lore || '')}</p>`).join('')}
+    <h3 style="color:${RACES.feral.col}">The Wardens</h3><p>Varuun is not helpless. Its hunter cells hatch from Warden Nests and attack every invader alike. When the fighting grows too fierce, Varuun's whole body answers with fever.</p>
+    <p class="fine" style="text-align:left">Deeper than any of them have reached, something else is stirring.</p>
+    <div class="actions"><button class="btn ghost" data-go="menu">Back</button><button class="btn prime" data-go="tutorials">Begin with a tutorial</button></div></div>`);
 }
 function settingsScreen() {
   show(`<div class="card"><h2>Settings</h2>
@@ -3591,15 +3629,15 @@ function codexScreen(back) {
     const v = RACES[r].scav[c]; return `<td class="c" style="color:${v >= 1 ? '#8fe388' : v === 0 ? '#ff5a4e' : 'inherit'}">${v ? '×' + v : 'None'}</td>`;
   }).join('')}</tr>`).join('');
   show(`<div class="card wide codex"><h2>Codex</h2>
-    <p>Every unit leaves a corpse that lingers for ${CORPSE_LIFE} seconds. Workers carry scavenged Matter <i class="gem"></i> and Essence <i class="ess"></i> home. A corpse is worth half the unit's cost, multiplied by how well your race digests it. Kytinos and Gorgers leave flesh, Mechonized leave wrecks, Huminodiz leave hybrid remains and NecrosisPhagi leave rot.</p>
+    <p>Every lifeform that falls inside Varuun leaves a corpse that lingers for ${CORPSE_LIFE} seconds. Workers carry scavenged Nutrient <i class="gem"></i> and Essence <i class="ess"></i> home. A corpse is worth half the unit's cost, multiplied by how well your race digests it. Kytinos and Wardens leave flesh, Mechonized leave wrecks, Huminodiz leave hybrid remains and NecrosisPhagi leave rot.</p>
     <div class="tbl"><table>${head}${rows}</table></div>
     <h3>Essence</h3><p>Essence only comes from the dead: scavenging, devouring, salvaging and raising. Tier 3 units and every upgrade need it, so the corpse economy decides who evolves first.</p>
-    <h3>Evolve</h3><p>Tap your core and open the Evolve tab. Each race has six upgrades: three shared and three of its own. One researches at a time.</p>
-    <h3>Terrain</h3><p><b>Rock</b> blocks movement and sight. <b>Chasms</b> block movement but not shots. <b>Bog</b> slows everything except swift races. <b>Thickets</b> block sight, which makes them good for ambushes. Where many die, the ground rots into bog.</p>
+    <h3>Mutate</h3><p>Tap your core and open the Mutate tab. Each race has six mutations: three shared and three of its own. One develops at a time.</p>
+    <h3>Varuun's flesh</h3><p><b>Bone</b> blocks movement and sight. <b>Lumen channels</b>, rivers of Varuun's glowing blood, block movement but not shots. <b>Mucus marsh</b> slows everything except swift races. <b>Villi forests</b> block sight, which makes them good for ambushes. Where many die, the ground rots into bog.</p>
     <h3>Fog of war</h3><p>You only see what your team's units and buildings can see. Enemy buildings stay marked once found. Units cannot target what they cannot see.</p>
-    <h3>Outposts</h3><p>Select a worker and build an outpost (${POST_COST} Matter) at a far bloom. Workers drop off there, it grants vision, defends itself and carries your core's aura at a smaller radius.</p>
-    <h3 style="color:${RACES.feral.col}">The wild</h3><p>Feral lairs guard rich blooms and keep spawning Gorgers, whose bodies are good eating. A destroyed lair leaves a huge carcass. Carrion Mites wander in to steal corpses, grow as they eat, and flee when attacked.</p>
-    <h3>Build points and speed</h3><p>Your core and every finished outpost can train units, each with its own queue. Tap a building and then the ground to set its rally point. <b>Quicken</b> at the core makes every building train 25% faster, up to two levels. Workers can help: select them and tap a building under construction to speed it up (each helper adds 60%, up to four), or tap a damaged building to repair it for free.</p>
+    <h3>Footholds</h3><p>Select a worker and grow a foothold (${POST_COST} Nutrient) at a far nutrient well. Workers drop off there, it grants vision, defends itself and carries your core's aura at a smaller radius.</p>
+    <h3 style="color:${RACES.feral.col}">Varuun's defences</h3><p>Varuun is not helpless. Warden Nests guard rich nutrient wells and keep hatching Wardens, hunter cells that attack every lifeform alike. Their bodies are good eating, and a destroyed nest leaves a huge carcass. Lumen Lice drift in on the bloodstream to steal corpses, grow as they eat, and flee when attacked.</p>
+    <h3>Build points and speed</h3><p>Your core and every finished foothold can train units, each with its own queue. Tap a building and then the ground to set its rally point. <b>Quicken</b> at the core makes every building train 25% faster, up to two levels. Workers can help: select them and tap a building under construction to speed it up (each helper adds 60%, up to four), or tap a damaged building to repair it for free.</p>
     <h3>Workers to warriors</h3><p><b>Muster</b> permanently turns selected workers into your tier 1 unit for the price difference. They stand still for 5 seconds while they change, so do it somewhere safe. <b>Call to arms</b> (at the core or from the worker panel) arms every worker near your buildings as militia for 25 seconds: triple damage and extra armor. It recharges in 70 seconds, then they go back to work.</p>
     <h3>Control groups</h3><p>Hold one of the three group buttons to save your selection, tap to recall it, and double-tap to jump the camera there. On a keyboard, Ctrl plus 1 to 3 saves and 1 to 3 recalls.</p>
     ${BASE_RACES.map(r => `<h3 style="color:${RACES[r].col}">${RACES[r].name}</h3><p>${RACES[r].blurb} ${RACES[r].core}</p><p><b>${RACES[r].ab.name}</b> (every ${RACES[r].ab.cd}s): ${RACES[r].ab.desc}</p>
@@ -3647,14 +3685,14 @@ function gameMenu() {
 function statsTable() {
   const n = V.np(), row = (l, f) => `<tr><td>${l}</td>${[...Array(n).keys()].map(i => { const p = V.player(i); return `<td class="c">${p ? f(p.st || {}) : ''}</td>`; }).join('')}</tr>`;
   const head = [...Array(n).keys()].map(i => { const r = V.race(i), t = V.team(i); return `<th class="c" style="color:${RACES[r] ? RACES[r].col : '#fff'}">${i === App.seat ? 'You' : (V.rel(i) === 'ally' ? 'Ally' : 'Foe')} ${TEAM_NAMES[t]}</th>`; }).join('');
-  return `<div class="tbl"><table><tr><th></th>${head}</tr>${row('Kills', s => s.k || 0)}${row('Losses', s => s.l || 0)}${row('Corpses eaten', s => s.s || 0)}${row('Dead raised', s => s.r || 0)}${row('Essence', s => s.e || 0)}${row('Upgrades', s => s.u || 0)}${row('Outposts', s => s.b || 0)}${row('Matter', s => s.g || 0)}</table></div>`;
+  return `<div class="tbl"><table><tr><th></th>${head}</tr>${row('Kills', s => s.k || 0)}${row('Losses', s => s.l || 0)}${row('Corpses eaten', s => s.s || 0)}${row('Dead raised', s => s.r || 0)}${row('Essence', s => s.e || 0)}${row('Mutations', s => s.u || 0)}${row('Footholds', s => s.b || 0)}${row('Nutrient', s => s.g || 0)}</table></div>`;
 }
 function endScreen(won, note) {
   App.endShown = true;
   SFX.ui(won ? 'win' : 'lose');
   if (App.tut && won) { LS.set('nt.tut.' + App.tut.race, 1); }
   show(`<div class="card end wide"><h2 style="color:${won ? '#8fe388' : '#ff5a4e'}">${App.tut && won ? 'Tutorial complete' : won ? 'Victory' : 'Defeat'}</h2>
-    <div class="sub">${note || (won ? 'Their cores have fallen. The cycle continues with you.' : 'Your side has fallen. Something else will feed on it.')}</div>
+    <div class="sub">${note || (won ? 'Their cores are consumed. This part of Varuun feeds your kind now.' : 'Your core is consumed. Something else inside Varuun will feed on what remains.')}</div>
     ${statsTable()}
     <div class="actions"><button class="btn ghost" data-go="watch">View the field</button><button class="btn prime" data-go="quit">${App.returnTo === 'editor' ? 'Back to the designer' : App.tut ? 'Back to tutorials' : 'Main menu'}</button></div></div>`);
   clearSaved();
@@ -3673,6 +3711,7 @@ scr.addEventListener('click', e => {
   switch (a) {
     case 'menu': menuScreen(); break;
     case 'settings': settingsScreen(); break;
+    case 'story': storyScreen(); break;
     case 'snd': SFX.set(v === '1'); settingsScreen(); break;
     case 'mus': Music.set(v === '1'); settingsScreen(); break;
     case 'mustog': Music.set(!Music.on); gameMenu(); break;
@@ -3850,7 +3889,7 @@ function previewIcon(def, i) {
 function raceLibrary() {
   const list = customRaces();
   show(`<div class="card wide"><h2>Race builder</h2>
-    <p class="status" style="text-align:left">Design a lifeform: its ecology, its four units and how they look. Every unit is priced automatically from its stats, so stronger troops simply cost more, and each tier has a ceiling. When you play online, the host re-checks your race, so an edited file can't sneak past the limits.</p>
+    <p class="status" style="text-align:left">Design a new strain that rode into Varuun on something else it swallowed: its ecology, its four units and how they look. Every unit is priced automatically from its stats, so stronger troops simply cost more, and each tier has a ceiling. When you play online, the host re-checks your race, so an edited file can't sneak past the limits.</p>
     <div class="mlist">${list.map(d => { const v = validateRace(d); return `<div class="mitem"><img src="${previewIcon(d, 1)}" alt=""><b style="color:${d.col}">${esc(d.name)}${v.ok ? '' : ' <span class="bad">(needs fixing)</span>'}</b>
       <button class="tog" data-go="rb-edit:${d.id}">Edit</button><button class="tog" data-go="rb-copy:${d.id}">Copy</button><button class="tog" data-go="rb-del:${d.id}">Delete</button></div>`; }).join('') || '<p class="fine">No custom races yet.</p>'}</div>
     <div class="actions"><button class="btn prime" data-go="rb-new">Create a race</button><button class="btn" data-go="rb-import">Import</button></div>
@@ -3875,9 +3914,9 @@ function rbEditor() {
       <div class="row"><label>Core aura</label>${rbSeg('aura', Object.keys(AURAS), d.aura, k => AURAS[k].name)}<p class="fine" style="text-align:left">${esc(AURAS[d.aura].desc)}${d.aura === 'raise' ? ' Raising caps total digestion at 1.3.' : ''}</p></div>
       <div class="row"><label>Ability</label>${rbSeg('ability', Object.keys(ABIL), d.ability, k => ABIL[k].name)}<p class="fine" style="text-align:left">${esc(ABIL[d.ability].desc)}</p></div>
       <div class="row"><label>Core look</label><div class="seg">${ART.core.map(k => `<button data-go="rb-set:art.core=${k}" class="${d.art.core === k ? 'on' : ''}"><img src="${shapeIcon(k, d)}" alt="" style="width:34px;height:34px"></button>`).join('')}</div></div>
-      <div class="row"><label>Outpost look</label><div class="seg">${ART.post.map(k => `<button data-go="rb-set:art.post=${k}" class="${d.art.post === k ? 'on' : ''}"><img src="${shapeIcon(k, d)}" alt="" style="width:34px;height:34px"></button>`).join('')}</div></div>
+      <div class="row"><label>Foothold look</label><div class="seg">${ART.post.map(k => `<button data-go="rb-set:art.post=${k}" class="${d.art.post === k ? 'on' : ''}"><img src="${shapeIcon(k, d)}" alt="" style="width:34px;height:34px"></button>`).join('')}</div></div>
       <div class="row"><label for="rbGrow">Supply upgrade name</label><input id="rbGrow" class="txt" maxlength="20" value="${esc(d.grow)}" data-tx="grow"></div>
-      <div class="row"><label for="rbPost">Outpost name</label><input id="rbPost" class="txt" maxlength="20" value="${esc(d.postName)}" data-tx="postName"></div>`;
+      <div class="row"><label for="rbPost">Foothold name</label><input id="rbPost" class="txt" maxlength="20" value="${esc(d.postName)}" data-tx="postName"></div>`;
   } else {
     const i = +tab, u = d.units[i];
     const p = i ? priceUnit(u, i) : null;
@@ -3906,10 +3945,10 @@ function rbEditor() {
 }
 function shapeIcon(k, d) { const c = document.createElement('canvas'); c.width = c.height = 68; const g = c.getContext('2d'); g.translate(34, 34); g.scale(0.62, 0.62); SH[k](g, k.endsWith('core') ? 42 : 24, 0.5, previewPal(d), {}); return c.toDataURL(); }
 function priceHTML(i, p) {
-  if (!i) return `<b>50</b> Matter · supply 1<br><span>Workers have a fixed price. Choose their toughness and speed.</span>`;
+  if (!i) return `<b>50</b> Nutrient · supply 1<br><span>Workers have a fixed price. Choose their toughness and speed.</span>`;
   const [lo, hi] = TIER_COST[i], pct = Math.max(0, Math.min(100, (p.cost - lo) / (hi - lo) * 100));
   return `<b><i class="gem"></i>${p.cost}${p.ess ? ` <i class="ess"></i>${p.ess}` : ''}</b> · supply ${p.s} · ${p.bt}s to train
-    <div class="band"><i style="left:${pct}%"></i></div><span>${TIER_NAME[i]} costs between ${lo} and ${hi}. Stronger stats cost more Matter.</span>`;
+    <div class="band"><i style="left:${pct}%"></i></div><span>${TIER_NAME[i]} costs between ${lo} and ${hi}. Stronger stats cost more Nutrient.</span>`;
 }
 function issuesHTML(v) { return v.ok ? '<span style="color:var(--good)">This race is valid and ready to play.</span>' : v.errs.slice(0, 6).map(e => `<span class="bad">${esc(e)}</span>`).join('<br>'); }
 function testHTML(r) {
@@ -4033,23 +4072,23 @@ function rbAction(a, v) {
 
 /* ================= TUTORIALS ================= */
 const FEED_STEP = {
-  necrosis: { title: 'Raise the dead', text: 'Plaguecasters and your Blight Core raise organic corpses as Husks. Fight Gorgers near your casters until 2 Husks rise.', goal: P => P.st.r >= 2, prog: P => `${Math.min(2, P.st.r)} of 2` },
+  necrosis: { title: 'Raise the dead', text: 'Plaguecasters and your Blight Core raise organic corpses as Husks. Fight Wardens near your casters until 2 Husks rise.', goal: P => P.st.r >= 2, prog: P => `${Math.min(2, P.st.r)} of 2` },
   kytinos: { title: 'Feed the swarm', text: 'Hurt Kytinos eat corpses to heal, and Larvae carry them home. Tap a corpse with units selected. Consume 3 corpses.', goal: P => P.st.s >= 3, prog: P => `${Math.min(3, P.st.s)} of 3` },
   mechonized: { title: 'Salvage', text: 'Your Forge consumes corpses near it and Salvagers strip wrecks. Select Salvagers and tap corpses. Consume 2.', goal: P => P.st.s >= 2, prog: P => `${Math.min(2, P.st.s)} of 2` },
-  huminodiz: { title: 'Waste nothing', text: 'Techs digest every kind of corpse. Select workers and tap the Gorger corpses. Consume 3.', goal: P => P.st.s >= 3, prog: P => `${Math.min(3, P.st.s)} of 3` }
+  huminodiz: { title: 'Waste nothing', text: 'Techs digest every kind of corpse. Select workers and tap the Warden corpses. Consume 3.', goal: P => P.st.s >= 3, prog: P => `${Math.min(3, P.st.s)} of 3` }
 };
 function tutSteps(race) {
   const armyOf = () => W.units.filter(u => u.o === App.seat && !U[u.type].worker && !U[u.type].struct).length;
   return [
-    { title: 'Harvest', text: 'Tap Workers, then tap a pink Matter bloom. Workers carry Matter home to your core.', goal: P => P.st.g >= 150, prog: P => `${Math.min(150, P.st.g)} of 150 Matter` },
+    { title: 'Harvest', text: 'Tap Workers, then tap a pink nutrient well. Workers carry Nutrient home to your core.', goal: P => P.st.g >= 150, prog: P => `${Math.min(150, P.st.g)} of 150 Nutrient` },
     { title: 'Raise an army', text: 'Tap Core, then train 4 combat units from the Train tab.', goal: () => armyOf() >= 4, prog: () => `${Math.min(4, armyOf())} of 4 units` },
-    { title: 'Hunt the ferals', text: 'A feral lair is circled in yellow. Tap Army, then tap a Gorger to attack it. Kill 3.', goal: P => P.st.kf >= 3, prog: P => `${Math.min(3, P.st.kf)} of 3`, mark: 'lair' },
+    { title: 'Hunt the Wardens', text: 'A Warden Nest is circled in yellow. Tap Army, then tap a Warden to attack it. Kill 3.', goal: P => P.st.kf >= 3, prog: P => `${Math.min(3, P.st.kf)} of 3`, mark: 'lair' },
     FEED_STEP[race],
-    { title: 'Gather Essence', text: 'Corpses give Essence (the green drop) as well as Matter. Keep scavenging until you have gathered 40.', goal: P => P.st.e >= 40, prog: P => `${Math.min(40, P.st.e)} of 40` },
-    { title: 'Evolve', text: 'Tap Core, open the Evolve tab and research any upgrade.', goal: P => P.st.u >= 1 || !!P.res, prog: () => '' },
-    { title: 'Expand', text: 'Select a worker, tap Build, and place an outpost near a bloom away from your core.', goal: P => P.st.b >= 1, prog: () => '' },
+    { title: 'Gather Essence', text: 'Corpses give Essence (the green drop) as well as Nutrient. Keep scavenging until you have gathered 40.', goal: P => P.st.e >= 40, prog: P => `${Math.min(40, P.st.e)} of 40` },
+    { title: 'Mutate', text: 'Tap Core, open the Mutate tab and develop any mutation.', goal: P => P.st.u >= 1 || !!P.res, prog: () => '' },
+    { title: 'Expand', text: 'Select a worker, tap Build, and grow a foothold near a nutrient well away from your core.', goal: P => P.st.b >= 1, prog: () => '' },
     { title: 'Unleash', text: 'Select your army and tap the ability button in the panel.', goal: P => P.st.ab >= 1, prog: () => '' },
-    { title: 'Consume them', text: 'The enemy core is circled. It only defends itself. Destroy it.', goal: () => W.over >= 0, prog: () => '', mark: 'enemy' }
+    { title: 'Consume them', text: 'The enemy core is circled. It only defends itself. Consume it.', goal: () => W.over >= 0, prog: () => '', mark: 'enemy' }
   ];
 }
 const Tut = {
@@ -4084,7 +4123,7 @@ $('tut').addEventListener('click', e => {
   else { $('tut').classList.add('hide'); toast('Tap the menu to show the tutorial again'); }
 });
 function tutorialsScreen() {
-  show(`<div class="card wide"><h2>Tutorials</h2><p class="status" style="text-align:left">Each lesson teaches the corpse cycle through one race: harvest, fight, feed on the dead, gather Essence, evolve, expand, and finish the enemy. The opponent only defends.</p>
+  show(`<div class="card wide"><h2>Tutorials</h2><p class="status" style="text-align:left">Each lesson teaches the cycle of feeding inside Varuun through one lifeform: harvest, fight the Wardens, feed on the dead, gather Essence, mutate, expand, and consume a rival. The opponent only defends.</p>
     <div class="races">${BASE_RACES.map(r => `<button class="race" data-go="tut:${r}" style="--rc:${RACES[r].col}"><img src="${iconFor(PFX[r] + '_core')}" alt=""><b>${RACES[r].name}${LS.get('nt.tut.' + r) ? ' ✓' : ''}</b><span>${esc(FEED_STEP[r].title)}: ${esc(RACES[r].blurb)}</span></button>`).join('')}</div>
     <div class="actions"><button class="btn ghost" data-go="menu">Back</button></div></div>`);
 }
