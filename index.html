@@ -210,6 +210,16 @@ input[type=color]{width:56px;height:40px;border:1px solid var(--line);border-rad
 .band{position:relative;height:8px;border-radius:4px;margin:6px 0;background:linear-gradient(90deg,#3a3024,#6a5c49)}
 .band i{position:absolute;top:-3px;width:4px;height:14px;border-radius:2px;background:var(--ichor);transform:translateX(-50%)}
 .rb .seg button{padding:8px 10px}
+#deephud{position:fixed;inset:0;pointer-events:none}
+#dtop{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:12px;pointer-events:auto;padding:calc(var(--sat) + 6px) calc(var(--sar) + 10px) 14px calc(var(--sal) + 10px);background:linear-gradient(rgba(10,2,6,.9),transparent)}
+.dvit div{width:110px;height:10px;border-radius:5px;background:#3a0c18;overflow:hidden;border:1px solid rgba(255,180,200,.25)}
+.dvit i{display:block;height:100%;background:linear-gradient(90deg,#ff5a4e,#ff8fb0)}
+.dinfo{font-size:12.5px;color:var(--mute)} .dinfo b{color:var(--bone)}
+#dBoost,#dDock{position:absolute;pointer-events:auto;border-radius:50%;border:2px solid rgba(255,224,138,.6);background:rgba(40,10,20,.75);color:#ffe08a;font:700 14px Oxanium,sans-serif;cursor:pointer;touch-action:none;-webkit-user-select:none;user-select:none}
+#dBoost{right:calc(var(--sar) + 20px);bottom:calc(var(--sab) + 26px);width:86px;height:86px}
+#dBoost.on{background:rgba(255,224,138,.3)}
+#dDock{left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 120px);width:auto;height:auto;border-radius:16px;padding:14px 22px;background:rgba(255,224,138,.92);color:#2a1406;animation:dglow 1.4s ease-in-out infinite}
+@keyframes dglow{50%{box-shadow:0 0 26px #ffe08a}}
 .atlas .ahead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px}
 .vital{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute)}
 .vital div{width:90px;height:8px;border-radius:4px;background:#2a1a20;overflow:hidden}
@@ -275,6 +285,18 @@ input[type=color]{width:56px;height:40px;border:1px solid var(--line);border-rad
     <div class="prow" id="edTools"></div>
     <div class="edrow"><span>Brush</span><div class="seg" id="edBrush"></div><span id="edInfo" style="margin-left:auto"></span></div>
   </div>
+</div>
+<div id="deephud" class="hide">
+  <div id="dtop">
+    <button class="ib" id="dMenu" aria-label="Dive menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <div class="dvit" title="Vitality"><div><i id="dVit"></i></div></div>
+    <div class="stat"><i class="gem"></i><b id="dNut">0</b></div>
+    <div class="stat"><i class="ess"></i><b id="dEss">0</b></div>
+    <div class="flex"></div>
+    <div class="dinfo"><b id="dDepth">0%</b> deep · <b id="dClaim">0</b> claimed</div>
+  </div>
+  <button id="dDock" class="hide">Dock</button>
+  <button id="dBoost">Boost</button>
 </div>
 <div id="scr"></div>
 <div id="toast"></div>
@@ -2465,7 +2487,7 @@ function saveSession() {
   LS.set('lc.session', v);
 }
 function saveWorld() {
-  if (!App.inGame || App.tut || App.camp || App.role === 'guest' || App.role === 'demo' || !W || W.over >= 0) return;
+  if (!App.inGame || App.tut || App.camp || App.exp || App.role === 'guest' || App.role === 'demo' || !W || W.over >= 0) return;
   const fx = W.fx; W.fx = [];
   const map = W.map; W.map = Object.assign({}, map, { t: packTiles(TER.t) });
   LS.set('lc.world', { ts: Date.now(), W, host: App.role === 'host' ? Host.slots.map(s => ({ kind: s.kind, team: s.team, token: s.token || '', race: s.race || '', name: s.name || '', seat: s.seat })) : null });
@@ -2480,7 +2502,7 @@ function resumeAvailable() {
   if (s.role !== 'guest') { const w = LS.get('lc.world'); if (!w || !w.W || w.W.v !== 4 || w.W.over >= 0) return null; s.world = w; }
   return s;
 }
-setInterval(() => { if (App.inGame && App.role !== 'demo' && !App.tut && !App.camp) { saveSession(); saveWorld(); } }, 5000);
+setInterval(() => { if (App.inGame && App.role !== 'demo' && !App.tut && !App.camp && !App.exp) { saveSession(); saveWorld(); } }, 5000);
 
 const V = {
   guest() { return App.role === 'guest'; },
@@ -3801,6 +3823,7 @@ function menuScreen() {
     <div class="logo"><img src="icon.png" alt="" onerror="this.remove()"><h1>Necrotroph</h1><p class="tag">Every death feeds something.</p><p class="fine" style="margin-top:4px">Inside the dying star-leviathan Varuun</p></div>
     ${res ? `<button class="btn prime" data-go="resume">Resume ${res.role === 'solo' ? 'skirmish' : 'online match'}</button>` : ''}
     <button class="btn ${res ? '' : 'prime'}" data-go="campaign">Campaign: the Atlas</button>
+    <button class="btn" data-go="deep">The Deep Lumen: dive to Varuun's heart</button>
     <button class="btn" data-go="pick:solo">Skirmish against the AI</button>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="pick:host">Host online</button><button class="btn" data-go="pick:join">Join online</button></div>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="tutorials">Tutorials</button><button class="btn" data-go="races">Race builder</button></div>
@@ -3889,6 +3912,7 @@ function codexScreen(back) {
     <h3>Build points and speed</h3><p>Your core and every finished foothold can train units, each with its own queue. Tap a building and then the ground to set its rally point. <b>Quicken</b> at the core makes every building train 25% faster, up to two levels. Workers can help: select them and tap a building under construction to speed it up (each helper adds 60%, up to four), or tap a damaged building to repair it for free.</p>
     <h3>Workers to warriors</h3><p><b>Muster</b> permanently turns selected workers into your tier 1 unit for the price difference. They stand still for 5 seconds while they change, so do it somewhere safe. <b>Call to arms</b> (at the core or from the worker panel) arms every worker near your buildings as militia for 25 seconds: triple damage and extra armor. It recharges in 70 seconds, then they go back to work.</p>
     <h3>Drift: the Lumen Sea</h3><p>A battlefield on Varuun's bloodstream. Each base sits on an anchored island, and three rings of islands wheel around a central heart-island at different speeds and directions. When two islands pass within leaping distance a golden bridge glows between them, and units ordered across leap over. With no bridge open they wait at the edge for the current. Everything on an island rides with it, so a foothold on a drifting cell is a moving base. Spore rafts and wrecks keep shedding corpses, a steady source of Essence. Anyone knocked into the sea is washed back onto the nearest island, hurt.</p>
+    <h3>The Deep Lumen</h3><p>A dive down Varuun's vessels toward its heart, seen from just behind your colony-cell. Drag to steer and hold Boost to surge. Pink motes add Nutrient and green motes add Essence to your stores; Wardens home in and sap your vitality; blood cells knock you aside; scraping the vessel wall hurts. Floating bodies wait in wider chambers: slow near one and tap Dock to fight for it. Your stores become your starting resources, every body you claim strengthens later battles, and a win heals you. Reach the Heart and take it to finish the dive.</p>
     <h3>Control groups</h3><p>Hold one of the three group buttons to save your selection, tap to recall it, and double-tap to jump the camera there. On a keyboard, Ctrl plus 1 to 3 saves and 1 to 3 recalls.</p>
     ${BASE_RACES.map(r => `<h3 style="color:${RACES[r].col}">${RACES[r].name}</h3><p>${RACES[r].blurb} ${RACES[r].core}</p><p><b>${RACES[r].ab.name}</b> (every ${RACES[r].ab.cd}s): ${RACES[r].ab.desc}</p>
       <div class="tbl"><table><tr><th>Unit</th><th>Cost</th><th>Supply</th><th>Health</th><th>Speed</th><th>Range</th><th>Role</th></tr>
@@ -3929,7 +3953,7 @@ function gameMenu() {
     <button class="btn" data-go="codex-in">Codex</button>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="mustog">${Music.on ? 'Music off' : 'Music on'}</button><button class="btn" data-go="sndtog">${SFX.on ? 'Effects off' : 'Effects on'}</button></div>
     ${App.tut ? '' : '<button class="btn" data-go="surrender">Surrender</button>'}
-    <button class="btn ghost" data-go="quit">${App.camp ? 'Retreat to the Atlas' : App.returnTo === 'editor' ? 'Back to the designer' : 'Leave to main menu'}</button>
+    <button class="btn ghost" data-go="quit">${App.exp ? 'Retreat to the Deep Lumen' : App.camp ? 'Retreat to the Atlas' : App.returnTo === 'editor' ? 'Back to the designer' : 'Leave to main menu'}</button>
     ${App.role === 'solo' ? '<p class="fine">The match is paused while this menu is open.</p>' : '<p class="fine">Online matches keep running while this menu is open.</p>'}</div>`);
 }
 function statsTable() {
@@ -3940,17 +3964,18 @@ function statsTable() {
 function endScreen(won, note) {
   App.endShown = true;
   if (App.camp && !App.camp.done) { App.camp.done = 1; campaignResult(won); }
+  if (App.exp && !App.exp.doneR) { App.exp.doneR = 1; Deep.result(won); }
   SFX.ui(won ? 'win' : 'lose');
   if (App.tut && won) { LS.set('nt.tut.' + App.tut.race, 1); }
   show(`<div class="card end wide"><h2 style="color:${won ? '#8fe388' : '#ff5a4e'}">${App.tut && won ? 'Tutorial complete' : won ? 'Victory' : 'Defeat'}</h2>
     <div class="sub">${note || (won ? 'Their cores are consumed. This part of Varuun feeds your kind now.' : 'Your core is consumed. Something else inside Varuun will feed on what remains.')}</div>
     ${statsTable()}
-    <div class="actions"><button class="btn ghost" data-go="watch">View the field</button><button class="btn prime" data-go="quit">${App.camp ? 'Return to the Atlas' : App.returnTo === 'editor' ? 'Back to the designer' : App.tut ? 'Back to tutorials' : 'Main menu'}</button></div></div>`);
+    <div class="actions"><button class="btn ghost" data-go="watch">View the field</button><button class="btn prime" data-go="quit">${App.exp ? 'Return to the Deep Lumen' : App.camp ? 'Return to the Atlas' : App.returnTo === 'editor' ? 'Back to the designer' : App.tut ? 'Back to tutorials' : 'Main menu'}</button></div></div>`);
   clearSaved();
 }
 function elimScreen() {
   App.elimShown = true;
-  if (App.camp) { endScreen(false, 'Your core is consumed. The others fight on without you.'); return; }
+  if (App.camp || App.exp) { endScreen(false, 'Your core is consumed. The others fight on without you.'); return; }
   SFX.ui('lose');
   show(`<div class="card end"><h2 style="color:#ff5a4e">Eliminated</h2><div class="sub">Your core has fallen and your swarm has become carrion. ${V.np() > 2 ? 'The others fight on.' : ''}</div>
     <div class="actions"><button class="btn ghost" data-go="watch">Keep watching</button><button class="btn prime" data-go="quit">Leave</button></div></div>`);
@@ -3960,7 +3985,7 @@ scr.addEventListener('click', e => {
   const b = e.target.closest('[data-go]'); if (!b || b.disabled) return;
   SFX.unlock(); SFX.ui('click');
   const go = b.dataset.go, i = go.indexOf(':'), a = i < 0 ? go : go.slice(0, i), v = i < 0 ? '' : go.slice(i + 1);
-  if (edAction(a, v) || rbAction(a, v) || tutAction(a, v) || campAction(a, v)) return;
+  if (edAction(a, v) || rbAction(a, v) || tutAction(a, v) || campAction(a, v) || deepAction(a, v)) return;
   switch (a) {
     case 'menu': menuScreen(); break;
     case 'settings': settingsScreen(); break;
@@ -3970,7 +3995,7 @@ scr.addEventListener('click', e => {
     case 'mustog': Music.set(!Music.on); gameMenu(); break;
     case 'sndtog': SFX.set(!SFX.on); gameMenu(); break;
     case 'pick': pickScreen(v); break;
-    case 'race': App.myRace = v; if (App.pickMode === 'host-lobby') { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
+    case 'race': App.myRace = v; if (App.pickMode === 'deep') { deepPick(); break; } if (App.pickMode === 'host-lobby') { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
     case 'map': App.mapId = v; if (Net.role === 'host' && !App.inGame) { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
     case 'drift': App.drift = v === '1'; if (Net.role === 'host' && !App.inGame) { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
     case 'fog': App.fog = v === '1'; if (Net.role === 'host' && !App.inGame) { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
@@ -4004,7 +4029,7 @@ scr.addEventListener('click', e => {
 function startGame(seat) {
   App.inGame = true; App.editing = false; App.seat = seat; App.sel.clear(); App.endShown = false; App.elimShown = false; App.paused = false; App.amove = false; App.boxMode = false; App.place = false;
   genDecor(App.role === 'guest' ? G.seed : W.seed);
-  hideScr(); $('hud').classList.remove('hide'); $('edhud').classList.add('hide');
+  hideScr(); $('hud').classList.remove('hide'); $('edhud').classList.add('hide'); $('deephud').classList.add('hide');
   const s = V.starts()[seat] || [MAP_W / 2, MAP_H / 2];
   cam.z = Math.max(0.8, Math.min(1.4, Math.min(vw, vh) / 430));
   centerOn(s[0] + (MAP_W / 2 - s[0]) * 0.12, s[1] + (MAP_H / 2 - s[1]) * 0.12);
@@ -4121,12 +4146,13 @@ function quitToMenu() {
   const hadNet = !!Net.role;
   if (hadNet) setTimeout(netShutdown, 150);
   clearSaved();
-  const back = App.returnTo === 'editor' && ED.map, tut = !!App.tut, camp = !!App.camp;
+  const back = App.returnTo === 'editor' && ED.map, tut = !!App.tut, camp = !!App.camp, exp = !!App.exp;
+  if (exp && !App.expAfter) { const b = Deep.st && Deep.st.bodies.find(x => x.z === App.exp.z); if (b) b.done = 1; App.expAfter = App.exp.final ? 'heart-lost' : 'retreat'; }
   App.inGame = false; App.role = 'demo'; App.sel.clear(); App.paused = false; App.returnTo = ''; App.tut = null; App.camp = null;
   W = null; G.units.clear(); G.list = []; G.over = -1;
   $('hud').classList.add('hide'); $('hint').classList.add('hide'); $('tut').classList.add('hide');
   if (back) { openEditor(ED.map); ED.saved = false; edBuildUI(); return; }
-  setTimeout(() => { startDemo(); if (camp) { Music.setTheme(Camp.st.race); campaignContinue(); } else tut ? tutorialsScreen() : menuScreen(); }, hadNet ? 170 : 0);
+  setTimeout(() => { startDemo(); if (exp) { Deep.after(); if (App.expAfter === null) {} } else if (camp) { Music.setTheme(Camp.st.race); campaignContinue(); } else tut ? tutorialsScreen() : menuScreen(); }, hadNet ? 170 : 0);
 }
 
 /* ================= RACE BUILDER ================= */
@@ -4811,6 +4837,296 @@ function campAction(a, v) {
   return false;
 }
 
+/* ================= THE DEEP LUMEN =================
+   A 3D run through Varuun's vessels, drawn with a small perspective renderer on the 2D canvas.
+   You steer a colony-cell down the tube, gather motes, dodge Wardens and dock with floating
+   bodies, each of which opens an RTS battle. What you gather and claim carries into those battles. */
+const DEEP_LEN = 6200, DEEP_BODIES = [900, 2000, 3100, 4200, 5300];
+const BODY_KINDS = {
+  cell:  { name: 'Drifting cell', col: '#c23a5c', desc: 'A living cell adrift in the current. Fought for on a Drift battlefield.', boon: 'workers', boonText: '+1 worker in later battles' },
+  wreck: { name: 'Hesper debris', col: '#5d7a88', desc: 'A torn piece of the swallowed starship, corridors and all.', boon: 'prod', boonText: 'Quicken level 1 in later battles' },
+  raft:  { name: 'Spore raft', col: '#8aa64a', desc: 'A raft of comet spores, thick with the dead.', boon: 'ess', boonText: '+30 Essence in later battles' },
+  nest:  { name: 'Warden hive', col: '#c0573e', desc: 'A drifting knot of Varuun\'s defences. Dangerous, and rich.', boon: 'matter', boonText: '+100 Nutrient in later battles' }
+};
+const Deep = {
+  st: null, last: 0, drag: null, keys: {}, boost: false, ended: false,
+  C(z) { return { x: 30 * Math.sin(z * 0.004) + 18 * Math.sin(z * 0.0011 + 1), y: 22 * Math.sin(z * 0.003 + 2) + 12 * Math.sin(z * 0.0017) }; },
+  R(z) {
+    let r = 26 + 6 * Math.sin(z * 0.002);
+    for (const b of this.st.bodies) r += 46 * Math.exp(-(((z - b.z) / 130) ** 2));
+    r += 70 * Math.exp(-(((z - DEEP_LEN) / 220) ** 2));
+    return r;
+  },
+  start(race) {
+    const seed = (Math.random() * 1e9) | 0, R = mulberry(seed), kinds = Object.keys(BODY_KINDS);
+    this.st = { race, seed, z: 0, ox: 0, oy: 0, tx: 0, ty: 0, speed: 60, vit: 100, nut: 0, ess: 0, claimed: [], lost: 0, motes: 0,
+      bodies: DEEP_BODIES.map((z, i) => ({ z, kind: kinds[(i + Math.floor(R() * 4)) % 4], done: 0, x: (R() - 0.5) * 30, y: (R() - 0.5) * 20 })),
+      objs: [], gen: 0, hitT: 0, flash: 0, heart: 0 };
+    this.ended = false;
+    App.deep = true; App.inGame = false;
+    hideScr(); $('hud').classList.add('hide'); $('deephud').classList.remove('hide');
+    Music.setTheme(race); Music.target = 0.25;
+    this.last = performance.now();
+    this.hud();
+    toast('Drag to steer. Collect motes, dodge Wardens, and dock with the floating bodies.');
+  },
+  resume() {
+    App.deep = true; App.inGame = false; this.last = performance.now();
+    hideScr(); $('hud').classList.add('hide'); $('deephud').classList.remove('hide');
+    Music.setTheme(this.st.race); this.hud();
+  },
+  // Objects are generated in 200-unit chunks just ahead of the player.
+  generate() {
+    const s = this.st;
+    while (s.gen < s.z + 900 && s.gen < DEEP_LEN - 150) {
+      const R = mulberry(s.seed + s.gen), z0 = s.gen, depth = z0 / DEEP_LEN;
+      for (let i = 0; i < 6; i++) { const z = z0 + R() * 200, a = R() * TAU, d = R() * 0.8; s.objs.push({ k: 'blood', z, a, d, spin: R() * TAU, vz: 22 + R() * 14 }); }
+      const nm = 3 + Math.floor(R() * 3);
+      for (let i = 0; i < nm; i++) { const z = z0 + R() * 200, a = R() * TAU, d = R() * 0.7; s.objs.push({ k: R() < 0.72 ? 'nut' : 'ess', z, a, d }); }
+      if (z0 > 300 && R() < 0.45 + depth * 0.45) { const n = 1 + Math.floor(R() * (1 + depth * 3)); for (let i = 0; i < n; i++) s.objs.push({ k: 'warden', z: z0 + R() * 200, a: R() * TAU, d: R() * 0.7 }); }
+      s.gen += 200;
+    }
+  },
+  worldOf(o) { const c = this.C(o.z), r = this.R(o.z); if (o.wx == null) { o.wx = Math.cos(o.a) * o.d * r; o.wy = Math.sin(o.a) * o.d * r; } return { x: c.x + o.wx, y: c.y + o.wy, z: o.z }; },
+  nearBody() { const s = this.st; return s.bodies.find(b => !b.done && b.z - s.z < 70 && b.z - s.z > -25) || null; },
+  update(dt) {
+    const s = this.st;
+    if (this.ended) return;
+    // steering: drag or keys move a target offset; the cell eases toward it
+    const kx = (this.keys.ArrowRight || this.keys.d ? 1 : 0) - (this.keys.ArrowLeft || this.keys.a ? 1 : 0), ky = (this.keys.ArrowDown || this.keys.s ? 1 : 0) - (this.keys.ArrowUp || this.keys.w ? 1 : 0);
+    s.tx += kx * 60 * dt; s.ty += ky * 60 * dt;
+    const R = this.R(s.z), lim = R - 6, tl = Math.hypot(s.tx, s.ty);
+    if (tl > lim) { s.tx *= lim / tl; s.ty *= lim / tl; }
+    s.ox += (s.tx - s.ox) * Math.min(1, dt * 6); s.oy += (s.ty - s.oy) * Math.min(1, dt * 6);
+    const ol = Math.hypot(s.ox, s.oy);
+    if (ol > R - 5) { s.ox *= (R - 5) / ol; s.oy *= (R - 5) / ol; s.vit -= dt * 6; s.flash = 0.2; }
+    const body = this.nearBody();
+    const spd = (s.speed + s.z / DEEP_LEN * 25) * (this.boost ? 1.8 : 1) * (body ? 0.25 : 1);
+    s.z = Math.min(DEEP_LEN, s.z + spd * dt);
+    this.generate();
+    const c = this.C(s.z), px = c.x + s.ox, py = c.y + s.oy;
+    let wardensNear = 0;
+    for (const o of s.objs) {
+      if (o.k === 'blood') o.z += o.vz * dt;
+      const w = this.worldOf(o), dz = w.z - s.z;
+      if (o.k === 'warden' && dz > 0 && dz < 160) {
+        wardensNear++;
+        const ax = px - w.x, ay = py - w.y, l = Math.hypot(ax, ay) || 1, home = 14 + s.z / DEEP_LEN * 14;
+        o.wx += ax / l * home * dt; o.wy += ay / l * home * dt; o.z -= 10 * dt;
+      }
+      if (Math.abs(dz) > 4) continue;
+      const dd = Math.hypot(w.x - px, w.y - py);
+      if (o.k === 'blood' && dd < 6) { s.ox += (px - w.x) / (dd || 1) * 3; s.oy += (py - w.y) / (dd || 1) * 3; o.dead = 1; }
+      else if (o.k === 'warden' && dd < 6.5) { o.dead = 1; s.vit -= 12; s.flash = 0.45; vibrate(40); SFX.ui('alert'); }
+      else if ((o.k === 'nut' || o.k === 'ess') && dd < 7) { o.dead = 1; s.motes++; if (o.k === 'nut') s.nut += 12; else s.ess += 5; SFX.ui('select'); }
+    }
+    s.objs = s.objs.filter(o => !o.dead && o.z > s.z - 40);
+    Music.target = Math.min(1, Music.target + wardensNear * 0.004);
+    s.flash = Math.max(0, s.flash - dt);
+    if (s.vit <= 0) { s.vit = 0; this.finish(false); return; }
+    if (s.z >= DEEP_LEN - 1 && !s.heart) this.heartPrompt();
+  },
+  // ---------- perspective renderer ----------
+  proj(x, y, z, cam) { const d = z - cam.z; if (d < 1) return null; const f = Math.min(vw, vh) * 0.9; return { x: vw / 2 + (x - cam.x) * f / d, y: vh * 0.44 + (y - cam.y) * f / d, s: f / d }; },
+  render(now) {
+    const s = this.st, t = now / 1000, c = ctx;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const camZ = s.z - 40, cc = this.C(camZ), cam = { x: cc.x + s.ox * 0.85, y: cc.y + s.oy * 0.85, z: camZ };
+    c.fillStyle = '#0a0206'; c.fillRect(0, 0, vw, vh);
+    const step = 14, N = 70, base = Math.floor(camZ / step) * step;
+    const rings = [];
+    for (let i = N; i >= 1; i--) { const z = base + i * step; if (z - camZ < 3) continue; const cz = this.C(z), p = this.proj(cz.x, cz.y, z, cam); if (p) rings.push({ z, p, r: this.R(z) * p.s, fog: Math.min(1, (z - camZ) / (N * step)) }); }
+    const far = rings[0];
+    if (far) { const g = c.createRadialGradient(far.p.x, far.p.y, 0, far.p.x, far.p.y, far.r * 1.2); g.addColorStop(0, 'rgba(255,120,160,.55)'); g.addColorStop(1, 'rgba(60,8,24,1)'); c.fillStyle = g; c.beginPath(); c.arc(far.p.x, far.p.y, far.r, 0, TAU); c.fill(); }
+    for (let i = 1; i < rings.length; i++) {
+      const A = rings[i - 1], B = rings[i], k = 1 - B.fog, pulse = 0.5 + 0.5 * Math.sin(B.z * 0.05 - t * 3);
+      const rib = Math.floor(B.z / step) % 3 === 0 ? 0.62 : Math.floor(B.z / step) % 3 === 1 ? 0.85 : 1;
+      c.beginPath(); c.arc(B.p.x, B.p.y, B.r, 0, TAU); c.arc(A.p.x, A.p.y, A.r, 0, TAU, true);
+      const rr = Math.round((26 + 128 * k + pulse * 14 * k) * rib), gg = Math.round((6 + 24 * k) * rib), bb = Math.round((16 + 40 * k) * rib);
+      c.fillStyle = `rgb(${rr},${gg},${bb})`; c.fill();
+      if (i % 2 === 0) { c.strokeStyle = `rgba(255,170,200,${0.05 + 0.18 * k})`; c.lineWidth = Math.max(1, 2 * k); c.beginPath(); c.arc(B.p.x, B.p.y, B.r, 0, TAU); c.stroke(); }
+    }
+    // veins running along the vessel wall
+    for (let v = 0; v < 9; v++) {
+      const a = v / 9 * TAU + 0.3 * Math.sin(v * 1.7);
+      c.beginPath(); let started = false;
+      for (const R of rings) { const x = R.p.x + Math.cos(a + R.z * 0.002) * R.r * 0.985, y = R.p.y + Math.sin(a + R.z * 0.002) * R.r * 0.985; if (!started) { c.moveTo(x, y); started = true; } else c.lineTo(x, y); }
+      c.strokeStyle = 'rgba(110,10,40,.55)'; c.lineWidth = 2.5; c.stroke();
+    }
+    // objects far to near
+    const items = [];
+    for (const o of s.objs) { const w = this.worldOf(o), p = this.proj(w.x, w.y, w.z, cam); if (p && w.z - camZ < N * step) items.push({ o, p, d: w.z - camZ }); }
+    for (const b of s.bodies) { const cz = this.C(b.z), p = this.proj(cz.x + b.x, cz.y + b.y, b.z, cam); if (p && b.z - camZ < N * step) items.push({ b, p, d: b.z - camZ }); }
+    { const cz = this.C(DEEP_LEN + 60), p = this.proj(cz.x, cz.y, DEEP_LEN + 60, cam); if (p && DEEP_LEN + 60 - camZ < N * step) items.push({ heart: 1, p, d: DEEP_LEN + 60 - camZ }); }
+    items.sort((a, b) => b.d - a.d);
+    for (const it of items) {
+      const p = it.p, fog = Math.min(1, it.d / (N * step)), al = 1 - fog * 0.85;
+      c.globalAlpha = al;
+      if (it.heart) {
+        const r = 60 * p.s * (1 + 0.08 * Math.sin(t * 3));
+        const g = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, r); g.addColorStop(0, '#ffd1df'); g.addColorStop(0.5, '#ff5e8a'); g.addColorStop(1, 'rgba(255,94,138,0)');
+        c.fillStyle = g; c.beginPath(); c.arc(p.x, p.y, r, 0, TAU); c.fill();
+      } else if (it.b) {
+        const b = it.b, K = BODY_KINDS[b.kind], r = 26 * p.s;
+        c.fillStyle = b.done ? 'rgba(70,40,50,.6)' : K.col; c.beginPath();
+        for (let i = 0; i <= 30; i++) { const a = i / 30 * TAU, rr = r * (1 + 0.06 * Math.sin(3 * a + t + b.z)); i ? c.lineTo(p.x + Math.cos(a) * rr, p.y + Math.sin(a) * rr) : c.moveTo(p.x + Math.cos(a) * rr, p.y + Math.sin(a) * rr); }
+        c.fill(); c.strokeStyle = 'rgba(255,220,230,.6)'; c.lineWidth = Math.max(1, 3 * p.s * 0.3); c.stroke();
+        c.fillStyle = 'rgba(255,255,255,.15)'; c.beginPath(); c.arc(p.x - r * 0.3, p.y - r * 0.3, r * 0.35, 0, TAU); c.fill();
+        if (!b.done) { c.strokeStyle = `rgba(255,224,138,${0.5 + 0.4 * Math.sin(t * 4)})`; c.lineWidth = Math.max(2, 2 * p.s * 0.4); c.beginPath(); c.arc(p.x, p.y, r * 1.35, 0, TAU); c.stroke(); }
+      } else {
+        const o = it.o;
+        if (o.k === 'blood') { const r = 4.2 * p.s; c.save(); c.translate(p.x, p.y); c.rotate(o.spin + t * 0.6); c.fillStyle = '#a3142f'; c.beginPath(); c.ellipse(0, 0, r, r * 0.55, 0, 0, TAU); c.fill(); c.fillStyle = '#6b0a1d'; c.beginPath(); c.ellipse(0, 0, r * 0.45, r * 0.22, 0, 0, TAU); c.fill(); c.restore(); }
+        else if (o.k === 'warden') { const r = 4 * p.s; c.fillStyle = '#f2ede4'; c.beginPath(); for (let i = 0; i < 16; i++) { const a = i / 16 * TAU + t * 2, rr = i % 2 ? r : r * 1.5; i ? c.lineTo(p.x + Math.cos(a) * rr, p.y + Math.sin(a) * rr) : c.moveTo(p.x + Math.cos(a) * rr, p.y + Math.sin(a) * rr); } c.closePath(); c.fill(); c.fillStyle = '#ff5a4e'; c.beginPath(); c.arc(p.x, p.y, r * 0.35, 0, TAU); c.fill(); }
+        else { const r = 2.2 * p.s, col = o.k === 'nut' ? '255,94,138' : '157,255,106'; const g = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 2.5); g.addColorStop(0, `rgba(${col},1)`); g.addColorStop(1, `rgba(${col},0)`); c.fillStyle = g; c.beginPath(); c.arc(p.x, p.y, r * 2.5, 0, TAU); c.fill(); }
+      }
+    }
+    c.globalAlpha = 1;
+    // the player's colony-cell
+    const pc = this.C(s.z), pp = this.proj(pc.x + s.ox, pc.y + s.oy, s.z, cam);
+    if (pp) {
+      const R = RACES[s.race] || RACES.kytinos, r = 2.4 * pp.s;
+      const g = c.createRadialGradient(pp.x, pp.y, 0, pp.x, pp.y, r * 1.9); g.addColorStop(0, R.col2); g.addColorStop(0.45, R.col); g.addColorStop(1, 'rgba(0,0,0,0)');
+      c.fillStyle = g; c.beginPath(); c.arc(pp.x, pp.y, r * 1.9, 0, TAU); c.fill();
+      c.strokeStyle = R.col2; c.lineWidth = 2; c.beginPath(); c.arc(pp.x, pp.y, r * (1 + 0.06 * Math.sin(t * 5)), 0, TAU); c.stroke();
+      c.fillStyle = R.col2; for (let i = 0; i < 4; i++) { const a = t * 2 + i * 1.57; c.beginPath(); c.arc(pp.x + Math.cos(a) * r * 1.6, pp.y + Math.sin(a) * r * 1.6, r * 0.18, 0, TAU); c.fill(); }
+      if (this.boost) { c.strokeStyle = 'rgba(255,240,200,.4)'; c.lineWidth = 3; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; c.beginPath(); c.moveTo(pp.x + Math.cos(a) * r * 2, pp.y + Math.sin(a) * r * 2); c.lineTo(pp.x + Math.cos(a) * r * 4, pp.y + Math.sin(a) * r * 4); c.stroke(); } }
+    }
+    const vg = c.createRadialGradient(vw / 2, vh * 0.44, Math.min(vw, vh) * 0.25, vw / 2, vh * 0.44, Math.max(vw, vh) * 0.75);
+    vg.addColorStop(0, 'rgba(10,2,6,0)'); vg.addColorStop(1, 'rgba(10,2,6,.78)'); c.fillStyle = vg; c.fillRect(0, 0, vw, vh);
+    if (s.flash > 0) { c.fillStyle = `rgba(255,60,60,${s.flash * 0.6})`; c.fillRect(0, 0, vw, vh); }
+  },
+  frame(now) {
+    const dt = Math.min(0.05, (now - this.last) / 1000); this.last = now;
+    if (!App.paused && !this.ended) this.update(dt);
+    if (this.st) this.render(now);
+    this.hudTick();
+  },
+  // ---------- HUD ----------
+  hud() { this.hudTick(true); },
+  hudTick(force) {
+    const s = this.st; if (!s) return;
+    const now = performance.now(); if (!force && now - (this.ht || 0) < 150) return; this.ht = now;
+    $('dVit').style.width = Math.max(0, s.vit) + '%';
+    $('dDepth').textContent = `${Math.round(s.z / DEEP_LEN * 100)}%`;
+    $('dNut').textContent = Math.floor(s.nut); $('dEss').textContent = Math.floor(s.ess);
+    $('dClaim').textContent = s.claimed.length;
+    const b = this.nearBody(), dk = $('dDock');
+    if (b && !this.ended) { dk.classList.remove('hide'); dk.textContent = `Dock: ${BODY_KINDS[b.kind].name}`; } else dk.classList.add('hide');
+  },
+  dockPrompt() {
+    const b = this.nearBody(); if (!b) return;
+    App.paused = true;
+    const K = BODY_KINDS[b.kind], s = this.st, i = DEEP_BODIES.indexOf(b.z);
+    show(`<div class="card"><h2 style="color:${K.col}">${K.name}</h2><p class="status" style="text-align:left">${esc(K.desc)}</p>
+      <p class="fine" style="text-align:left">Claiming it: ${esc(K.boonText)}. You bring ${Math.floor(s.nut)} Nutrient and ${Math.floor(s.ess)} Essence from your stores. Losing costs 30 vitality.</p>
+      <div class="actions"><button class="btn ghost" data-go="deep-pass">Drift past</button><button class="btn prime" data-go="deep-dock:${i}">Invade it</button></div></div>`);
+  },
+  heartPrompt() {
+    this.st.heart = 1; App.paused = true;
+    show(`<div class="card story"><h2 style="color:#ff5e8a">The Heart</h2><p style="line-height:1.6">The vessel opens into Varuun's heart, thundering slow and vast. Two rival strains got here first. Take it, and the expedition is yours.</p>
+      <div class="actions"><button class="btn prime" data-go="deep-final">Invade the Heart</button></div></div>`);
+  },
+  battle(kind, final, bz) {
+    const s = this.st;
+    const rivals = BASE_RACES.filter(r => r !== s.race);
+    const foes = final ? rivals.sort(() => Math.random() - 0.5).slice(0, 2) : [rivals[Math.floor(Math.random() * rivals.length)]];
+    const depth = s.z / DEEP_LEN, diff = final ? 'hard' : depth < 0.35 ? 'easy' : depth < 0.7 ? 'normal' : 'hard';
+    const slots = [{ race: s.race, team: 0, name: App.name() }, ...foes.map((r, i) => ({ race: r, team: i + 1, ai: diff, name: RACES[r].name }))];
+    if (!prepareRaces(slots)) return;
+    const seed = (Math.random() * 1e9) | 0;
+    const prof = { wreck: ORGANS.wreck.prof, raft: ORGANS.reefs.prof, nest: ORGANS.marrow.prof }[kind];
+    const arena = final ? null : kind === 'cell' ? driftArena(slots.length, seed) : null;
+    const map = final ? mapCross() : arena ? arena.map : genMapWith(seed, 64, slots.length, prof, BODY_KINDS[kind].name);
+    newWorld(slots, { map, drift: arena && arena.drift, fog: true, mods: { fever: depth > 0.5 } });
+    const P = W.P[0];
+    P.matter += Math.floor(s.nut); P.ess += Math.floor(s.ess); s.nut = 0; s.ess = 0;
+    for (const k of s.claimed) {
+      if (k === 'matter') P.matter += 100;
+      if (k === 'ess') P.ess += 30;
+      if (k === 'prod') P.prod = Math.max(P.prod || 0, 1);
+      if (k === 'workers') { const w = spawn(PFX[P.race] + '_work', 0, P.start[0] + 50, P.start[1] - 50); setCmd(w, nearestGatherCmd(w)); }
+    }
+    refreshStats(0);
+    App.deep = false; App.paused = false; $('deephud').classList.add('hide');
+    App.role = 'solo'; App.returnTo = ''; App.tut = null; App.camp = null; App.exp = { kind, final, z: bz != null ? bz : s.z };
+    startGame(0);
+  },
+  result(won) {
+    const s = this.st, e = App.exp; if (!s || !e) return;
+    const b = s.bodies.find(x => x.z === e.z) || null;
+    if (e.final) { App.expAfter = won ? 'win' : 'heart-lost'; if (!won) s.vit = Math.max(0, s.vit - 30); return; }
+    if (b) b.done = 1;
+    if (won) { s.claimed.push(BODY_KINDS[b ? b.kind : 'cell'].boon); s.vit = Math.min(100, s.vit + 15); App.expAfter = 'claimed'; }
+    else { s.lost++; s.vit -= 30; App.expAfter = s.vit <= 0 ? 'dead' : 'lostbattle'; }
+  },
+  after() {
+    const a = App.expAfter; App.expAfter = null; App.exp = null;
+    if (a === 'win') { this.finish(true); return; }
+    if (a === 'dead') { this.finish(false); return; }
+    if (a === 'heart-lost') { if (this.st.vit <= 0) { this.finish(false); return; } this.st.heart = 0; this.st.z = DEEP_LEN - 260; }
+    this.resume();
+    if (a === 'claimed') toast('Body claimed. Its strength carries into your next battles.');
+    if (a === 'lostbattle') toast('Driven off. The current carries you on.');
+    if (a === 'retreat') toast('You withdrew. The body drifts away behind you.');
+    if (a === 'heart-lost') toast('Thrown back from the Heart. Try again.');
+  },
+  finish(won) {
+    const s = this.st; this.ended = true; App.paused = true;
+    const best = LS.get('nt.deep.best') || 0, pct = Math.round(s.z / DEEP_LEN * 100);
+    if (pct > best) LS.set('nt.deep.best', pct);
+    SFX.ui(won ? 'win' : 'lose');
+    show(`<div class="card end"><h2 style="color:${won ? '#8fe388' : '#ff5a4e'}">${won ? 'The Heart is yours' : 'Consumed by the Lumen'}</h2>
+      <div class="sub">${won ? 'Your strain reached the centre of Varuun and took it.' : 'Your colony-cell dissolved into Varuun\'s bloodstream.'}</div>
+      <div class="tbl"><table><tr><td>Depth reached</td><td class="c">${pct}%</td></tr><tr><td>Bodies claimed</td><td class="c">${s.claimed.length}</td></tr><tr><td>Battles lost</td><td class="c">${s.lost}</td></tr><tr><td>Motes gathered</td><td class="c">${s.motes}</td></tr><tr><td>Best depth</td><td class="c">${Math.max(best, pct)}%</td></tr></table></div>
+      <div class="actions"><button class="btn ghost" data-go="menu-from-deep">Main menu</button><button class="btn prime" data-go="deep-again">Dive again</button></div></div>`);
+  },
+  leave() { App.deep = false; App.paused = false; this.st = null; $('deephud').classList.add('hide'); startDemo(); menuScreen(); }
+};
+function deepPick() {
+  const best = LS.get('nt.deep.best');
+  show(`<div class="card wide"><h2>The Deep Lumen</h2>
+    <p class="status" style="text-align:left">Pilot a colony-cell down Varuun's vessels toward its heart. Drag to steer, hold Boost to surge. Gather Nutrient and Essence motes, dodge the Wardens, and dock with the bodies drifting in the chambers. Each one is a battle, and everything you gather and claim carries into the next.${best ? ` Your best dive reached ${best}%.` : ''}</p>
+    ${raceCards(App.myRace, 'race')}
+    <div class="actions"><button class="btn ghost" data-go="menu">Back</button><button class="btn prime" data-go="deep-go">Dive</button></div></div>`);
+  App.pickMode = 'deep';
+}
+function deepAction(a, v) {
+  switch (a) {
+    case 'deep': deepPick(); return true;
+    case 'deep-go': { const r = myRaceKey(); const race = isCustomPick(r) ? 'kytinos' : r; if (isCustomPick(r)) toast('Custom races join the Deep Lumen soon. Diving as Kytinos.'); Deep.start(race); return true; }
+    case 'deep-pass': { const b = Deep.nearBody(); if (b) b.done = 1; App.paused = false; hideScr(); return true; }
+    case 'deep-dock': { const b = Deep.st.bodies[+v]; if (b) { hideScr(); Deep.battle(b.kind, false, b.z); } return true; }
+    case 'deep-final': hideScr(); Deep.battle('heart', true); return true;
+    case 'deep-again': { const race = Deep.st.race; hideScr(); App.paused = false; Deep.start(race); return true; }
+    case 'menu-from-deep': Deep.leave(); return true;
+    case 'deep-resume': App.paused = false; hideScr(); return true;
+    case 'deep-abandon': Deep.leave(); return true;
+    case 'mustog-deep': Music.set(!Music.on); $('dMenu').click(); return true;
+    case 'sndtog-deep': SFX.set(!SFX.on); $('dMenu').click(); return true;
+  }
+  return false;
+}
+// steering by dragging anywhere on the canvas
+cv.addEventListener('pointerdown', e => { if (!App.deep || App.paused) return; Deep.drag = { x: e.clientX, y: e.clientY, tx: Deep.st.tx, ty: Deep.st.ty }; });
+cv.addEventListener('pointermove', e => { if (!App.deep || !Deep.drag) return; const k = 60 / Math.min(vw, vh); Deep.st.tx = Deep.drag.tx + (e.clientX - Deep.drag.x) * k; Deep.st.ty = Deep.drag.ty + (e.clientY - Deep.drag.y) * k; });
+const deepUp = () => { Deep.drag = null; };
+cv.addEventListener('pointerup', deepUp); cv.addEventListener('pointercancel', deepUp);
+window.addEventListener('keydown', e => { if (App.deep) { Deep.keys[e.key] = true; if (e.key === ' ') { Deep.boost = true; e.preventDefault(); } } });
+window.addEventListener('keyup', e => { if (App.deep) { Deep.keys[e.key] = false; if (e.key === ' ') Deep.boost = false; } });
+(() => {
+  const bb = $('dBoost');
+  bb.addEventListener('pointerdown', e => { e.preventDefault(); Deep.boost = true; bb.classList.add('on'); });
+  const off = () => { Deep.boost = false; bb.classList.remove('on'); };
+  bb.addEventListener('pointerup', off); bb.addEventListener('pointercancel', off); bb.addEventListener('pointerleave', off);
+  $('dDock').addEventListener('click', () => Deep.dockPrompt());
+  $('dMenu').addEventListener('click', () => {
+    App.paused = true;
+    show(`<div class="card"><h2>The Deep Lumen</h2><button class="btn prime" data-go="deep-resume">Keep diving</button>
+      <div class="actions" style="margin-top:0"><button class="btn" data-go="mustog-deep">${Music.on ? 'Music off' : 'Music on'}</button><button class="btn" data-go="sndtog-deep">${SFX.on ? 'Effects off' : 'Effects on'}</button></div>
+      <button class="btn ghost" data-go="deep-abandon">Abandon the dive</button></div>`);
+  });
+})();
+
 /* ================= MAIN LOOP ================= */
 let acc = 0, snapT = 0, lastCoreHp = 0, coreAlertT = 0;
 function drainFx() {
@@ -4823,7 +5139,7 @@ function drainFx() {
 let simLast = performance.now();
 function simPump() {
   const now = performance.now(), dt = Math.min(1, (now - simLast) / 1000); simLast = now;
-  if (App.role === 'guest' || !W || App.editing || App.testing) return;
+  if (App.role === 'guest' || !W || App.editing || App.testing || App.deep) return;
   const demo = App.role === 'demo';
   const run = W.over < 0 && !App.paused && !(App.role === 'host' && Net.state !== 'online');
   if (run) {
@@ -4837,6 +5153,7 @@ function simPump() {
 setInterval(simPump, 25);
 function frame(now) {
   requestAnimationFrame(frame);
+  if (App.deep && Deep.st) { Deep.frame(now); return; }
   if (App.editing) {
     if (ED.dirtyTer) { loadTerrain(ED.map); ED.dirtyTer = false; }
     renderEditor(now);

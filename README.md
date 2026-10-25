@@ -58,6 +58,16 @@ A second kind of battlefield, set on Varuun's bloodstream.
 
 Pick **Drift** as the battlefield in skirmish or when hosting online. In the campaign, the Lumen Sea is always a Drift battle.
 
+## The Deep Lumen
+
+A dive down Varuun's vessels toward its heart, rendered in 3D perspective from just behind your colony-cell.
+
+- **Steer** by dragging anywhere and hold **Boost** to surge. On a keyboard, use the arrow keys or WASD, and Space to boost.
+- **Gather motes**: pink for Nutrient, green for Essence. They fill your stores.
+- **Dodge Wardens** that home in on you, bump through tumbling blood cells, and stay off the vessel walls.
+- **Dock with floating bodies** in the wider chambers: drifting cells, Hesper debris, spore rafts and Warden hives. Each one opens a battle, fought with everything in your stores. Every body you claim strengthens your later battles, and each win restores vitality.
+- **Reach the Heart** and take it from two rival strains to finish the dive. Your best depth is remembered.
+
 ## Features
 
 - **Fog of war with line of sight.** Rock and thickets block vision. Teammates share sight.
@@ -169,7 +179,7 @@ Saved maps, races, settings and in-progress matches are stored in the browser's 
 
 1. **The Atlas.** Done: see Campaign above.
 2. **Drift mode.** Done: see Drift above.
-3. **The Deep Lumen.** A 3D mode: steer through glowing vessel tunnels and dock with floating bodies, then fight for them.
+3. **The Deep Lumen.** Done: see above. It uses a lightweight built-in 3D renderer, so the game stays a single file. A full Three.js version is a possible future upgrade.
 
 ## Credits
 
