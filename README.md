@@ -68,6 +68,10 @@ A dive down Varuun's vessels toward its heart, rendered in 3D perspective from j
 - **Dock with floating bodies** in the wider chambers: drifting cells, Hesper debris, spore rafts and Warden hives. Each one opens a battle, fought with everything in your stores. Every body you claim strengthens your later battles, and each win restores vitality.
 - **Reach the Heart** and take it from two rival strains to finish the dive. Your best depth is remembered.
 
+## Survival
+
+Varuun has noticed you. Every 70 seconds a bigger wave of Wardens marches on your core, with Warden Brutes from wave 4. Every Warden you kill feeds you a little Nutrient. Gentle, Standard and Brutal difficulty; your best wave count is saved.
+
 ## Features
 
 - **Fog of war with line of sight.** Rock and thickets block vision. Teammates share sight.
@@ -76,7 +80,7 @@ A dive down Varuun's vessels toward its heart, rendered in 3D perspective from j
 - **Faster builds.** *Quicken* at the core makes every building train 25% faster, up to two levels. Workers can help a foothold take root (each helper adds 60% speed, up to four) or repair a damaged building for free.
 - **Workers to warriors.** *Muster* permanently transforms selected workers into your tier 1 unit for the price difference. *Call to arms* turns every worker near your buildings into militia for 25 seconds.
 - **Varuun's defences.** Warden Nests guard rich nutrient wells and keep hatching Wardens, which attack every lifeform. Lumen Lice compete for the dead.
-- **An AI that plays fair.** It sees only through its own fog, scouts to find you, expands, mutates, counters what it has seen, masses before attacking and retreats when a push fails. Easy, Normal and Hard.
+- **An AI that plays fair.** It sees only through its own fog, scouts to find you, expands, mutates, counters what it has seen, masses before attacking and retreats when a push fails. Five difficulty levels: Passive (never attacks, a sandbox), Easy, Normal, Hard and Brutal (starts ahead, thinks fastest, rarely retreats). Set a default in Settings, per AI in skirmish and online lobbies, and separately for the campaign (Story, Standard, Brutal) and the Deep Lumen (Gentle, Standard, Brutal).
 - **1v1, 2v2 and free-for-all**, against the AI or online, with up to four players.
 - **Tutorials**, one per lifeform, teaching the cycle of feeding step by step.
 - **Maps set in Varuun's organs:** the Furnace Gut, the Baleen Reefs, the Heart Choir (four players), and Uncharted Tissue, a new random region every match.
@@ -84,6 +88,16 @@ A dive down Varuun's vessels toward its heart, rendered in 3D perspective from j
 - **Race builder.** Design your own lifeform (see below).
 - **Adaptive music.** A soundtrack generated live, with its own scale, tempo and instruments for each race and the menu. It builds from calm pads to bass, drums and racing arpeggios as fighting heats up on screen. Music and sound effects can be toggled separately.
 - **Resume.** Reload or get interrupted mid-match and pick up where you left off.
+- **Heroes.** One per race, one at a time: the Cantor, the Hive-Mother, the Foreman and Sela. They wear a crown and level up to 5 from kills.
+- **Veterancy.** Units that survive fights rank up after 3, 7 and 14 kills, growing stronger and earning gold chevrons.
+- **Varuun's events.** Every couple of minutes the host body reacts: heart surges throw everything outward, Warden sweeps march in from the edge, nutrient blooms surface, and fevers make everyone faster but slowly burn.
+- **Mutation branches.** Three tiers, each a choice between two mutations. Picking one closes off the other.
+- **Symbiont Pods.** Neutral strains wait in the middle of the map. Hold your army next to one, with no rivals nearby, to win two Symbionts.
+- **Replays.** Matches are deterministic, so every match is saved automatically and can be watched back with full vision at 1×, 4× or 16× speed. Export and import replay files; online guests get the host's copy at the end.
+- **Recap charts** of army size and Nutrient gathered over time on the end screen.
+- **Daily dive.** The same Deep Lumen run for everyone each day, scored, with your best runs listed.
+- **Campaign challenges.** One optional goal per organ. Complete 1, 3 and 5 with a lifeform to unlock its Ashen, Abyssal and Gilded colors.
+- **Share links** for your maps and races: one link that opens the game and adds them.
 
 ## Race builder
 
@@ -110,9 +124,12 @@ Online matches are **peer to peer** over WebRTC, using [PeerJS](https://peerjs.c
 **Built to survive bad connections:**
 
 - Brief network blips heal on their own while the match pauses.
-- A dropped player reconnects automatically.
+- A dropped player reconnects automatically. If they're not back within a few seconds, **the AI takes over their side** so the match keeps going, and hands control straight back the moment they return. If they never come back, the AI plays their side to the end.
 - A player who reloads the page resumes their seat, and so does the host.
-- If someone is gone for good, the host can let the AI take over their side.
+- **If the host drops, the match carries on.** Every few seconds the host sends the next player in line a full copy of the match. If the host vanishes, that player takes over hosting from the latest copy (the match may jump back up to 5 seconds), everyone else reconnects to them, and the AI covers the old host's side. If the old host comes back, they rejoin as a guest.
+- **Leaving on purpose turns your side rogue.** Tap Leave and your units and buildings become neutral, attacking anyone nearby: fodder for the players still fighting. If the host leaves, hosting passes on immediately.
+- **Spectators:** up to four people can join a room to watch, with full vision and no fog.
+- **Pings:** tap the pin button, choose Attack here, Help me, Retreat or Look here, then tap the map. Only your team (and spectators) see it.
 
 The host runs the simulation. Each guest only receives what their team can see, so fog of war can't be cheated.
 

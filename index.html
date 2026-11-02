@@ -210,6 +210,19 @@ input[type=color]{width:56px;height:40px;border:1px solid var(--line);border-rad
 .band{position:relative;height:8px;border-radius:4px;margin:6px 0;background:linear-gradient(90deg,#3a3024,#6a5c49)}
 .band i{position:absolute;top:-3px;width:4px;height:14px;border-radius:2px;background:var(--ichor);transform:translateX(-50%)}
 .rb .seg button{padding:8px 10px}
+.herotag{background:#ffe08a;color:#2a1406;border-radius:5px;padding:0 4px;font-size:10px}
+.tierlab{font-size:11px;color:var(--mute);margin:6px 2px 2px;text-transform:uppercase;letter-spacing:.06em}
+.prow .or{align-self:center;font-size:11px;color:var(--mute);padding:0 2px}
+.pb.closed{opacity:.4}
+#pingbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--sat) + 62px);display:flex;gap:6px;z-index:6;flex-wrap:wrap;justify-content:center}
+#pingbar button{border:1px solid rgba(255,224,138,.5);background:rgba(30,20,12,.92);color:#ffe08a;border-radius:12px;padding:10px 12px;font:600 13px Oxanium,sans-serif;min-height:44px}
+#specbar{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:calc(var(--sat) + 8px) calc(var(--sar) + 10px) 10px calc(var(--sal) + 10px);background:linear-gradient(rgba(14,10,8,.95),rgba(14,10,8,.6));font-size:12.5px}
+#specbar button{border:1px solid var(--line);background:var(--panel2);color:var(--bone);border-radius:10px;padding:8px 10px;font:600 12.5px Oxanium,sans-serif;min-height:40px}
+#specInfo{flex:1 1 100%;display:flex;gap:10px;flex-wrap:wrap}
+#specInfo span b{font-variant-numeric:tabular-nums}
+#rvCtl{display:flex;align-items:center;gap:6px;flex:1}
+.rvbar{flex:1;min-width:60px;height:6px;border-radius:3px;background:#2a221a;overflow:hidden}.rvbar i{display:block;height:100%;background:#ff5e8a}
+.recap{width:100%;height:150px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-top:6px}
 #deephud{position:fixed;inset:0;pointer-events:none}
 #dtop{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:12px;pointer-events:auto;padding:calc(var(--sat) + 6px) calc(var(--sar) + 10px) 14px calc(var(--sal) + 10px);background:linear-gradient(rgba(10,2,6,.9),transparent)}
 .dvit div{width:110px;height:10px;border-radius:5px;background:#3a0c18;overflow:hidden;border:1px solid rgba(255,180,200,.25)}
@@ -253,6 +266,7 @@ input[type=color]{width:56px;height:40px;border:1px solid var(--line);border-rad
     <div id="tRace"></div>
     <div class="flex"></div>
     <div id="tNet" class="hide"><i></i><span></span></div>
+    <button class="ib hide" id="bPing" aria-label="Ping your team"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/></svg></button>
   </div>
   <canvas id="mini"></canvas>
   <div id="groups"><button data-g="0">1<em></em></button><button data-g="1">2<em></em></button><button data-g="2">3<em></em></button></div>
@@ -298,6 +312,8 @@ input[type=color]{width:56px;height:40px;border:1px solid var(--line);border-rad
   <button id="dDock" class="hide">Dock</button>
   <button id="dBoost">Boost</button>
 </div>
+<div id="pingbar" class="hide"><button data-ping="attack">Attack here</button><button data-ping="help">Help me</button><button data-ping="retreat">Retreat</button><button data-ping="look">Look here</button></div>
+<div id="specbar" class="hide"><div id="specInfo"></div><div id="rvCtl" class="hide"><button data-rv="play" id="rvPlay">Pause</button><button data-rv="speed" id="rvSpeed">1×</button><button data-rv="restart">Restart</button><div class="rvbar"><i id="rvProg"></i></div><span id="rvTime"></span></div><button data-rv="exit" id="specExit">Leave</button></div>
 <div id="scr"></div>
 <div id="toast"></div>
 
@@ -394,6 +410,7 @@ const U = {
   n_sham: { name: 'Shambler', cost: 55, hp: 155, ar: 1, spd: 44, rng: 14, dmg: 12, cd: 1, r: 10, bt: 12, s: 1, rise: 0.3, desc: 'Cheap, sturdy melee mass. Often gets back up once after being killed.' },
   n_cast: { name: 'Plaguecaster', cost: 100, hp: 105, ar: 1, spd: 46, rng: 130, dmg: 12, cd: 1.4, r: 9, bt: 18, s: 2, raise: 1, vis: 280, desc: 'Ranged plague bolts. Raises nearby organic and hybrid corpses as Husks.' },
   n_bloat: { name: 'Bloat', cost: 130, ess: 20, hp: 380, ar: 2, spd: 34, rng: 18, dmg: 14, cd: 1.2, r: 15, bt: 22, s: 2, splash: 30, boom: { dmg: 80, rad: 78 }, desc: 'Bloated tank that sprays corrosive bile on groups and bursts when killed.' },
+  n_hero: { hero: 1, name: 'The Cantor', cost: 220, ess: 40, hp: 560, ar: 2, spd: 44, rng: 140, dmg: 18, cd: 1.2, r: 15, bt: 30, s: 3, raise: 1, splash: 20, vis: 300, desc: 'Hero. A voice of the Quiet Choir. Raises the dead around it, and grows stronger with every kill.' },
   n_husk: { husk: 1, name: 'Husk', hp: 60, spd: 42, rng: 14, dmg: 7, cd: 1.1, r: 9, s: 0, desc: 'Raised dead with a shadow of its old strength. Slowly rots away.' },
   n_post: { post: 1, struct: 1, name: 'Blight Pustule', cost: POST_COST, hp: 700, ar: 2, rng: 120, dmg: 8, cd: 1.2, r: 24, bt: 22, vis: 320, desc: 'Foothold. Drop-off point, vision, and raises corpses nearby.' },
   k_core: { core: 1, struct: 1, name: 'Brood Mound', hp: 2400, ar: 3, rng: 140, dmg: 12, cd: 1, r: 44, vis: 340 },
@@ -401,21 +418,27 @@ const U = {
   k_skit: { name: 'Skitter', cost: 55, hp: 96, ar: 1, spd: 96, rng: 14, dmg: 8, cd: 0.7, r: 9, bt: 9, s: 1, desc: 'Very fast swarming melee.' },
   k_spit: { name: 'Spitter', cost: 100, hp: 115, ar: 1, spd: 62, rng: 135, dmg: 16, cd: 1.5, r: 11, bt: 13, s: 2, splash: 22, vis: 270, desc: 'Acid artillery with splash.' },
   k_cara: { name: 'Carapace', cost: 220, ess: 30, hp: 600, ar: 4, spd: 42, rng: 22, dmg: 30, cd: 1.6, r: 21, bt: 24, s: 4, desc: 'Colossal armored tank. Very hard to kill.' },
+  k_hero: { hero: 1, name: 'Hive-Mother', cost: 220, ess: 40, hp: 900, ar: 4, spd: 48, rng: 24, dmg: 30, cd: 1.3, r: 22, bt: 30, s: 3, regen: 4, brood: 20, desc: 'Hero. Hatches a Skitter every 20 seconds, and grows stronger with every kill.' },
   k_post: { post: 1, struct: 1, name: 'Brood Chamber', cost: POST_COST, hp: 760, ar: 2, rng: 110, dmg: 8, cd: 1.2, r: 24, bt: 18, vis: 320, desc: 'Foothold. Drop-off point, vision, and heals units nearby.' },
   m_core: { core: 1, struct: 1, name: 'Nexus Forge', hp: 2200, ar: 3, rng: 150, dmg: 12, cd: 1, r: 42, vis: 340 },
   m_work: { worker: 1, name: 'Salvager', cost: 55, hp: 60, ar: 1, spd: 60, rng: 14, dmg: 4, cd: 1, r: 8, bt: 9, s: 1, vis: 210, desc: 'Harvests Nutrient, builds Pylons. Strips machine wrecks for huge yields.' },
   m_sent: { name: 'Sentry', cost: 75, hp: 105, ar: 2, spd: 58, rng: 115, dmg: 11, cd: 1, r: 10, bt: 12, s: 1, desc: 'Reliable laser infantry.' },
   m_lanc: { name: 'Lancer', cost: 160, hp: 80, spd: 40, rng: 210, dmg: 28, cd: 3, r: 12, bt: 22, s: 2, splash: 30, vis: 290, desc: 'Extreme-range siege lance with splash.' },
   m_bast: { name: 'Bastion', cost: 240, ess: 30, hp: 380, ar: 3, spd: 36, rng: 90, dmg: 18, cd: 0.9, r: 19, bt: 32, s: 4, shield: 200, desc: 'Heavy walker with a regenerating shield.' },
+  m_hero: { hero: 1, name: 'The Foreman', cost: 220, ess: 40, hp: 520, ar: 3, spd: 50, rng: 150, dmg: 20, cd: 1, r: 16, bt: 30, s: 3, shield: 180, heal: 10, desc: 'Hero. A command node of the swarm. Shielded, repairs allies, and grows stronger with every kill.' },
   m_post: { post: 1, struct: 1, name: 'Relay Pylon', cost: POST_COST, hp: 650, ar: 3, rng: 140, dmg: 9, cd: 1.1, r: 24, bt: 22, vis: 360, desc: 'Foothold. Drop-off point, long sight, and salvages wrecks nearby.' },
   h_core: { core: 1, struct: 1, name: 'Graft Citadel', hp: 2200, ar: 3, rng: 150, dmg: 13, cd: 1, r: 42, vis: 340 },
   h_work: { worker: 1, name: 'Tech', cost: 50, hp: 55, spd: 62, rng: 14, dmg: 4, cd: 1, r: 8, bt: 9, s: 1, vis: 210, desc: 'Harvests Nutrient, builds Field Posts. Scavenges every corpse type.' },
   h_troo: { name: 'Trooper', cost: 60, hp: 96, ar: 1, spd: 62, rng: 105, dmg: 10, cd: 0.8, r: 9, bt: 11, s: 1, desc: 'Fast-firing rifle infantry.' },
   h_graf: { name: 'Grafter', cost: 120, hp: 110, ar: 1, spd: 56, rng: 80, dmg: 6, cd: 1, r: 10, bt: 18, s: 2, heal: 10, desc: 'Field medic. Heals any ally, flesh or machine.' },
   h_exo:  { name: 'Exoframe', cost: 200, ess: 25, hp: 340, ar: 3, spd: 46, rng: 60, dmg: 24, cd: 1, r: 17, bt: 26, s: 3, splash: 24, desc: 'Armored exoframe with splash melee.' },
+  h_hero: { hero: 1, name: 'Sela', cost: 220, ess: 40, hp: 600, ar: 3, spd: 58, rng: 120, dmg: 16, cd: 0.7, r: 14, bt: 30, s: 3, heal: 8, leech: 0.2, desc: 'Hero. The Hesper\'s captain, remembered. Heals allies, drains foes, and grows stronger with every kill.' },
   h_post: { post: 1, struct: 1, name: 'Field Post', cost: POST_COST, hp: 700, ar: 2, rng: 130, dmg: 9, cd: 1, r: 24, bt: 20, vis: 320, desc: 'Foothold. Drop-off point, vision, and heals units nearby.' },
   f_beast: { feral: 1, name: 'Warden', cost: 70, hp: 150, ar: 1, spd: 62, rng: 14, dmg: 11, cd: 1, r: 12, vis: 220, desc: 'One of Varuun\'s hunter cells. It guards its nest and attacks every invader. Its body is good eating.' },
   f_mite: { feral: 1, mite: 1, name: 'Lumen Louse', cost: 24, hp: 40, spd: 74, rng: 12, dmg: 3, cd: 1, r: 7, vis: 200, desc: 'Drifts in on the Lumen Sea to steal corpses, and grows as it eats. Flees when attacked.' },
+  f_brute: { feral: 1, name: 'Warden Brute', cost: 120, hp: 520, ar: 3, spd: 46, rng: 18, dmg: 24, cd: 1.3, r: 18, vis: 240, desc: 'A swollen hunter cell that only appears when Varuun runs a fever.' },
+  f_symb: { name: 'Symbiont', cost: 90, hp: 220, ar: 2, spd: 54, rng: 110, dmg: 13, cd: 1.1, r: 12, s: 0, vis: 260, desc: 'A neutral strain that joined your side. Ranged and tough.' },
+  f_pod: { struct: 1, pod: 1, name: 'Symbiont Pod', hp: 400, r: 22, vis: 150, desc: 'A neutral strain waiting for a host. Hold your army next to it, with no rivals nearby, to win it over.' },
   f_lair: { struct: 1, lair: 1, name: 'Warden Nest', hp: 900, ar: 2, r: 26, vis: 200, desc: 'A knot of Varuun\'s defences that keeps hatching Wardens. Leaves a huge carcass when destroyed.' }
 };
 let TYPES = [], TI = {};
@@ -1075,6 +1098,8 @@ function clampTo(v, S) { return Math.max(160, Math.min(S - 160, v)); }
 function startsFor(np, map) { return map.starts.length >= 4 && np === 2 ? [0, 2] : [...Array(np).keys()]; }
 
 /* ---------- World ---------- */
+// Seeded random for everything inside a match, so a match replays exactly from its start state and orders.
+function rnd() { let a = W.rs = (W.rs + 0x6D2B79F5) | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
 function rebuild() { BY.clear(); for (const u of W.units) BY.set(u.id, u); }
 function mkP(race, team) {
   return { race, team, matter: 220, ess: 0, cap: CAP_START, res: null, up: {}, auto: true, core: 0, ab: 0, dead: 0, ai: null, name: '', prod: 0, armsCd: 0,
@@ -1085,16 +1110,18 @@ function newWorld(slots, opts = {}) {
   const map = opts.map || mapBasin();
   DRIFT = opts.drift || null;
   if (DRIFT) DRIFT.adj = null;
-  W = { v: 4, tick: 0, time: 0, nid: 1, seed: opts.seed || ((Math.random() * 1e9) | 0), units: [], corpses: [], nodes: [], P: [], F: mkP('feral', -1),
+  const seed0 = opts.seed || ((Math.random() * 1e9) | 0);
+  W = { v: 5, rs: seed0, tick: 0, time: 0, nid: 1, seed: seed0, units: [], corpses: [], nodes: [], P: [], F: mkP('feral', -1),
     over: -1, fx: [], fog: opts.fog !== false, mods: opts.mods || {}, map: mapToJSON(map), custom: opts.custom || [], np: slots.length,
-    heat: {}, rot: 0, tchg: [], miteT: 40, demo: !!opts.demo, drift: opts.drift || null };
+    heat: {}, rot: 0, tchg: [], miteT: 40, demo: !!opts.demo, drift: opts.drift || null,
+    events: opts.events !== false, evNext: 150, lastEv: null, feverT: 0, surgeT: 0, hist: [], nodesVer: 0, survival: opts.survival || null };
   BY.clear();
   loadTerrain(map); resetFog();
   for (const b of map.blooms) { const nd = { x: b[0], y: b[1], r: b[2] >= 3000 ? 34 : 26, amt: b[2], max: b[2] }; if (DRIFT) { const I = islandAt(nd.x, nd.y, 0); nd.isl = I ? I.id : null; } W.nodes.push(nd); }
   const si = startsFor(slots.length, map);
   slots.forEach((sl, i) => {
     const P = mkP(sl.race, sl.team);
-    P.name = sl.name || ''; if (sl.ai) P.ai = makeAI(sl.ai);
+    P.name = sl.name || ''; if (sl.ai) { P.ai = makeAI(sl.ai); if (P.ai.bonus) P.matter += P.ai.bonus; }
     W.P.push(P);
     const st = map.starts[si[i]] || map.starts[i % map.starts.length];
     const [bx, by] = findWalkable(st[0], st[1]);
@@ -1109,6 +1136,7 @@ function newWorld(slots, opts = {}) {
     for (let k = 0; k < 3; k++) spawnBeast(lair);
   }
   for (const u of W.units) if (U[u.type].worker) setCmd(u, nearestGatherCmd(u));
+  if (!DRIFT && !W.survival && opts.pods !== false) placePods();
   if (W.fog) for (let t = 0; t < MAXP; t++) computeVis(t);
   return W;
 }
@@ -1120,7 +1148,7 @@ function restoreWorld(w) {
   if (W.fog) for (let t = 0; t < MAXP; t++) computeVis(t);
 }
 function spawnBeast(lair) {
-  const a = Math.random() * TAU, p = findWalkable(lair.x + Math.cos(a) * 50, lair.y + Math.sin(a) * 50);
+  const a = rnd() * TAU, p = findWalkable(lair.x + Math.cos(a) * 50, lair.y + Math.sin(a) * 50);
   spawn('f_beast', FER, p[0], p[1], { home: lair.id, hx: lair.x, hy: lair.y });
 }
 function statsFor(type, o) {
@@ -1147,15 +1175,16 @@ function refreshStats(o) {
   for (const u of W.units) {
     if (u.o !== o || U[u.type].husk) continue;
     const s = statsFor(u.type, o), ratio = u.hp / u.mhp;
-    Object.assign(u, { mhp: s.mhp, ar: s.ar, dmg: s.dmg, spd: s.spd, rng: s.rng, shmax: s.shmax, splash: s.splash, heal: s.heal, cd: s.cd });
-    u.hp = Math.max(1, ratio * s.mhp);
+    const k = bonusMult(u);
+    Object.assign(u, { mhp: s.mhp * k, ar: s.ar, dmg: s.dmg * k, spd: s.spd, rng: s.rng, shmax: s.shmax, splash: s.splash, heal: s.heal, cd: s.cd });
+    u.hp = Math.max(1, ratio * u.mhp);
   }
 }
 function spawn(type, o, x, y, ex) {
   const d = U[type], s = statsFor(type, o);
   const u = { id: W.nid++, type, o, x, y, px: x, py: y, hp: s.mhp, mhp: s.mhp, ar: s.ar, spd: s.spd, rng: s.rng, dmg: s.dmg, cd: s.cd,
     shmax: s.shmax, sh: s.shmax, splash: s.splash, heal: s.heal, r: d.r, face: -0.785, cmd: { k: 'idle' }, tid: 0, ac: 0, work: 0, carry: 0, carryE: 0,
-    lastHit: -99, lastSrc: -1, scan: Math.random() * 0.3, rcd: 1, rv: '', best: 1e9, stall: 0, bt: 0, os: 0 };
+    lastHit: -99, lastSrc: -1, scan: rnd() * 0.3, rcd: 1, rv: '', best: 1e9, stall: 0, bt: 0, os: 0 };
   if (d.core || d.post) { u.q = []; u.rally = null; }
   if (DRIFT) { const I = islandAt(x, y, 0) || nearestIsland(x, y); u.isl = I ? I.id : null; }
   if (ex) Object.assign(u, ex);
@@ -1243,7 +1272,7 @@ function canPlace(x, y, units, nodes) {
 function speedOf(u) {
   let s = u.spd;
   if (u.bt > 0) s *= u.bs || 1;
-  if (W.mods && W.mods.fever) s *= 1.1;
+  if ((W.mods && W.mods.fever) || W.feverT > 0) s *= 1.1;
   if (terAt(u.x, u.y) === T_BOG && !(RACES[U[u.type].race].feat || {}).bog) s *= 0.55;
   return s;
 }
@@ -1274,10 +1303,10 @@ function acquire(u, rad, dt) {
   let t = u.tid ? BY.get(u.tid) : null;
   if (t && (t.hp <= 0 || !foe(u.o, t.o) || Math.hypot(t.x - u.x, t.y - u.y) - t.r > rad + 120 || !canSeeTarget(u, t))) { t = null; u.tid = 0; }
   if (u.scan > 0) return t;
-  u.scan = 0.3 + Math.random() * 0.15;
+  u.scan = 0.3 + rnd() * 0.15;
   let best = null, bd = rad;
   for (const e of W.units) {
-    if (e.hp <= 0 || !foe(u.o, e.o)) continue;
+    if (e.hp <= 0 || !foe(u.o, e.o) || U[e.type].pod) continue;
     const q = Math.hypot(e.x - u.x, e.y - u.y) - e.r + (U[e.type].struct ? 80 : 0) + (U[e.type].mite ? 60 : 0);
     if (q < bd && canSeeTarget(u, e)) { bd = q; best = e; }
   }
@@ -1287,7 +1316,7 @@ function acquire(u, rad, dt) {
 function nearestEnemy(u, rad) {
   let best = null, bd = rad;
   for (const e of W.units) {
-    if (e.hp <= 0 || !foe(u.o, e.o)) continue;
+    if (e.hp <= 0 || !foe(u.o, e.o) || U[e.type].pod) continue;
     const q = Math.hypot(e.x - u.x, e.y - u.y) - e.r;
     if (q < bd && canSeeTarget(u, e)) { bd = q; best = e; }
   }
@@ -1303,19 +1332,19 @@ function strike(a, d, t) {
   const ri = COLK.indexOf(d.race), dmg = a.dmg * (a.bt > 0 ? (a.bd || 1) : 1) * (a.mil > 0 ? 3 : 1);
   if (a.rng > 30) W.fx.push([0, a.x | 0, a.y | 0, t.x | 0, t.y | 0, ri]);
   else W.fx.push([6, t.x | 0, t.y | 0, ri]);
-  let dealt = hurt(t, dmg, a.o);
+  let dealt = hurt(t, dmg, a.o, a.id);
   if (a.splash) {
     for (const e of W.units) {
-      if (e === t || e.hp <= 0 || !foe(a.o, e.o)) continue;
-      if (Math.hypot(e.x - t.x, e.y - t.y) <= a.splash + e.r) dealt += hurt(e, dmg * 0.5, a.o);
+      if (e === t || e.hp <= 0 || !foe(a.o, e.o) || U[e.type].pod) continue;
+      if (Math.hypot(e.x - t.x, e.y - t.y) <= a.splash + e.r) dealt += hurt(e, dmg * 0.5, a.o, a.id);
     }
     W.fx.push([1, t.x | 0, t.y | 0, a.splash, ri]);
   }
   if (d.leech && dealt > 0) a.hp = Math.min(a.mhp, a.hp + dealt * d.leech);
 }
-function hurt(t, amt, src) {
-  if (t.hp <= 0) return 0;
-  t.lastHit = W.time; t.lastSrc = src;
+function hurt(t, amt, src, aid) {
+  if (t.hp <= 0 || U[t.type].pod) return 0;
+  t.lastHit = W.time; t.lastSrc = src; if (aid) t.lastUnit = aid;
   if (t.os > 0) { const s = Math.min(t.os, amt); t.os -= s; amt -= s; if (amt <= 0) return 0; }
   if (t.sh > 0) { const s = Math.min(t.sh, amt); t.sh -= s; amt -= s; if (amt <= 0) return 0; }
   const td = U[t.type];
@@ -1352,13 +1381,13 @@ function healPulse(u) {
     const ratio = e.hp / e.mhp;
     if (ratio < br) { br = ratio; best = e; }
   }
-  if (best) { best.hp = Math.min(best.mhp, best.hp + u.heal * 0.5); if (Math.random() < 0.4) W.fx.push([5, best.x | 0, best.y | 0, 3]); }
+  if (best) { best.hp = Math.min(best.mhp, best.hp + u.heal * 0.5); if (rnd() < 0.4) W.fx.push([5, best.x | 0, best.y | 0, 3]); }
 }
 function raiser(race) { return RACES[race].aura === 'raise'; }
 function autoScav(u, P, dt) {
   u.scan -= dt;
   if (u.scan > 0) return false;
-  u.scan = 0.5 + Math.random() * 0.2;
+  u.scan = 0.5 + rnd() * 0.2;
   const ra = raiser(P.race), o = u.o;
   const k = findCorpse(u, 280, k => yieldOf(o, k)[0] > 0 && !(ra && (k.cls === 'organic' || k.cls === 'hybrid')) && isVis(o, k.x, k.y));
   if (!k) return false;
@@ -1372,16 +1401,21 @@ function updateUnit(u, dt) {
   const d = U[u.type];
   if (u.ac > 0) u.ac -= dt;
   if (u.bt > 0) { u.bt -= dt; if (u.bt <= 0) { u.bt = 0; u.os = 0; } }
-  if (u.o === FER) { if (d.struct) lairTick(u, dt); else if (d.mite) miteTick(u, dt); else feralTick(u, dt); return; }
+  if (u.o === FER) {
+    if (u.rogue) { rogueTick(u, d, dt); return; }
+    if (d.pod) podTick(u, dt); else if (d.struct) lairTick(u, dt); else if (d.mite) miteTick(u, dt); else feralTick(u, dt);
+    return;
+  }
   const P = W.P[u.o], R = RACES[d.race];
   if (d.struct) { structTick(u, d, P, R, dt); return; }
   if (d.husk) u.hp -= dt * (P.up.n_rot ? 0.3 : 0.6);
-  if (W.mods && W.mods.fever && !d.worker && u.hp > u.mhp * 0.5) u.hp -= dt * 0.4;
+  if (((W.mods && W.mods.fever) || W.feverT > 0) && !d.worker && u.hp > u.mhp * 0.5) u.hp -= dt * 0.4;
   if (R.feat.regen && W.time - u.lastHit > 4 && u.hp < u.mhp) u.hp = Math.min(u.mhp, u.hp + dt * 1.2);
   if (d.regen && u.hp < u.mhp) u.hp = Math.min(u.mhp, u.hp + dt * d.regen);
   if (u.shmax && W.time - u.lastHit > 4 && u.sh < u.shmax) u.sh = Math.min(u.shmax, u.sh + dt * 12);
   if (u.heal) { u.htimer = (u.htimer || 0) - dt; if (u.htimer <= 0) { u.htimer = 0.5; healPulse(u); } }
   if (d.raise) { u.rcd -= dt; if (u.rcd <= 0) u.rcd = tryRaise(u.o, u.x, u.y, 150) ? 3 : 0.6; }
+  if (d.brood) { u.broodT = (u.broodT == null ? d.brood : u.broodT) - dt; if (u.broodT <= 0) { u.broodT = d.brood; const p = findWalkable(u.x + (rnd() - 0.5) * 60, u.y + (rnd() - 0.5) * 60); const b = spawn('k_skit', u.o, p[0], p[1]); setCmd(b, u.cmd.k === 'amove' ? { k: 'amove', x: u.cmd.x, y: u.cmd.y } : { k: 'idle' }); W.fx.push([2, p[0] | 0, p[1] | 0, 1]); } }
   if (u.morph) { u.morph.p += dt / 5; if (u.morph.p >= 1) finishMorph(u, P); return; }
   if (u.mil > 0) { u.mil -= dt; if (u.mil <= 0) { u.mil = 0; setCmd(u, u.milBack || nearestGatherCmd(u)); u.milBack = null; } }
   const c = u.cmd;
@@ -1419,9 +1453,10 @@ function feralTick(u, dt) {
   const far = Math.hypot(u.x - u.hx, u.y - u.hy);
   if (u.cmd.k === 'move') { if (goTo(u, u.cmd.x, u.cmd.y, dt, 30)) { setCmd(u, { k: 'idle' }); u.hp = u.mhp; } return; }
   if (home && far > 380) { setCmd(u, { k: 'move', x: u.hx, y: u.hy }); return; }
-  const t = acquire(u, 200, dt);
+  const t = acquire(u, u.siege ? 300 : 200, dt);
   if (t && !U[t.type].feral && (!home || Math.hypot(t.x - u.hx, t.y - u.hy) < 420)) engage(u, t, dt);
   else if (home && far > 110) goTo(u, u.hx, u.hy, dt, 60);
+  else if (!home && u.siege) { const c = BY.get(u.siege); if (c && c.hp > 0) goTo(u, c.x, c.y, dt, c.r + 20); else if (goTo(u, u.sx || MAP_W / 2, u.sy || MAP_H / 2, dt, 80)) u.siege = 0; }
 }
 // Carrion mites: competitors in the food chain. They steal corpses, grow as they eat, and flee from fighters.
 function miteTick(u, dt) {
@@ -1446,7 +1481,7 @@ function miteTick(u, dt) {
     u.scan = 1;
     const k = findCorpse(u, 800, () => true);
     if (k) { k.claim = u.id; setCmd(u, { k: 'devour', c: k.id }); return; }
-    if (c.k !== 'move') { const p = findWalkable(clampX(u.x + (Math.random() - 0.5) * 700), clampY(u.y + (Math.random() - 0.5) * 700)); setCmd(u, { k: 'move', x: p[0], y: p[1] }); }
+    if (c.k !== 'move') { const p = findWalkable(clampX(u.x + (rnd() - 0.5) * 700), clampY(u.y + (rnd() - 0.5) * 700)); setCmd(u, { k: 'move', x: p[0], y: p[1] }); }
   }
   if (u.cmd.k === 'move' && goTo(u, u.cmd.x, u.cmd.y, dt, 20)) setCmd(u, { k: 'idle' });
 }
@@ -1464,8 +1499,8 @@ function ecosystem() {
   if (mites >= 3 + W.np || W.corpses.length < 2) return;
   const lairs = W.units.filter(u => U[u.type].lair);
   let p;
-  if (lairs.length && Math.random() < 0.6) { const l = lairs[(Math.random() * lairs.length) | 0]; p = findWalkable(l.x + 40, l.y + 40); }
-  else { const e = Math.random() * 4 | 0, t = Math.random(); p = findWalkable(e === 0 ? 40 : e === 1 ? MAP_W - 40 : t * MAP_W, e === 2 ? 40 : e === 3 ? MAP_H - 40 : t * MAP_H); }
+  if (lairs.length && rnd() < 0.6) { const l = lairs[(rnd() * lairs.length) | 0]; p = findWalkable(l.x + 40, l.y + 40); }
+  else { const e = rnd() * 4 | 0, t = rnd(); p = findWalkable(e === 0 ? 40 : e === 1 ? MAP_W - 40 : t * MAP_W, e === 2 ? 40 : e === 3 ? MAP_H - 40 : t * MAP_H); }
   spawn('f_mite', FER, p[0], p[1]);
 }
 // Where many die the ground rots into bog.
@@ -1478,7 +1513,7 @@ function addHeat(x, y, v) {
   W.heat[key] = 0;
   const n = TER.n, cx = i % n, cy = (i / n) | 0;
   for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-    if ((dx || dy) && Math.random() < 0.45) continue;
+    if ((dx || dy) && rnd() < 0.45) continue;
     const X = cx + dx, Y = cy + dy; if (X < 0 || Y < 0 || X >= n || Y >= n) continue;
     const j = Y * n + X;
     if (TER.t[j] === T_GROUND) { setTile(j, T_BOG); W.tchg.push([j, T_BOG]); W.rot++; }
@@ -1557,7 +1592,7 @@ function assistTick(u, c, P, dt) {
   const st = BY.get(c.sid);
   if (!st || st.o !== u.o || st.hp <= 0 || (st.build == null && st.hp >= st.mhp)) { setCmd(u, nearestGatherCmd(u)); return; }
   c.near = goTo(u, st.x, st.y, dt, st.r + u.r + 8) ? 1 : 0;
-  if (c.near && st.build == null) { st.hp = Math.min(st.mhp, st.hp + 6 * dt); if (Math.random() < dt) W.fx.push([5, st.x | 0, st.y | 0, 3]); }
+  if (c.near && st.build == null) { st.hp = Math.min(st.mhp, st.hp + 6 * dt); if (rnd() < dt) W.fx.push([5, st.x | 0, st.y | 0, 3]); }
 }
 function buildTick(u, c, P, dt) {
   if (!goTo(u, c.x, c.y, dt, 34)) return;
@@ -1621,12 +1656,12 @@ function production(dt) {
       st.q.shift(); P.st.t++;
       const rally = st.rally;
       const tx = rally ? rally.x : MAP_W / 2, ty = rally ? rally.y : MAP_H / 2;
-      const a = Math.atan2(ty - st.y, tx - st.x) + (Math.random() - 0.5) * 0.8;
+      const a = Math.atan2(ty - st.y, tx - st.x) + (rnd() - 0.5) * 0.8;
       const p = findWalkable(st.x + Math.cos(a) * (st.r + d.r + 4), st.y + Math.sin(a) * (st.r + d.r + 4));
       const u = spawn(q.t, o, p[0], p[1]);
       u.face = a;
       if (d.worker) setCmd(u, nearestGatherCmd(u));
-      else if (rally) setCmd(u, { k: 'amove', x: clampX(rally.x + (Math.random() - 0.5) * 50), y: clampY(rally.y + (Math.random() - 0.5) * 50) });
+      else if (rally) setCmd(u, { k: 'amove', x: clampX(rally.x + (rnd() - 0.5) * 50), y: clampY(rally.y + (rnd() - 0.5) * 50) });
       else { const m = findWalkable(st.x + Math.cos(a) * (st.r + 70), st.y + Math.sin(a) * (st.r + 70)); setCmd(u, { k: 'move', x: m[0], y: m[1] }); }
     }
   }
@@ -1658,6 +1693,7 @@ function eliminate(o) {
   if (P.dead) return;
   P.dead = 1; P.res = null;
   for (const v of W.units) if (v.o === o && v.hp > 0) { v.hp = 0; v.noRise = 1; }
+  if (W.survival) { if (W.over < 0) W.over = 99; return; }
   const alive = new Set(W.P.filter(p => !p.dead).map(p => p.team));
   if (alive.size <= 1 && W.over < 0) W.over = alive.size ? [...alive][0] : 0;
 }
@@ -1667,6 +1703,10 @@ function onDeath(u) {
   if (u.cmd && u.cmd.k === 'build' && !u.cmd.done && u.o !== FER) { P.matter += U[u.cmd.t].cost; u.cmd.done = true; }
   if (u.lastSrc >= 0 && u.lastSrc !== u.o) { const K = PL(u.lastSrc); if (K) { K.st.k++; if (u.o === FER) K.st.kf++; } }
   P.st.l++;
+  if (d.worker) P.st.wl = (P.st.wl || 0) + 1;
+  if (d.pod) return;
+  const killer = u.lastUnit && BY.get(u.lastUnit);
+  if (killer && killer.hp > 0 && killer.o !== u.o) creditKill(killer, u);
   if (d.boom) {
     const mult = P.up && P.up.n_volatile ? 1.5 : 1;
     W.fx.push([1, u.x | 0, u.y | 0, d.boom.rad, 0]);
@@ -1680,12 +1720,13 @@ function onDeath(u) {
   if (d.core) { W.fx.push([1, u.x | 0, u.y | 0, 130, COLK.indexOf(d.race)]); eliminate(u.o); return; }
   if (d.post) { W.fx.push([1, u.x | 0, u.y | 0, 70, COLK.indexOf(d.race)]); return; }
   if (d.lair) { W.fx.push([1, u.x | 0, u.y | 0, 80, 4]); W.corpses.push({ id: W.nid++, x: u.x, y: u.y, cls: 'organic', val: 140, age: -60, r: 26, from: 'f_beast', claim: 0 }); return; }
-  if (d.rise && !u.risen && !u.noRise && Math.random() < d.rise) {
+  if (d.rise && !u.risen && !u.noRise && rnd() < d.rise) {
     spawn(u.type, u.o, u.x, u.y, { hp: Math.round(u.mhp * 0.5), risen: 1, face: u.face });
     W.fx.push([2, u.x | 0, u.y | 0, 0]); P.st.r++;
     return;
   }
   W.fx.push([7, u.x | 0, u.y | 0, COLK.indexOf(d.race)]);
+  if (W.survival && u.o === FER && W.P[0]) { W.P[0].matter += 6; }
   const val = d.husk ? 8 : Math.round((d.cost || 20) * 0.5);
   const kI = DRIFT ? islandAt(u.x, u.y, 0) : null;
   if (DRIFT && !kI) { W.fx.push([3, u.x | 0, u.y | 0, 4]); return; }
@@ -1737,9 +1778,9 @@ function driftTick(dt) {
     if (I.kind !== 'raft' && I.kind !== 'wreck') continue;
     I.shed = (I.shed || 0) - 1;
     if (I.shed > 0) continue;
-    I.shed = 30 + Math.random() * 15;
+    I.shed = 30 + rnd() * 15;
     if (W.corpses.filter(k => k.isl === I.id).length >= 2) continue;
-    const a = Math.random() * TAU, d = Math.random() * (I.r - 40);
+    const a = rnd() * TAU, d = rnd() * (I.r - 40);
     W.corpses.push({ id: W.nid++, x: I.x + Math.cos(a) * d, y: I.y + Math.sin(a) * d, cls: I.kind === 'raft' ? 'organic' : 'mech', val: 40, age: 0, r: 12, from: I.kind === 'raft' ? 'f_beast' : 'm_sent', claim: 0, isl: I.id });
   }
 }
@@ -1758,6 +1799,9 @@ function tick(dt) {
   const life = W.mods && W.mods.collapse ? 55 : CORPSE_LIFE;
   if (W.corpses.some(k => k.age >= life)) W.corpses = W.corpses.filter(k => k.age < life);
   ecosystem();
+  if (W.tick % 200 === 0) recordHist();
+  if (W.events) varuunEvents(dt);
+  if (W.survival) survivalTick(dt);
   if (W.fog && W.tick % 4 === 0) { const teams = new Set(W.P.map(p => p.team)); for (const t of teams) computeVis(t); }
   for (let o = 0; o < W.np; o++) { const P = W.P[o]; if (P.ai && !P.dead && (W.tick + o * 7) % P.ai.think === 0) aiTick(o); }
 }
@@ -1828,6 +1872,7 @@ function applyCmd(o, c) {
     case 'train': {
       const d = U[c.t];
       if (!d || d.race !== P.race || !d.cost || d.struct) return 'no';
+      if (d.hero && (W.units.some(x => x.o === o && x.type === c.t && x.hp > 0) || W.units.some(x => x.o === o && x.q && x.q.some(q => q.t === c.t)))) return 'hero';
       const st = c.sid ? BY.get(c.sid) : BY.get(P.core);
       if (!st || st.o !== o || !st.q || st.build != null) return 'no';
       if (st.q.length >= queueLimit(st)) return 'queue';
@@ -1883,6 +1928,9 @@ function applyCmd(o, c) {
     case 'research': {
       const g = UPG[c.id];
       if (!g || !R.upg.includes(c.id) || P.up[c.id]) return 'no';
+      const ui = R.upg.indexOf(c.id);
+      if (P.up[R.upg[ui ^ 1]]) return 'locked';
+      if (ui >= 2 && !P.up[R.upg[(ui & ~1) - 2]] && !P.up[R.upg[(ui & ~1) - 1]]) return 'tier';
       if (P.res) return 'busy';
       if (P.matter < g.cost) return 'matter';
       if (P.ess < g.ess) return 'ess';
@@ -1898,6 +1946,8 @@ function applyCmd(o, c) {
     }
     case 'rally': { const st = c.sid ? BY.get(c.sid) : BY.get(P.core); if (st && st.o === o && st.q) st.rally = { x: clampX(+c.x || 0), y: clampY(+c.y || 0) }; break; }
     case 'auto': P.auto = !!c.v; break;
+    case '_cover': P.ai = c.diff ? makeAI(c.diff) : null; P.aiTemp = c.diff ? 1 : 0; break;
+    case '_rogue': abandonSeat(o); break;
     case 'gg': { const core = BY.get(P.core); if (core) core.hp = 0; else eliminate(o); break; }
   }
   return 'ok';
@@ -1908,8 +1958,13 @@ const AI_DIFF = {
   passive: { inc: 0.7, think: 30, minAtk: 1e9, mult: 9, wave: 99, workers: 6, posts: 0, noAttack: 1, research: 0 },
   easy:    { inc: 0.8, think: 30, minAtk: 750, mult: 1.6, wave: 10, workers: 7,  posts: 1, research: 1 },
   normal:  { inc: 1.0, think: 20, minAtk: 620, mult: 1.3, wave: 8,  workers: 9,  posts: 2, research: 3 },
-  hard:    { inc: 1.25, think: 12, minAtk: 520, mult: 1.1, wave: 7, workers: 11, posts: 3, research: 6 }
+  hard:    { inc: 1.25, think: 12, minAtk: 520, mult: 1.1, wave: 7, workers: 11, posts: 3, research: 6 },
+  brutal:  { inc: 1.5, think: 8, minAtk: 450, mult: 1.0, wave: 6, workers: 13, posts: 3, research: 6, retreat: 0.22, bonus: 150 }
 };
+const DIFFS = ['passive', 'easy', 'normal', 'hard', 'brutal'];
+const DIFF_NAME = { passive: 'Passive', easy: 'Easy', normal: 'Normal', hard: 'Hard', brutal: 'Brutal' };
+const DIFF_DESC = { passive: 'Builds up but never attacks. A sandbox.', easy: 'Slow to attack, small waves, a smaller economy.', normal: 'A fair fight.', hard: 'Faster economy, attacks early, uses every trick.', brutal: 'Starts ahead, thinks fastest, and only retreats when nearly wiped out.' };
+function shiftDiff(d, by) { const L = ['easy', 'normal', 'hard', 'brutal'], i = Math.max(0, L.indexOf(d)); return L[Math.max(0, Math.min(3, i + by))]; }
 function makeAI(diff) { return Object.assign({ diff, s: null }, AI_DIFF[diff] || AI_DIFF.normal); }
 function unitVal(u) { return U[u.type].husk ? 40 : (U[u.type].cost || 0); }
 function tierOf(type) { const d = U[type]; if (d.husk) return 1; return Math.max(1, d.tier || 1); }
@@ -1923,7 +1978,7 @@ function aiPick(o, comp) {
     if (comp[2] / tot > 0.45) w[1] += 0.2;
   }
   if (P.ess < U[r[3]].ess) w[3] = 0;
-  const sum = w[1] + w[2] + w[3]; let x = Math.random() * sum;
+  const sum = w[1] + w[2] + w[3]; let x = rnd() * sum;
   for (let i = 1; i <= 3; i++) { x -= w[i]; if (x <= 0) return r[i]; }
   return r[1];
 }
@@ -1979,18 +2034,25 @@ function aiTick(o) {
   // economy
   const posts = structs.filter(s => U[s.type].post).length;
   if (supplyUsed(o) >= P.cap - 3 && P.cap < CAP_MAX && P.matter >= GROW_COST) applyCmd(o, { k: 'grow' });
-  if (!P.res && Object.keys(P.up).length < ai.research && W.time > 120) {
-    const opts = R.upg.filter(id => !P.up[id] && P.matter >= UPG[id].cost + 80 && P.ess >= UPG[id].ess);
-    if (opts.length) applyCmd(o, { k: 'research', id: opts[(Math.random() * opts.length) | 0] });
+  if (!P.res && Object.keys(P.up).length < ai.research && W.time > 90) {
+    const opts = R.upg.filter((id, i) => !P.up[id] && !P.up[R.upg[i ^ 1]] && (i < 2 || P.up[R.upg[(i & ~1) - 2]] || P.up[R.upg[(i & ~1) - 1]]) && P.matter >= UPG[id].cost + 40 && P.ess >= UPG[id].ess);
+    if (opts.length) applyCmd(o, { k: 'research', id: opts[(rnd() * opts.length) | 0] });
   }
   const wantW = Math.min(20, ai.workers + posts * 4), pts = prodStructs(o);
   const qAll = pts.flatMap(s => s.q), qW = qAll.filter(q => q.t === wk).length;
   if (workers.length + qW < wantW && core.q.length < 2) applyCmd(o, { k: 'train', t: wk, sid: core.id });
   else {
-    const free = pts.filter(s => s.q.length < (U[s.type].core ? 3 : 2)).sort((a, b) => a.q.length - b.q.length)[0];
-    if (free) applyCmd(o, { k: 'train', t: aiPick(o, comp), sid: free.id });
+    // once it has the Essence, save Nutrient for the hero instead of more troops
+    const hero = roster.find(t => U[t].hero), heroUp = hero && (W.units.some(x => x.o === o && x.type === hero) || pts.some(p => p.q.some(q => q.t === hero)));
+    const saving = hero && !heroUp && ai.diff !== 'easy' && ai.diff !== 'passive' && W.time > 150 && P.ess >= U[hero].ess;
+    if (saving) { if (P.matter >= U[hero].cost) applyCmd(o, { k: 'train', t: hero, sid: core.id }); }
+    else {
+      const free = pts.filter(s => s.q.length < (U[s.type].core ? 3 : 2)).sort((a, b) => a.q.length - b.q.length)[0];
+      if (free) applyCmd(o, { k: 'train', t: aiPick(o, comp), sid: free.id });
+    }
   }
   if (!ai.noAttack && W.time > 240 && (P.prod || 0) < 2 && P.matter > 450) applyCmd(o, { k: 'quicken' });
+
   if (workers.length > wantW + 2 && P.matter > 200) applyCmd(o, { k: 'muster', ids: workers.slice(0, workers.length - wantW).map(w => w.id) });
   for (const w of workers) if (w.cmd.k === 'idle' && w.carry <= 0) setCmd(w, nearestGatherCmd(w));
   if (W.time > 90 && posts < ai.posts && P.matter >= POST_COST + 60 && !workers.some(w => w.cmd.k === 'build')) {
@@ -2027,17 +2089,17 @@ function aiTick(o) {
     let p = null, bd = Infinity;
     const E = EXP[P.team];
     for (const n of W.nodes) { if (E[tIdx(n.x, n.y)]) continue; const q = dist2(n, scout); if (q < bd) { bd = q; p = n; } }
-    if (!p) p = W.nodes[(Math.random() * W.nodes.length) | 0];
+    if (!p) p = W.nodes[(rnd() * W.nodes.length) | 0];
     if (p) setCmd(scout, { k: 'move', x: p.x, y: p.y });
   }
   const fighters = army.filter(u => u !== scout), fVal = fighters.reduce((s, u) => s + unitVal(u), 0);
   if (!S.stage) S.stage = aiStage(core);
   const stage = S.stage;
   const send = (x, y) => { for (const u of fighters) if (u.cmd.k !== 'attack' && u.cmd.k !== 'devour' && !(u.cmd.k === 'amove' && Math.hypot(u.cmd.x - x, u.cmd.y - y) < 160)) setCmd(u, { k: 'amove', x, y }); };
-  const regroup = () => { for (const u of fighters) setCmd(u, { k: 'move', x: stage[0] + (Math.random() - 0.5) * 140, y: stage[1] + (Math.random() - 0.5) * 140 }); };
+  const regroup = () => { for (const u of fighters) setCmd(u, { k: 'move', x: stage[0] + (rnd() - 0.5) * 140, y: stage[1] + (rnd() - 0.5) * 140 }); };
   if (S.st === 'mass') {
     for (const u of fighters) if ((u.cmd.k === 'idle' || u.cmd.k === 'move') && !u.tid && Math.hypot(u.x - stage[0], u.y - stage[1]) > 220 && !(u.cmd.k === 'move' && Math.hypot(u.cmd.x - stage[0], u.cmd.y - stage[1]) < 200))
-      setCmd(u, { k: 'move', x: stage[0] + (Math.random() - 0.5) * 140, y: stage[1] + (Math.random() - 0.5) * 140 });
+      setCmd(u, { k: 'move', x: stage[0] + (rnd() - 0.5) * 140, y: stage[1] + (rnd() - 0.5) * 140 });
     if (ai.noAttack) return;
     let lair = null, ld = Infinity;
     for (const l of W.units) if (U[l.type].lair) { const pd = pathDist(core.x, core.y, l.x, l.y); if (pd < ld && pd < 45) { ld = pd; lair = l; } }
@@ -2053,11 +2115,11 @@ function aiTick(o) {
   if (S.st === 'clear') {
     const l = BY.get(S.tgt);
     if (!l) S.st = 'mass';
-    else if (fVal < S.atkVal * 0.35) { S.st = 'mass'; regroup(); }
+    else if (fVal < S.atkVal * (ai.retreat || 0.35)) { S.st = 'mass'; regroup(); }
     else send(l.x, l.y);
   }
   if (S.st === 'attack') {
-    if (fVal < S.atkVal * 0.35 || !fighters.length) { S.st = 'mass'; S.grow *= 1.15; regroup(); return; }
+    if (fVal < S.atkVal * (ai.retreat || 0.35) || !fighters.length) { S.st = 'mass'; S.grow *= 1.15; regroup(); return; }
     const cx = fighters.reduce((s, u) => s + u.x, 0) / fighters.length, cy = fighters.reduce((s, u) => s + u.y, 0) / fighters.length;
     let tx = 0, ty = 0, bd = Infinity;
     for (const id in S.known) { const k = S.known[id], q = (k.x - cx) ** 2 + (k.y - cy) ** 2; if (q < bd) { bd = q; tx = k.x; ty = k.y; } }
@@ -2066,7 +2128,7 @@ function aiTick(o) {
       if (!S.hunt) {
         let hd = Infinity; const E = EXP[P.team];
         for (const n of W.nodes) { if (E[tIdx(n.x, n.y)] && W.fog) continue; const q = (n.x - cx) ** 2 + (n.y - cy) ** 2; if (q < hd) { hd = q; S.hunt = [n.x, n.y]; } }
-        if (!S.hunt) { const nn = W.nodes.filter(n => !isVis(o, n.x, n.y)); const pick = nn[(Math.random() * nn.length) | 0] || W.nodes[0]; S.hunt = [pick.x, pick.y]; }
+        if (!S.hunt) { const nn = W.nodes.filter(n => !isVis(o, n.x, n.y)); const pick = nn[(rnd() * nn.length) | 0] || W.nodes[0]; S.hunt = [pick.x, pick.y]; }
       }
       tx = S.hunt[0]; ty = S.hunt[1];
     }
@@ -2075,11 +2137,114 @@ function aiTick(o) {
 }
 // ==SIM END==
 
+/* ---------- Veterancy and heroes ---------- */
+const VET = [3, 7, 14], HERO_XP = [0, 150, 400, 800, 1400];
+function bonusMult(u) { return U[u.type].hero ? 1 + 0.15 * ((u.lv || 1) - 1) : 1 + 0.1 * (u.vet || 0); }
+function scaleBy(u, f) { u.mhp *= f; u.hp *= f; u.dmg *= f; }
+function creditKill(k, dead) {
+  const d = U[k.type];
+  if (d.struct || d.worker || k.o === FER) return;
+  if (d.hero) {
+    k.xp = (k.xp || 0) + (U[dead.type].cost || 25);
+    let lv = 1; while (lv < 5 && k.xp >= HERO_XP[lv]) lv++;
+    if (lv > (k.lv || 1)) { const before = bonusMult(k); k.lv = lv; scaleBy(k, bonusMult(k) / before); W.fx.push([12, k.x | 0, k.y | 0, COLK.indexOf(d.race)]); }
+    return;
+  }
+  k.kills = (k.kills || 0) + 1;
+  const rank = VET.filter(v => k.kills >= v).length;
+  if (rank > (k.vet || 0)) { const before = bonusMult(k); k.vet = rank; scaleBy(k, bonusMult(k) / before); W.fx.push([12, k.x | 0, k.y | 0, COLK.indexOf(d.race)]); }
+}
+/* ---------- Neutral strains: Symbiont Pods ---------- */
+function placePods() {
+  const C = MAP_W / 2, pts = [[C - 520, C + 260], [C + 520, C - 260]];
+  for (const [x, y] of pts) { const p = findWalkable(x, y); if (canPlace(p[0], p[1], W.units, W.nodes)) spawn('f_pod', FER, p[0], p[1], { cap: 0, capBy: -1 }); }
+}
+function podTick(u, dt) {
+  u.pass = (u.pass || 0) - dt; if (u.pass > 0) return; u.pass = 1;
+  const near = new Set(); let first = -1;
+  for (const e of W.units) { if (e.o === FER || e.hp <= 0 || U[e.type].worker || U[e.type].struct) continue; if (dist2(e, u) < 150 * 150) { near.add(W.P[e.o].team); if (first < 0) first = e.o; } }
+  if (near.size !== 1) { u.cap = Math.max(0, u.cap - 1); return; }
+  if (u.capBy !== first) { u.capBy = first; u.cap = 0; }
+  u.cap++;
+  if (u.cap >= 12) {
+    for (let i = 0; i < 2; i++) { const a = i * 2.1, p = findWalkable(u.x + Math.cos(a) * 40, u.y + Math.sin(a) * 40); spawn('f_symb', first, p[0], p[1]); }
+    W.fx.push([2, u.x | 0, u.y | 0, 0]); W.lastEv = { k: 'pod', o: first, t: W.time }; u.hp = 0;
+  }
+}
+/* ---------- A player who leaves on purpose: their side turns rogue ---------- */
+function abandonSeat(o) {
+  const P = W.P[o]; if (!P || P.dead) return;
+  P.dead = 1; P.res = null; P.ai = null;
+  for (const u of W.units) if (u.o === o && u.hp > 0) { u.o = FER; u.rogue = 1; if (u.q) u.q = []; setCmd(u, { k: 'idle' }); }
+  W.lastEv = { k: 'rogue', o, t: W.time };
+  const alive = new Set(W.P.filter(p => !p.dead).map(p => p.team));
+  if (alive.size <= 1 && W.over < 0 && !W.survival) W.over = alive.size ? [...alive][0] : 0;
+}
+function rogueTick(u, d, dt) {
+  if (d.struct) { if (u.ac <= 0 && u.rng) { const t = nearestEnemy(u, u.rng + u.r); if (t) { u.ac = u.cd; strike(u, d, t); } } return; }
+  if (d.worker) return;
+  const t = acquire(u, u.rng + 150, dt);
+  if (t) engage(u, t, dt);
+}
+/* ---------- Varuun's events ---------- */
+function varuunEvents(dt) {
+  if (W.feverT > 0) W.feverT -= dt;
+  if (W.surgeT > 0) {
+    W.surgeT -= dt;
+    const cx = MAP_W / 2, cy = MAP_H / 2;
+    for (const u of W.units) { if (U[u.type].struct || u.hp <= 0) continue; const dx = u.x - cx, dy = u.y - cy, d = Math.hypot(dx, dy) || 1; moveBy(u, dx / d * 45 * dt, dy / d * 45 * dt); }
+  }
+  if (W.time < W.evNext || W.over >= 0) return;
+  W.evNext = W.time + 110 + rnd() * 70;
+  const pool = ['surge', 'sweep', 'bloom', 'bloom'];
+  if (!(W.mods && W.mods.fever)) pool.push('fever');
+  const k = pool[(rnd() * pool.length) | 0];
+  const cx = MAP_W / 2, cy = MAP_H / 2;
+  if (k === 'surge') { W.surgeT = 2.2; W.fx.push([11, cx | 0, cy | 0, 0]); }
+  if (k === 'fever') W.feverT = 30;
+  if (k === 'sweep') {
+    const n = 2 + W.np + Math.floor(W.time / 400), e = (rnd() * 4) | 0;
+    for (let i = 0; i < n; i++) { const t = rnd(), p = findWalkable(e === 0 ? 60 : e === 1 ? MAP_W - 60 : t * MAP_W, e === 2 ? 60 : e === 3 ? MAP_H - 60 : t * MAP_H); const w = spawn('f_beast', FER, p[0], p[1]); w.siege = -1; w.sx = cx + (rnd() - 0.5) * 400; w.sy = cy + (rnd() - 0.5) * 400; }
+  }
+  if (k === 'bloom') {
+    for (let tries = 0; tries < 30; tries++) {
+      const p = findWalkable(MAP_W * (0.2 + rnd() * 0.6), MAP_H * (0.2 + rnd() * 0.6));
+      if (!canPlace(p[0], p[1], W.units, W.nodes)) continue;
+      const nd = { x: p[0], y: p[1], r: 30, amt: 1500, max: 1500 };
+      if (DRIFT) { const I = islandAt(nd.x, nd.y, 0); nd.isl = I ? I.id : null; }
+      W.nodes.push(nd); W.nodesVer++; W.fx.push([2, p[0] | 0, p[1] | 0, 0]); W.lastEv = { k, x: p[0], y: p[1], t: W.time }; return;
+    }
+    return;
+  }
+  W.lastEv = { k, t: W.time };
+}
+/* ---------- Survival ---------- */
+function survivalTick(dt) {
+  const S = W.survival; if (W.over >= 0) return;
+  S.next -= dt;
+  if (S.next > 0) return;
+  S.wave++; S.next = 70;
+  const core = BY.get(W.P[0].core); if (!core) return;
+  const m = S.diff === 'gentle' ? 0.7 : S.diff === 'brutal' ? 1.4 : 1;
+  const n = Math.round((3 + S.wave * 2) * m), brutes = S.wave >= 4 ? Math.round((S.wave - 3) * m) : 0;
+  for (let i = 0; i < n + brutes; i++) {
+    const e = (rnd() * 4) | 0, t = rnd(), p = findWalkable(e === 0 ? 60 : e === 1 ? MAP_W - 60 : t * MAP_W, e === 2 ? 60 : e === 3 ? MAP_H - 60 : t * MAP_H);
+    const w = spawn(i < n ? 'f_beast' : 'f_brute', FER, p[0], p[1]); w.siege = core.id;
+    if (S.wave > 6) scaleBy(w, 1 + (S.wave - 6) * 0.08);
+  }
+  W.lastEv = { k: 'wave', n: S.wave, t: W.time };
+}
+/* ---------- Match history for the recap chart ---------- */
+function recordHist() {
+  if (W.hist.length > 240) return;
+  W.hist.push([Math.round(W.time), W.P.map((P, o) => { let a = 0, n = 0; for (const u of W.units) if (u.o === o && !U[u.type].struct && !U[u.type].worker) { a += unitVal(u); n++; } return [a, P.st.g, n]; })]);
+}
+
 /* ================= NETWORK =================
    PeerJS signaling is used only to open a room, make first handshakes, and as a last-resort
    rendezvous. Once every seat has a direct WebRTC data channel the host releases the
    signaling socket (peer.disconnect()) while the peer-to-peer channels stay up. */
-const PROTO = 4, ID_PREFIX = 'necrotroph-v3-';
+const PROTO = 5, ID_PREFIX = 'necrotroph-v3-';
 const Net = { peer: null, conn: null, role: null, code: '', token: '', linked: false, state: 'off', info: '', lastSeen: 0, ping: 0,
   recovering: false, attempt: 0, aborted: false, leaveT: 0, pendingDial: null };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -2111,7 +2276,7 @@ function waitOpen(p, ms) {
 }
 async function ensureSignal() {
   if (!peerReady()) throw new Error('peerjs-missing');
-  const id = Net.role === 'host' ? hostIdOf(Net.code) : null;
+  const id = Net.role === 'host' ? (Net.migId || hostIdOf(Net.code)) : null;
   if (!Net.peer || Net.peer.destroyed) Net.peer = makePeer(id);
   else if (Net.peer.disconnected) { try { Net.peer.reconnect(); } catch (e) { try { Net.peer.destroy(); } catch (_) {} Net.peer = makePeer(id); } }
   await waitOpen(Net.peer, 12000);
@@ -2146,6 +2311,17 @@ function hostData(c, m) {
   if (c.__seat == null) {
     if (m.t !== 'hello') return;
     if (m.v !== PROTO) { try { c.send({ t: 'deny', why: 'Version mismatch. Refresh both devices.' }); } catch (e) {} setTimeout(() => c.close(), 400); return; }
+    if (m.spectate) {
+      clearTimeout(c.__to);
+      let sp = Host.spec.find(x => x.token === m.token);
+      if (!sp) { if (Host.spec.length >= 4) { try { c.send({ t: 'deny', why: 'The spectator seats are full.' }); } catch (e) {} setTimeout(() => c.close(), 400); return; } sp = { token: m.token, name: String(m.name || 'Spectator').slice(0, 16) }; Host.spec.push(sp); }
+      if (sp.conn && sp.conn !== c) { try { sp.conn.close(); } catch (e) {} }
+      sp.conn = c; sp.linked = true; sp.lastSeen = performance.now(); c.__spec = sp; c.__seat = -1;
+      c.send({ t: 'welcome', phase: Host.inGame ? 'game' : 'lobby', spectate: 1 });
+      if (Host.inGame && W) sendInitTo(c, -1); else { Host.broadcastLobby(); UI.lobbyUpdate(); }
+      toast(`${sp.name} is watching`);
+      return;
+    }
     const r = Host.accept(m);
     if (!r.ok) { try { c.send({ t: 'deny', why: r.why }); } catch (e) {} setTimeout(() => c.close(), 400); return; }
     clearTimeout(c.__to);
@@ -2157,6 +2333,7 @@ function hostData(c, m) {
     Host.onLinked(r.seat);
     return;
   }
+  if (c.__spec) { c.__spec.lastSeen = performance.now(); if (m.t === 'p') { try { c.send({ t: 'q', ts: m.ts }); } catch (e) {} } return; }
   const sl = Host.slots[c.__seat];
   if (!sl || sl.conn !== c) return;
   sl.lastSeen = performance.now();
@@ -2164,27 +2341,29 @@ function hostData(c, m) {
   if (m.t === 'q') { sl.ping = Math.round(performance.now() - m.ts); return; }
   Host.msg(c.__seat, m);
 }
-function hostConnClose(c) { if (c.__seat == null) return; const sl = Host.slots[c.__seat]; if (sl && sl.conn === c) guestLost(c.__seat, 'closed'); }
+function hostConnClose(c) { if (c.__spec) { c.__spec.linked = false; if (c.__spec.conn === c) c.__spec.conn = null; return; } if (c.__seat == null) return; const sl = Host.slots[c.__seat]; if (sl && sl.conn === c) guestLost(c.__seat, 'closed'); }
 function guestLost(slot, why) {
   const sl = Host.slots[slot];
   if (!sl || !sl.linked) return;
   sl.linked = false; const c = sl.conn; sl.conn = null;
   try { c && c.close(); } catch (e) {}
   if (!Host.inGame) { Object.assign(sl, { kind: 'open', token: '', race: '', def: null, name: '' }); Host.broadcastLobby(); UI.lobbyUpdate(); ensureSignal().catch(() => {}); return; }
+  sl.droppedAt = performance.now();
   Host.refreshState(why);
   hostWait();
 }
+// A dropped player gets a short grace pause; after that the AI covers their side until they reconnect.
+const COVER_GRACE = 8000;
 async function hostWait() {
   if (Net.recovering || Net.aborted) return;
   Net.recovering = true; Net.attempt = 0;
-  const deadline = Date.now() + 180000;
-  while (Host.missing().length && !Net.aborted && Date.now() < deadline) {
+  // stay reachable for as long as the match runs, so a dropped player can always come back
+  while (Host.missing().length && !Net.aborted && Host.inGame && W && W.over < 0) {
     Net.attempt++; UI.netState();
     try { await ensureSignal(); } catch (e) { const t = e && (e.type || e.message); if (t === 'unavailable-id' || t === 'invalid-id') { try { Net.peer.destroy(); } catch (_) {} Net.peer = null; } }
-    await sleep(2500);
+    await sleep(3000);
   }
   Net.recovering = false;
-  if (Host.missing().length && !Net.aborted) setNetState('failed', `${Host.missing().map(s => s.name).join(' and ')} could not reconnect.`);
 }
 
 /* ---- Guest side ---- */
@@ -2207,8 +2386,13 @@ function guestData(c, m) {
   if (m.t === 'p') { try { c.send({ t: 'q', ts: m.ts }); } catch (e) {} return; }
   if (m.t === 'q') { Net.ping = Math.round(performance.now() - m.ts); return; }
   if (Net.state === 'unstable') setNetState('online');
+  if (m.t === 'chunk') { const full = takeChunk(m); if (full) Guest.msg(full); return; }
   Guest.msg(m);
 }
+// Big messages (world checkpoints, replays) are split so no single data-channel message gets too large.
+function sendBig(c, m) { const s = JSON.stringify(m), id = rid(6), n = Math.ceil(s.length / 15000); for (let i = 0; i < n; i++) c.send({ t: 'chunk', id, i, n, d: s.slice(i * 15000, (i + 1) * 15000) }); }
+const CHUNKS = {};
+function takeChunk(m) { const b = CHUNKS[m.id] || (CHUNKS[m.id] = []); b[m.i] = m.d; if (b.filter(x => x != null).length < m.n) return null; delete CHUNKS[m.id]; try { return JSON.parse(b.join('')); } catch (e) { return null; } }
 function netSend(m) { if (Net.linked && Net.conn && Net.conn.open) { try { Net.conn.send(m); return true; } catch (e) {} } return false; }
 function lost(why) {
   if (!Net.linked) return;
@@ -2219,14 +2403,14 @@ function lost(why) {
   recover(180000);
 }
 function helloMsg() {
-  const h = { t: 'hello', v: PROTO, token: Net.token, name: App.name() };
+  const h = { t: 'hello', v: PROTO, token: Net.token, name: App.name(), spectate: !!App.wantSpectate };
   if (isCustomPick(App.myRace)) h.custom = customDefFor(App.myRace); else h.race = App.myRace;
   return h;
 }
 function dial(ms) {
   return new Promise((res, rej) => {
     let c;
-    try { c = Net.peer.connect(hostIdOf(Net.code), { reliable: true, serialization: 'json', metadata: { token: Net.token } }); }
+    try { c = Net.peer.connect(Net.hostPeer || hostIdOf(Net.code), { reliable: true, serialization: 'json', metadata: { token: Net.token } }); }
     catch (e) { return rej(e); }
     let done = false;
     const fin = e => { if (done) return; done = true; clearTimeout(to); Net.pendingDial = null; if (e) { try { c.close(); } catch (_) {} rej(e); } else res(); };
@@ -2248,6 +2432,8 @@ async function recover(budgetMs) {
     try { await ensureSignal(); await dial(9000); }
     catch (e) {
       lastErr = (e && (e.type || e.message)) || '';
+      if (lastErr === 'peer-unavailable') { Net.goneSince = Net.goneSince || Date.now(); } else Net.goneSince = 0;
+      if (App.inGame && G.plan && !Net.migrating && Net.goneSince && Date.now() - Net.goneSince > 20000) { Net.recovering = false; migrate(); return; }
       if (String(lastErr).startsWith('deny:')) { Net.aborted = true; Net.recovering = false; UI.netFatal(lastErr.slice(5)); return; }
       if (lastErr === 'peerjs-missing') { Net.recovering = false; UI.netFatal('Could not load PeerJS. Check your connection and reload.'); return; }
     }
@@ -2275,6 +2461,7 @@ setInterval(() => {
     else if (gap > 4500 && Net.state === 'online') setNetState('unstable', 'No reply from the host for ' + Math.round(gap / 1000) + 's. Holding the match.');
   }
   if (Net.role === 'host') {
+    Host.coverCheck();
     Host.slots.forEach((s, i) => {
       if (!s.conn || !s.linked) return;
       try { s.conn.send({ t: 'p', ts: now }); } catch (e) {}
@@ -2293,15 +2480,33 @@ document.addEventListener('visibilitychange', () => {
 /* ---- Host room state ---- */
 const TEAM_NAMES = ['A', 'B', 'C', 'D'];
 const Host = {
-  slots: [], inGame: false,
-  reset() { this.inGame = false; this.slots = [{ kind: 'host', team: 0 }, { kind: 'open', team: 1 }, { kind: 'closed', team: 0 }, { kind: 'closed', team: 1 }]; },
+  slots: [], inGame: false, spec: [], gen: 0, selfToken: '', planT: 0, lonelyT: 0,
+  reset() { this.spec = []; this.gen = 0; this.selfToken = rid(12); this.inGame = false; this.slots = [{ kind: 'host', team: 0 }, { kind: 'open', team: 1 }, { kind: 'closed', team: 0 }, { kind: 'closed', team: 1 }]; },
   needsSignal() { return !this.inGame ? this.slots.some(s => s.kind === 'open') || !this.slots.some(s => s.kind === 'guest') : this.missing().length > 0; },
-  missing() { return this.inGame ? this.slots.filter(s => s.kind === 'guest' && !s.linked) : []; },
+  missing() { return this.inGame ? this.slots.filter(s => s.kind === 'guest' && !s.linked && !(W && s.seat != null && W.P[s.seat] && W.P[s.seat].dead)) : []; },
+  covering() { return this.missing().filter(s => s.covered); },
   refreshState(why) {
     if (!this.inGame) return;
-    const miss = this.missing();
+    const miss = this.missing(), waiting = miss.filter(s => !s.covered);
     if (!miss.length) { setNetState('online'); leaveSignal(); }
-    else setNetState('reconnecting', `${miss.map(s => s.name).join(' and ')} lost connection${why ? ' (' + why + ')' : ''}. The match is paused until they return.`);
+    else if (!waiting.length) setNetState('online');
+    else {
+      const left = Math.max(0, Math.ceil((COVER_GRACE - (performance.now() - Math.min(...waiting.map(s => s.droppedAt || 0)))) / 1000));
+      setNetState('reconnecting', `${waiting.map(s => s.name).join(' and ')} lost connection${why ? ' (' + why + ')' : ''}. If they're not back in ${left}s, the AI covers for them.`);
+    }
+  },
+  // Called every second while hosting a match: hand dropped seats to the AI once the grace period ends.
+  coverCheck() {
+    if (!this.inGame || !W || W.over >= 0) return;
+    const now = performance.now();
+    let changed = false;
+    for (const s of this.missing()) {
+      if (s.covered || s.seat == null || W.P[s.seat].dead) continue;
+      if (now - (s.droppedAt || 0) < COVER_GRACE) continue;
+      sysCmd(s.seat, { k: '_cover', diff: App.diff === 'passive' ? 'normal' : App.diff }); s.covered = 1; changed = true;
+      toast(`${s.name} dropped. The AI is playing for them until they return.`);
+    }
+    if (changed || this.missing().some(s => !s.covered)) this.refreshState();
   },
   accept(m) {
     let def = null;
@@ -2315,7 +2520,13 @@ const Host = {
     return { ok: true, seat };
   },
   onLinked(slot) {
-    if (this.inGame && W) { toast(`${this.slots[slot].name} reconnected`); this.refreshState(); sendInit(slot); lastVis[this.slots[slot].seat] = ''; }
+    const sl = this.slots[slot];
+    if (this.inGame && W) {
+      if (sl.covered && sl.seat != null && W.P[sl.seat]) sysCmd(sl.seat, { k: '_cover', diff: null });
+      toast(sl.covered ? `${sl.name} is back and in control again` : `${sl.name} reconnected`);
+      sl.covered = 0; sl.droppedAt = 0;
+      this.refreshState(); sendInit(slot); lastVis[sl.seat] = '';
+    }
     else { this.broadcastLobby(); UI.lobbyUpdate(); }
   },
   arenaName() { return App.drift ? 'Drift: the Lumen Sea' : App.mapName(); },
@@ -2323,16 +2534,35 @@ const Host = {
   broadcastLobby() { const m = { t: 'lobby', slots: this.summary(), map: this.arenaName(), fog: App.fog }; for (const s of this.slots) if (s.conn && s.linked) { try { s.conn.send(m); } catch (e) {} } },
   msg(slot, m) {
     const sl = this.slots[slot];
-    if (m.t === 'c') { if (this.inGame && sl.seat != null) applyCmd(sl.seat, m.c); }
+    if (m.t === 'c') { if (this.inGame && sl.seat != null && m.c && typeof m.c.k === 'string' && m.c.k[0] !== '_') { REC.log(sl.seat, m.c); applyCmd(sl.seat, m.c); } }
+    else if (m.t === 'ping') { if (this.inGame && sl.seat != null) this.relayPing(sl.seat, m); }
     else if (m.t === 'bye') {
-      if (this.inGame && W && sl.seat != null && !W.P[sl.seat].dead) { applyCmd(sl.seat, { k: 'gg' }); toast(`${sl.name} left and forfeits`); }
+      if (this.inGame && W && sl.seat != null && !W.P[sl.seat].dead) { sysCmd(sl.seat, { k: '_rogue' }); toast(`${sl.name} left. Their swarm has gone rogue.`); }
       sl.kind = this.inGame ? 'gone' : 'open'; sl.token = ''; const c = sl.conn; sl.conn = null; sl.linked = false; try { c && c.close(); } catch (e) {}
       if (this.inGame) this.refreshState(); else { this.broadcastLobby(); UI.lobbyUpdate(); }
     }
   },
+  relayPing(from, m) {
+    const team = W.P[from] ? W.P[from].team : -1, p = { t: 'ping', from, x: +m.x || 0, y: +m.y || 0, k: String(m.k || 'look').slice(0, 8), name: from === App.seat ? App.name() : (this.slots.find(s => s.seat === from) || {}).name || 'Ally' };
+    for (const s of this.slots) if (s.kind === 'guest' && s.linked && s.conn && s.seat != null && W.P[s.seat] && W.P[s.seat].team === team) { try { s.conn.send(p); } catch (e) {} }
+    for (const s of this.spec) if (s.linked && s.conn) { try { s.conn.send(p); } catch (e) {} }
+    if (W.P[App.seat] && W.P[App.seat].team === team) showPing(p);
+  },
+  // Every few seconds: tell guests who takes over if the host vanishes, and give the first in line a full checkpoint.
+  sendPlan() {
+    if (!this.inGame || !W || W.over >= 0) return;
+    const order = this.slots.filter(s => s.kind === 'guest' && s.linked && s.conn).map(s => ({ seat: s.seat, peer: typeof s.conn.peer === 'string' ? s.conn.peer : (s.conn.remote || ''), token: s.token, name: s.name }));
+    if (!order.length) return;
+    this.gen++;
+    const plan = { t: 'plan', gen: this.gen, order, hostSeat: App.seat, hostToken: this.selfToken, hostName: App.name(), code: Net.code };
+    this.lastPlan = plan;
+    const succ = this.slots.find(s => s.kind === 'guest' && s.linked && s.conn && s.seat === order[0].seat);
+    for (const s of this.slots) if (s.kind === 'guest' && s.linked && s.conn && s !== succ) { try { s.conn.send(plan); } catch (e) {} }
+    try { sendBig(succ.conn, Object.assign({}, plan, { t: 'ckpt', w: JSON.stringify(worldSnap()), slots: this.slots.map(s => ({ kind: s.kind, team: s.team, token: s.token || '', name: s.name || '', seat: s.seat, race: s.race || '', ai: s.ai })) })); } catch (e) {}
+  },
   takeOverWithAI() {
-    for (const s of this.missing()) { if (W && s.seat != null && !W.P[s.seat].dead) W.P[s.seat].ai = makeAI('normal'); s.kind = 'ai'; s.conn = null; }
-    Net.recovering = false; this.refreshState(); toast('The AI has taken over for the missing players');
+    for (const s of this.missing()) s.droppedAt = -1e9;
+    this.coverCheck();
   }
 };
 Host.reset();
@@ -2348,9 +2578,13 @@ function unpackBits(s, out) { const bin = atob(s); for (let i = 0; i < out.lengt
 function sendInit(slot) {
   const sl = Host.slots[slot];
   if (!sl || !sl.conn || sl.seat == null) return;
+  sendInitTo(sl.conn, sl.seat);
+}
+function sendInitTo(conn, seat) {
   const map = Object.assign({}, W.map, { t: packTiles(TER.t) });
+  if (seat < 0) lastVis[-1] = '';
   try {
-    sl.conn.send({ t: 'init', seat: sl.seat, players: W.P.map(p => ({ race: p.race, team: p.team, name: p.name })), custom: W.custom, seed: W.seed, map, fog: W.fog,
+    conn.send({ t: 'init', seat, players: W.P.map(p => ({ race: p.race, team: p.team, name: p.name })), custom: W.custom, seed: W.seed, map, fog: W.fog,
       drift: DRIFT ? { isl: DRIFT.isl.map(I => ({ id: I.id, x: Math.round(I.x), y: Math.round(I.y), r: I.r, kind: I.kind, static: I.static || 0 })) } : null,
       nodes: W.nodes.map(n => [n.x, n.y, n.r, n.amt | 0, n.max]) });
   } catch (e) {}
@@ -2360,16 +2594,17 @@ function structQueues(o) {
   for (const u of W.units) if (u.o === o && u.q) out[u.id] = { q: u.q.map(q => [TI[q.t], Math.round(q.p * 100)]), r: u.rally ? [u.rally.x | 0, u.rally.y | 0] : null };
   return out;
 }
+const lastNodes = {}, lastEvT = {};
 function buildSnap(seat, fx, tch) {
-  const team = W.P[seat].team, vis = VIS[team];
-  const sees = (x, y) => { if (!W.fog) return true; const i = tIdx(x, y); return i >= 0 && vis[i] === 1; };
+  const spec = seat < 0, team = spec ? -1 : W.P[seat].team, vis = spec ? null : VIS[team];
+  const sees = (x, y) => { if (!W.fog || spec) return true; const i = tIdx(x, y); return i >= 0 && vis[i] === 1; };
   const Us = [];
   for (const u of W.units) {
     const d = U[u.type];
     if (!(u.o !== FER && W.P[u.o].team === team) && !d.struct && !sees(u.x, u.y)) continue;
     Us.push([u.id, TI[u.type], u.o, Math.round(u.x), Math.round(u.y), Math.ceil(u.hp), Math.round(u.mhp), Math.ceil(u.sh + (u.os || 0)),
       Math.round(u.face * 100), (u.carry > 0 || u.carryE > 0) ? 1 : 0, u.rv ? TI[u.rv] : -1, Math.round(u.r), u.bt > 0 ? 1 : 0, u.build != null ? Math.round(u.build * 100) : -1, Math.round(u.shmax || 0),
-      (u.morph ? 1 : 0) | (u.mil > 0 ? 2 : 0), u.morph ? Math.round(u.morph.p * 100) : 0]);
+      (u.morph ? 1 : 0) | (u.mil > 0 ? 2 : 0) | (u.rogue ? 4 : 0), u.morph ? Math.round(u.morph.p * 100) : 0, (u.lv || 0) * 10 + (u.vet || 0), u.cap || 0]);
   }
   const C = W.corpses.filter(k => sees(k.x, k.y)).map(k => [k.id, k.x | 0, k.y | 0, CLS.indexOf(k.cls), Math.max(0, k.age | 0), k.val, k.r]);
   const P = W.P.map((p, i) => { const me = i === seat; return [me ? p.matter | 0 : 0, me ? p.ess | 0 : 0, p.cap, me ? supplyUsed(i) : 0, p.auto ? 1 : 0,
@@ -2379,13 +2614,18 @@ function buildSnap(seat, fx, tch) {
   const s = { t: 's', k: W.tick, P, U: Us, C, N: W.nodes.map(n => n.amt | 0), F, O: W.over };
   if (tch.length) s.T = tch;
   if (DRIFT) s.D = DRIFT.isl.map(I => [Math.round(I.x), Math.round(I.y)]);
-  if (W.fog) { const v = packBits(vis); if (v !== lastVis[seat]) { s.V = v; lastVis[seat] = v; } }
+  if (DRIFT || lastNodes[seat] !== W.nodesVer) { s.NF = W.nodes.map(n => [n.x | 0, n.y | 0, n.r, n.amt | 0, n.max]); lastNodes[seat] = W.nodesVer; }
+  if (W.lastEv && lastEvT[seat] !== W.lastEv.t) { s.EV = W.lastEv; lastEvT[seat] = W.lastEv.t; }
+  if (W.over >= 0) s.H = W.hist;
+  if (W.survival) s.SV = W.survival.wave;
+  if (W.fog && !spec) { const v = packBits(vis); if (v !== lastVis[seat]) { s.V = v; lastVis[seat] = v; } }
   return s;
 }
 function hostBroadcast() {
   const fx = pendingFx, tch = W.tchg.splice(0);
   pendingFx = [];
   for (const sl of Host.slots) if (sl.kind === 'guest' && sl.linked && sl.conn && sl.seat != null) { try { sl.conn.send(buildSnap(sl.seat, fx, tch)); } catch (e) {} }
+  if (Host.spec.some(s => s.linked && s.conn)) { const sp = buildSnap(-1, fx, tch); for (const s of Host.spec) if (s.linked && s.conn) { try { s.conn.send(sp); } catch (e) {} } }
 }
 function applySnap(m) {
   const now = performance.now();
@@ -2399,13 +2639,18 @@ function applySnap(m) {
     else { r.px = r.rx; r.py = r.ry; }
     r.type = TYPES[a[1]]; r.o = a[2]; r.tx = r.x = a[3]; r.ty = r.y = a[4]; r.hp = a[5]; r.mhp = a[6]; r.sh = a[7];
     r.face = a[8] / 100; r.carry = a[9]; r.rv = a[10] >= 0 ? TYPES[a[10]] : ''; r.r = a[11]; r.bt = a[12]; r.build = a[13] >= 0 ? a[13] / 100 : null; r.shmax = a[14];
-    r.morph = a[15] & 1 ? { p: a[16] / 100 } : null; r.mil = a[15] & 2 ? 1 : 0;
+    r.morph = a[15] & 1 ? { p: a[16] / 100 } : null; r.mil = a[15] & 2 ? 1 : 0; r.rogue = a[15] & 4 ? 1 : 0;
+    r.lv = Math.floor((a[17] || 0) / 10); r.vet = (a[17] || 0) % 10; r.cap = a[18] || 0;
     seen.add(id);
   }
   for (const id of [...G.units.keys()]) if (!seen.has(id)) G.units.delete(id);
   G.list = [...G.units.values()];
   G.corpses = m.C.map(a => ({ id: a[0], x: a[1], y: a[2], cls: CLS[a[3]], age: a[4], val: a[5], r: a[6] }));
-  m.N.forEach((v, i) => { if (G.nodes[i]) G.nodes[i].amt = v; });
+  if (m.NF) G.nodes = m.NF.map(a => ({ x: a[0], y: a[1], r: a[2], amt: a[3], max: a[4] }));
+  else m.N.forEach((v, i) => { if (G.nodes[i]) G.nodes[i].amt = v; });
+  if (m.EV) G.lastEv = m.EV;
+  if (m.H) G.hist = m.H;
+  if (m.SV != null) G.wave = m.SV;
   G.P = m.P.map((a, i) => ({ race: G.players[i].race, team: G.players[i].team, matter: a[0], ess: a[1], cap: a[2], sup: a[3], auto: !!a[4], qs: a[5] || {},
     core: a[8], st: a[9], ab: a[10], dead: a[11], up: Object.fromEntries((a[12] || []).map(k => [k, 1])), res: a[13] ? { id: a[13][0], p: a[13][1] / 100 } : null, prod: a[14] || 0, armsCd: a[15] || 0 }));
   if (m.T) for (const [i, v] of m.T) setTile(i, v);
@@ -2422,7 +2667,13 @@ const Guest = {
     if (m.t === 'init') guestInit(m);
     else if (m.t === 's') { if (App.inGame) applySnap(m); }
     else if (m.t === 'lobby') { G.lobby = m; UI.guestLobby(); }
+    else if (m.t === 'plan') { if (!G.plan || m.gen >= G.plan.gen) G.plan = m; }
+    else if (m.t === 'ckpt') { G.plan = m; G.ckpt = { w: m.w, slots: m.slots, gen: m.gen }; }
+    else if (m.t === 'ping') showPing(m);
+    else if (m.t === 'replay') { if (m.r) saveReplay(m.r); }
+    else if (m.t === 'chunk') { const full = takeChunk(m); if (full) this.msg(full); }
     else if (m.t === 'bye') {
+      if (App.inGame && G.plan && G.over < 0 && !App.spectate) { try { Net.conn && Net.conn.close(); } catch (e) {} Net.linked = false; migrate(true); return; }
       Net.aborted = true;
       if (App.inGame) { if (G.over < 0) { G.over = -2; toast('The host left the match'); } }
       else { netShutdown(); toast('The host closed the room'); menuScreen(); }
@@ -2431,7 +2682,8 @@ const Guest = {
 };
 function guestInit(m) {
   try { registerMatchRaces(m.custom || []); } catch (e) { UI.netFatal('Could not load a custom race from the host.'); return; }
-  G.players = m.players; G.seed = m.seed; G.fog = m.fog !== false; G.team = m.players[m.seat].team;
+  App.spectate = m.seat < 0;
+  G.players = m.players; G.seed = m.seed; G.fog = m.fog !== false && !App.spectate; G.team = App.spectate ? -1 : m.players[m.seat].team;
   const map = mapFromJSON(m.map);
   DRIFT = m.drift ? { isl: m.drift.isl.map(I => Object.assign({}, I, { px: I.x, py: I.y, tx: I.x, ty: I.y, rx: I.x, ry: I.y })) } : null;
   loadTerrain(map);
@@ -2447,7 +2699,8 @@ function guestInit(m) {
 }
 
 /* ================= APP STATE / PERSISTENCE ================= */
-const App = { drift: false, inGame: false, editing: false, testing: false, role: 'demo', seat: 0, myRace: 'kytinos', diff: 'normal', paused: false, endShown: false, elimShown: false,
+function LS0(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
+const App = { drift: false, campDiff: LS0('nt.campdiff', 'standard'), deepDiff: LS0('nt.deepdiff', 'standard'), inGame: false, editing: false, testing: false, role: 'demo', seat: 0, myRace: 'kytinos', diff: LS0('nt.diff', 'normal'), paused: false, endShown: false, elimShown: false,
   sel: new Set(), boxMode: false, amove: false, place: false, pickMode: 'solo', joinCode: '', mapId: 'basin', fog: true, returnTo: '', tut: null,
   skirmish: [{ kind: 'you', team: 0 }, { kind: 'ai', race: 'random', diff: 'normal', team: 1 }],
   name() {
@@ -2499,7 +2752,7 @@ function resumeAvailable() {
   try { s = JSON.parse(sessionStorage.getItem('lc.session')); } catch (e) {}
   if (!s) s = LS.get('lc.session');
   if (!s || Date.now() - s.ts > 30 * 60e3) return null;
-  if (s.role !== 'guest') { const w = LS.get('lc.world'); if (!w || !w.W || w.W.v !== 4 || w.W.over >= 0) return null; s.world = w; }
+  if (s.role !== 'guest') { const w = LS.get('lc.world'); if (!w || !w.W || w.W.v !== 5 || w.W.over >= 0) return null; s.world = w; }
   return s;
 }
 setInterval(() => { if (App.inGame && App.role !== 'demo' && !App.tut && !App.camp && !App.exp) { saveSession(); saveWorld(); } }, 5000);
@@ -2513,10 +2766,10 @@ const V = {
   race(i) { return V.guest() ? (G.players[i] || {}).race : (W && W.P[i] ? W.P[i].race : 'kytinos'); },
   team(o) { if (o === FER) return -1; return V.guest() ? (G.players[o] || {}).team : (W && W.P[o] ? W.P[o].team : 0); },
   myTeam() { return V.team(App.seat); },
-  rel(o) { if (o === App.seat) return 'me'; if (o === FER) return 'feral'; return V.team(o) === V.myTeam() ? 'ally' : 'enemy'; },
+  rel(o) { if (o === FER) return 'feral'; if (App.spectate) return 't' + (V.team(o) & 3); if (o === App.seat) return 'me'; return V.team(o) === V.myTeam() ? 'ally' : 'enemy'; },
   over() { return V.guest() ? G.over : (W ? W.over : -1); },
   starts() { return V.guest() ? G.starts : (W ? W.P.map(p => p.start) : []); },
-  fog() { return App.inGame && (V.guest() ? G.fog : !!(W && W.fog)); },
+  fog() { return App.inGame && !App.spectate && (V.guest() ? G.fog : !!(W && W.fog)); },
   visArr() { return V.guest() ? G.vis : VIS[V.myTeam()]; },
   expArr() { return V.guest() ? G.exp : EXP[V.myTeam()]; },
   visAt(x, y) { if (!V.fog()) return true; const i = tIdx(x, y); return i >= 0 && V.visArr()[i] === 1; },
@@ -2536,6 +2789,68 @@ const V = {
       core: P.core, st: P.st, ab: P.ab, dead: P.dead, up: P.up, res: P.res, name: P.name, prod: P.prod || 0, armsCd: P.armsCd || 0 };
   }
 };
+
+/* ---- Host migration: if the host vanishes, the next player in line takes over the match ---- */
+function worldSnap() { const fx = W.fx; W.fx = []; const o = Object.assign({}, W, { map: Object.assign({}, W.map, { t: packTiles(TER.t) }), fx: [] }); W.fx = fx; return o; }
+function sysCmd(o, c) { REC.log(o, c); applyCmd(o, c); }
+async function tryHostPeer(peer, ms) {
+  const end = Date.now() + ms;
+  Net.hostPeer = peer;
+  while (Date.now() < end && !Net.linked && !Net.aborted) { try { await ensureSignal(); await dial(8000); } catch (e) { await sleep(1500); } }
+  return Net.linked;
+}
+async function migrate(abandon) {
+  if (Net.migrating || !G.plan) return;
+  Net.migrating = true; G.plan.abandon = !!abandon;
+  setNetState('reconnecting', 'The host is gone. Handing the match to the next player…');
+  for (const c of G.plan.order) {
+    if (c.seat === App.seat) { if (G.ckpt && G.ckpt.gen >= G.plan.gen - 1) { promote(); Net.migrating = false; return; } continue; }
+    if (await tryHostPeer(c.peer, 20000)) { Net.migrating = false; toast(`${c.name} is now hosting the match`); saveSession(); return; }
+  }
+  Net.migrating = false;
+  setNetState('failed', 'The host left and nobody could take over the match.');
+}
+function promote() {
+  const ck = G.ckpt, plan = G.plan;
+  restoreWorld(JSON.parse(ck.w));
+  const now = performance.now(), me = App.seat;
+  const slots = [{ kind: 'host', team: W.P[me].team, seat: me }];
+  for (const s of ck.slots) {
+    if (s.seat === me || s.kind === 'closed' || s.kind === 'open' || s.kind === 'gone') continue;
+    if (s.kind === 'host') slots.push({ kind: plan.abandon ? 'gone' : 'guest', team: s.team, token: plan.abandon ? '' : plan.hostToken, name: plan.hostName, seat: s.seat, linked: false, droppedAt: now });
+    else if (s.kind === 'guest') slots.push({ kind: 'guest', team: s.team, token: s.token, name: s.name, seat: s.seat, linked: false, droppedAt: now });
+    else slots.push(Object.assign({}, s));
+  }
+  Host.reset(); Host.slots = slots; Host.inGame = true; Host.gen = plan.gen + 1;
+  Net.role = 'host'; Net.migId = Net.peer && Net.peer.id; Net.code = plan.code; Net.hostPeer = null; Net.linked = false; Net.conn = null; Net.aborted = false;
+  App.role = 'host'; App.spectate = false;
+  G.units.clear(); G.list = []; G.plan = null; G.ckpt = null;
+  REC.begin();
+  if (plan.abandon) sysCmd(plan.hostSeat, { k: '_rogue' });
+  setNetState('online'); Host.refreshState(); hostWait(); saveSession();
+  toast('The host left. You are now hosting the match.');
+}
+// The old host comes back after everyone has moved on: it rejoins the new host as a guest.
+async function oldHostRejoin() {
+  const plan = Host.lastPlan; if (!plan || Net.migrating) return;
+  Net.migrating = true;
+  const keep = { W, slots: Host.slots, inGame: Host.inGame };
+  Net.role = 'guest'; Net.token = plan.hostToken;
+  for (const c of plan.order) {
+    if (await tryHostPeer(c.peer, 15000)) {
+      Host.reset(); App.role = 'guest'; W = null; G.units.clear(); G.list = [];
+      toast(`You reconnected. ${c.name} is hosting now.`); Net.migrating = false; saveSession(); return;
+    }
+  }
+  Net.role = 'host'; Net.hostPeer = null; Host.slots = keep.slots; Host.inGame = keep.inGame; Net.migrating = false; Net.aborted = false; hostWait();
+}
+setInterval(() => {
+  if (Net.role !== 'host' || !Host.inGame || !W || W.over >= 0 || App.role !== 'host') return;
+  if (Date.now() - Host.planT > 5000) { Host.planT = Date.now(); Host.sendPlan(); }
+  const guests = Host.slots.filter(s => s.kind === 'guest');
+  if (guests.length && guests.every(s => !s.linked)) { Host.lonelyT = Host.lonelyT || Date.now(); if (Date.now() - Host.lonelyT > 25000 && Host.lastPlan) { Host.lonelyT = Date.now(); oldHostRejoin(); } }
+  else Host.lonelyT = 0;
+}, 1000);
 /* ================= RENDERING ================= */
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
 const mini = document.getElementById('mini'), mctx = mini.getContext('2d');
@@ -2740,7 +3055,7 @@ function iconFor(type, huskOf) {
   return ICONS[key] = c.toDataURL();
 }
 
-const FXD = [0.14, 0.5, 1.0, 0.6, 0.8, 0.6, 0.25, 0.55, 0.9, 1.4, 0.9];
+const FXD = [0.14, 0.5, 1.0, 0.6, 0.8, 0.6, 0.25, 0.55, 0.9, 1.4, 0.9, 2.2, 1.2];
 let localFx = [], markers = [];
 function pushFx(f) { localFx.push({ f, t0: performance.now() }); if (localFx.length > 320) localFx.splice(0, localFx.length - 320); SFX.fx(f); Music.notice(f); }
 function drawFx(c, now) {
@@ -2759,6 +3074,8 @@ function drawFx(c, now) {
       case 5: { c.strokeStyle = '#8fe388'; c.lineWidth = 2.4; c.beginPath(); const hy = f[2] - 14 - life * 12; c.moveTo(f[1] - 5, hy); c.lineTo(f[1] + 5, hy); c.moveTo(f[1], hy - 5); c.lineTo(f[1], hy + 5); c.stroke(); break; }
       case 6: c.strokeStyle = col.col2; c.lineWidth = 1.6; c.beginPath(); for (let k = 0; k < 4; k++) { const a = k * 1.57 + .7; c.moveTo(f[1] + Math.cos(a) * 3, f[2] + Math.sin(a) * 3); c.lineTo(f[1] + Math.cos(a) * 9, f[2] + Math.sin(a) * 9); } c.stroke(); break;
       case 7: c.fillStyle = 'rgba(200,190,170,.4)'; circ(c, f[1], f[2], 6 + life * 16); c.fill(); break;
+      case 11: { c.strokeStyle = 'rgba(255,94,138,.8)'; for (let k = 0; k < 3; k++) { c.lineWidth = 6 * (1 - life) + 1; const rr = 80 + life * 1400 - k * 140; if (rr <= 0) continue; c.beginPath(); c.arc(f[1], f[2], rr, 0, TAU); c.stroke(); } break; }
+      case 12: { c.strokeStyle = '#ffe08a'; c.fillStyle = '#ffe08a'; c.lineWidth = 2; c.beginPath(); c.arc(f[1], f[2], 14 + life * 26, 0, TAU); c.stroke(); for (let k = 0; k < 6; k++) { const a = k * 1.047 + life * 2; circ(c, f[1] + Math.cos(a) * (10 + life * 30), f[2] - life * 30 + Math.sin(a) * 8, 2.5); c.fill(); } break; }
       case 10: c.strokeStyle = col.col2; c.lineWidth = 3 * (1 - life) + 1; for (let k = 0; k < 8; k++) { const a = k * 0.785; c.beginPath(); c.moveTo(f[1] + Math.cos(a) * 8, f[2] + Math.sin(a) * 8); c.lineTo(f[1] + Math.cos(a) * (12 + life * 30), f[2] + Math.sin(a) * (12 + life * 30)); c.stroke(); } break;
       case 9: c.fillStyle = '#7d9a3c'; for (let k = 0; k < 7; k++) { circ(c, f[1] + Math.cos(k * 2.1) * 26 * life, f[2] + Math.sin(k * 2.1) * 26 * life - life * 10, 3 * (1 - life) + 1); c.fill(); } break;
       case 8: c.strokeStyle = col.col2; c.lineWidth = 4 * (1 - life) + 1; circ(c, f[1], f[2], 30 + life * 260); c.stroke(); c.strokeStyle = col.col; circ(c, f[1], f[2], 20 + life * 200); c.stroke(); break;
@@ -2865,8 +3182,18 @@ function drawCorpse(c, k, t, myRace) {
     c.lineWidth = 1.5; circ(c, k.x, k.y, k.r + 7); c.stroke(); c.globalAlpha = 1;
   }
 }
-const REL_COL = { me: 'rgba(143,227,136,.6)', ally: 'rgba(110,190,255,.7)', enemy: 'rgba(255,90,78,.7)', feral: 'rgba(255,170,90,.6)' };
-const REL_DOT = { me: '#8fe388', ally: '#6ebeff', enemy: '#ff5a4e', feral: '#ffaa5a' };
+const REL_COL = { me: 'rgba(143,227,136,.6)', ally: 'rgba(110,190,255,.7)', enemy: 'rgba(255,90,78,.7)', feral: 'rgba(255,170,90,.6)', t0: 'rgba(143,227,136,.7)', t1: 'rgba(255,90,78,.7)', t2: 'rgba(110,190,255,.7)', t3: 'rgba(255,224,138,.7)' };
+const REL_DOT = { me: '#8fe388', ally: '#6ebeff', enemy: '#ff5a4e', feral: '#ffaa5a', t0: '#8fe388', t1: '#ff5a4e', t2: '#6ebeff', t3: '#ffe08a' };
+const SH_ALIAS = { n_hero: 'n_cast', k_hero: 'k_cara', m_hero: 'm_bast', h_hero: 'h_exo', f_brute: 'f_beast', f_symb: 'h_troo' };
+function drawPod(c, r, t, u) {
+  const k = 1 + 0.05 * Math.sin(t * 2);
+  const g = c.createRadialGradient(0, -r * 0.2, 2, 0, 0, r * 1.2); g.addColorStop(0, 'rgba(220,255,200,.9)'); g.addColorStop(0.6, 'rgba(120,200,140,.55)'); g.addColorStop(1, 'rgba(60,120,80,.2)');
+  c.fillStyle = g; c.beginPath(); c.ellipse(0, 0, r * 0.85 * k, r * 1.05 * k, 0, 0, TAU); c.fill();
+  c.strokeStyle = 'rgba(220,255,210,.7)'; c.lineWidth = 2; c.stroke();
+  c.fillStyle = 'rgba(40,90,60,.8)'; for (let i = 0; i < 3; i++) { circ(c, Math.cos(t + i * 2.1) * r * 0.3, Math.sin(t * 1.3 + i * 2.1) * r * 0.4, r * 0.16); c.fill(); }
+}
+for (const k in SH_ALIAS) if (!SH[k]) SH[k] = (c, r, t, p, u) => SH[SH_ALIAS[k]](c, r, t, p, u);
+SH.f_pod = (c, r, t) => drawPod(c, r, t, {});
 function drawUnit(c, u, t, mine, sel) {
   const d = U[u.type], r = u.r || d.r;
   c.fillStyle = 'rgba(0,0,0,.32)'; c.beginPath(); c.ellipse(u.rx + 2, u.ry + r * .35, r * 1.05, r * .6, 0, 0, TAU); c.fill();
@@ -2884,10 +3211,20 @@ function drawUnit(c, u, t, mine, sel) {
     const k = 0.6 + 0.5 * u.morph.p + 0.06 * Math.sin(t * 6);
     c.beginPath(); c.ellipse(0, 0, r * 1.3 * k, r * 1.0 * k, 0, 0, TAU); fs(c, pal.d, pal.a, 2);
     c.strokeStyle = pal.b; c.lineWidth = 1.5; c.beginPath(); for (let i = 0; i < 4; i++) { c.moveTo(-r * k, (i - 1.5) * r * 0.45); c.quadraticCurveTo(0, (i - 1.5) * r * 0.65, r * k, (i - 1.5) * r * 0.45); } c.stroke();
-  } else SH[u.type](c, r, t + u.id * .37, pal, u);
+  } else if (d.pod) drawPod(c, r, t, u);
+  else (SH[u.type] || SH[SH_ALIAS[u.type]] || SH.f_beast)(c, r, t + u.id * .37, pal, u);
   c.globalAlpha = 1;
   if (u.carry) { c.fillStyle = '#ff5e8a'; circ(c, -r * .6, 0, r * .3); c.fill(); }
   c.restore();
+  if (d.hero) {
+    c.strokeStyle = '#ffe08a'; c.lineWidth = 2; c.globalAlpha = .6 + .3 * Math.sin(t * 3); c.beginPath(); c.ellipse(u.rx, u.ry + r * .2, r * 1.5, r * 1.05, 0, 0, TAU); c.stroke(); c.globalAlpha = 1;
+    c.fillStyle = '#ffe08a'; c.beginPath(); const cx = u.rx, cy = u.ry - r - 10; c.moveTo(cx - 9, cy + 5); c.lineTo(cx - 9, cy - 3); c.lineTo(cx - 4.5, cy + 1); c.lineTo(cx, cy - 6); c.lineTo(cx + 4.5, cy + 1); c.lineTo(cx + 9, cy - 3); c.lineTo(cx + 9, cy + 5); c.closePath(); c.fill();
+    if (u.lv > 1) { c.font = '700 10px Oxanium,sans-serif'; c.textAlign = 'center'; c.fillStyle = '#2a1406'; c.fillText(u.lv, cx, cy + 4); }
+  } else if (u.vet) {
+    c.fillStyle = '#ffe08a';
+    for (let k = 0; k < u.vet; k++) { const y = u.ry - r - 8 - k * 4; c.beginPath(); c.moveTo(u.rx - 6, y); c.lineTo(u.rx, y - 3); c.lineTo(u.rx + 6, y); c.lineTo(u.rx + 6, y + 1.6); c.lineTo(u.rx, y - 1.4); c.lineTo(u.rx - 6, y + 1.6); c.closePath(); c.fill(); }
+  }
+  if (d.pod && u.cap > 0) { c.strokeStyle = '#ffe08a'; c.lineWidth = 3; c.beginPath(); c.arc(u.rx, u.ry, r + 10, -Math.PI / 2, -Math.PI / 2 + u.cap / 12 * TAU); c.stroke(); }
   if (u.build != null) { c.strokeStyle = '#ece3d0'; c.lineWidth = 3; c.beginPath(); c.arc(u.rx, u.ry, r + 8, -Math.PI / 2, -Math.PI / 2 + u.build * TAU); c.stroke(); }
 }
 function drawBar(c, u, sel) {
@@ -3057,6 +3394,7 @@ function render(now, alpha) {
   for (const u of vis) drawUnit(ctx, u, t, u.o === App.seat, App.sel.has(u.id));
   if (!DRIFT) drawCanopy(ctx);
   drawFx(ctx, now);
+  drawPings(ctx, now);
   for (let i = markers.length - 1; i >= 0; i--) {
     const m = markers[i], l = Math.max(0, (now - m.t0) / 600);
     if (l >= 1) { markers.splice(i, 1); continue; }
@@ -3225,7 +3563,9 @@ function selUnits() { const out = []; for (const id of App.sel) { const u = V.un
 function selMovable() { return selUnits().filter(u => !U[u.type].struct); }
 function mark(x, y, col) { markers.push({ x, y, col, t0: performance.now() }); }
 function issue(c) {
+  if (App.spectate) return 'no';
   if (V.guest()) { if (!netSend({ t: 'c', c })) toast('Reconnecting… order not sent'); return 'sent'; }
+  REC.log(App.seat, c);
   return applyCmd(App.seat, c);
 }
 function setSel(ids) { App.sel = new Set(ids); App.amove = false; App.place = false; UI.bar(); UI.ctxDirty = true; }
@@ -3256,6 +3596,8 @@ function command(sx, sy, fromTap) {
   return false;
 }
 function tap(sx, sy) {
+  if (App.spectate) return;
+  if (pingKind) { const pw = s2w(sx, sy); if (pingTap(pw.x, pw.y)) return; }
   const w = s2w(sx, sy), now = performance.now();
   if (App.amove || App.place) { command(sx, sy, true); return; }
   const hit = pickUnit(w.x, w.y);
@@ -3295,7 +3637,7 @@ function placeAt(x, y) {
   let bw = ws[0], bd = Infinity;
   for (const w of ws) { const q = (w.rx - x) ** 2 + (w.ry - y) ** 2; if (q < bd) { bd = q; bw = w; } }
   const r = issue({ k: 'build', ids: [bw.id], x, y });
-  if (r === 'matter') toast('Not enough Nutrient'); else if (r === 'place') toast('That spot is blocked');
+  if (r === 'hero') toast('Your hero is already alive or in training'); else if (r === 'matter') toast('Not enough Nutrient'); else if (r === 'place') toast('That spot is blocked');
   else { mark(x, y, '#ece3d0'); App.place = false; UI.ctxDirty = true; SFX.ui('order'); }
 }
 function useAbility() {
@@ -3409,7 +3751,8 @@ const UI = {
       el.classList.remove('hide');
       el.className = Net.state === 'online' ? 'on' : Net.state === 'unstable' ? 'wob' : 'off';
       const ping = Net.role === 'host' ? Math.max(0, ...Host.slots.filter(s => s.kind === 'guest').map(s => s.ping || 0)) : Net.ping;
-      el.querySelector('span').textContent = Net.state === 'online' ? `P2P ${ping || '–'}ms` : Net.state === 'unstable' ? 'Unstable' : Net.state === 'failed' ? 'Lost' : 'Reconnecting';
+      const cov = Net.role === 'host' ? Host.covering().length : 0;
+      el.querySelector('span').textContent = Net.state === 'online' ? `P2P ${ping || '–'}ms${cov ? ` · ${cov} on AI` : ''}` : Net.state === 'unstable' ? 'Unstable' : Net.state === 'failed' ? 'Lost' : 'Reconnecting';
     }
     const nb = $('netBanner');
     if (App.inGame && (App.role === 'host' || App.role === 'guest') && Net.state !== 'online' && Net.state !== 'off' && V.over() < 0) {
@@ -3417,7 +3760,7 @@ const UI = {
       const failed = Net.state === 'failed', host = Net.role === 'host';
       const html = `<div>${esc(Net.info || 'Reconnecting…')}</div>
         ${Net.state === 'reconnecting' ? `<div style="color:var(--mute);margin-top:4px"><span id="nbAtt"></span>The match is paused and nothing is lost.</div>` : ''}
-        <div class="acts">${failed ? '<button class="tog" data-n="retry">Keep waiting</button>' : ''}${host && Host.missing().length ? '<button class="tog" data-n="ai">Let the AI take over</button>' : ''}${failed ? '<button class="tog" data-n="quit">Leave match</button>' : ''}</div>`;
+        <div class="acts">${failed ? '<button class="tog" data-n="retry">Keep waiting</button>' : ''}${host && Host.missing().some(s => !s.covered) ? '<button class="tog" data-n="ai">Let the AI cover now</button>' : ''}${failed ? '<button class="tog" data-n="quit">Leave match</button>' : ''}</div>`;
       if (nb.__h !== html) { nb.__h = html; nb.innerHTML = html; }
       const at = $('nbAtt'); if (at) at.textContent = `Attempt ${Net.attempt}. `;
       $('hint').classList.add('hide');
@@ -3437,10 +3780,10 @@ const UI = {
     const sl = $('lobSlots');
     if (sl) sl.innerHTML = Host.slots.map((s, i) => {
       const label = i === 0 ? `You · ${esc(raceLabel(App.myRace))}` : s.kind === 'guest' ? `${esc(s.name)} · ${esc(s.def ? s.def.name : RACES[s.race].name)}${s.linked ? '' : ' (dropped)'}` :
-        s.kind === 'ai' ? `AI · ${esc(s.race && s.race !== 'random' ? RACES[s.race].name : 'Random')} · ${s.ai || 'normal'}` : s.kind === 'open' ? 'Open for a player' : 'Closed';
+        s.kind === 'ai' ? `AI · ${esc(s.race && s.race !== 'random' ? RACES[s.race].name : 'Random')}` : s.kind === 'open' ? 'Open for a player' : 'Closed';
       return `<div class="slot ${s.kind}"><button class="team t${s.team}" data-go="lteam:${i}">${TEAM_NAMES[s.team]}</button><b>${label}</b>
         ${i > 0 && s.kind !== 'guest' ? `<button class="tog" data-go="lkind:${i}">${s.kind === 'open' ? 'Make AI' : s.kind === 'ai' ? 'Close' : 'Open'}</button>` : ''}
-        ${s.kind === 'ai' ? `<button class="tog" data-go="lairace:${i}">Race</button><button class="tog" data-go="laidiff:${i}">${s.ai || 'normal'}</button>` : ''}
+        ${s.kind === 'ai' ? `<button class="tog" data-go="lairace:${i}">Race</button><button class="tog" data-go="laidiff:${i}">${DIFF_NAME[s.ai || 'normal']}</button>` : ''}
         ${s.kind === 'guest' ? `<button class="tog" data-go="lkick:${i}">Remove</button>` : ''}</div>`;
     }).join('');
     const b = $('lobStart');
@@ -3454,6 +3797,8 @@ const UI = {
   },
   refresh() {
     if (!App.inGame) return;
+    watchEvents();
+    if (App.spectate) { specHud(); return; }
     const me = V.player(App.seat);
     if (!me) return;
     $('tMat').textContent = Math.floor(me.matter);
@@ -3494,14 +3839,14 @@ const UI = {
           : `<div class="tabs"><button class="on">${esc(R.post)}: train here</button></div>`;
         const qk = QUICKEN[me.prod || 0];
         if (tab === 'train') el.innerHTML = tabs + `<div class="prow">${ROSTER[me.race].map(t => `<button class="pb" data-act="train" data-t="${t}" title="${esc(U[t].desc)}">
-          <img src="${iconFor(t)}" alt=""><span class="nm">${esc(U[t].name)}</span><span class="cs">${cost(U[t].cost, U[t].ess)} · ${U[t].s}</span></button>`).join('')}
+          <img src="${iconFor(t)}" alt=""><span class="nm">${U[t].hero ? '<b class="herotag">Hero</b> ' : ''}${esc(U[t].name)}</span><span class="cs">${cost(U[t].cost, U[t].ess)} · ${U[t].s}</span></button>`).join('')}
           ${isCore ? `<button class="pb grow" data-act="grow"><img src="${iconFor(PFX[me.race] + '_core')}" alt=""><span class="nm">${esc(R.grow)}</span><span class="cs">${cost(GROW_COST)} · +10</span></button>
           <button class="pb grow" data-act="quicken" title="All your buildings train 25% faster per level"><span class="nm">Quicken ${'●'.repeat(me.prod || 0)}${'○'.repeat(2 - (me.prod || 0))}</span><span class="ud">${qk ? 'Train 25% faster everywhere' : 'Fully quickened'}</span><span class="cs">${qk ? cost(qk.cost, qk.ess) : 'Max'}</span></button>
           <button class="pb grow" data-act="arms" title="Workers near your buildings fight as militia for 25 seconds"><span class="nm">Call to arms</span><span class="ud" id="armsT">Arm nearby workers</span><span class="cs">Free · 70s</span></button>` : ''}</div>
           <div class="qrow"><div id="qslots" style="display:flex;gap:5px"></div><div class="qlab" id="qlab"></div>
           <button class="tog" data-act="auto" id="autoT">Auto-scavenge</button></div>`;
-        else el.innerHTML = tabs + `<div class="prow">${R.upg.map(id => `<button class="pb up" data-act="research" data-id="${id}" title="${esc(UPG[id].desc)}">
-          <span class="nm">${esc(UPG[id].name)}</span><span class="ud">${esc(UPG[id].desc)}</span><span class="cs" data-c="${id}">${cost(UPG[id].cost, UPG[id].ess)}</span></button>`).join('')}</div>
+        else el.innerHTML = tabs + `${[0, 1, 2].map(t => `<div class="tierlab">Tier ${t + 1}: choose one</div><div class="prow">${R.upg.slice(t * 2, t * 2 + 2).map(id => `<button class="pb up" data-act="research" data-id="${id}" title="${esc(UPG[id].desc)}">
+          <span class="nm">${esc(UPG[id].name)}</span><span class="ud">${esc(UPG[id].desc)}</span><span class="cs" data-c="${id}">${cost(UPG[id].cost, UPG[id].ess)}</span></button>`).join('<span class="or">or</span>')}</div>`).join('')}
           <div class="qrow"><div class="qlab" id="reslab"></div><button class="tog hide" data-act="cancelres" id="resX">Cancel</button></div>`;
       } else if (mode === 'units' || mode === 'struct') {
         const counts = {}; su.forEach(u => { const k = u.type + '|' + (u.rv || ''); counts[k] = (counts[k] || 0) + 1; });
@@ -3523,7 +3868,7 @@ const UI = {
     }
     if (mode === 'core' && (UI.coreTab === 'train' || !U[one.type].core)) {
       const sq = ((me.qs || {})[one.id] || {}).q || [], lim = U[one.type].core ? 5 : 3;
-      el.querySelectorAll('[data-act="train"]').forEach(b => { const d = U[b.dataset.t]; b.disabled = me.matter < d.cost || (me.ess || 0) < d.ess || me.sup + d.s > me.cap || sq.length >= lim; });
+      el.querySelectorAll('[data-act="train"]').forEach(b => { const d = U[b.dataset.t]; b.disabled = me.matter < d.cost || (me.ess || 0) < d.ess || me.sup + d.s > me.cap || sq.length >= lim || (d.hero && heroBusy(b.dataset.t, me)); });
       const g = el.querySelector('[data-act="grow"]'); if (g) g.disabled = me.matter < GROW_COST || me.cap >= CAP_MAX;
       const qb = el.querySelector('[data-act="quicken"]'); if (qb) { const qk = QUICKEN[me.prod || 0]; qb.disabled = !qk || me.matter < qk.cost || (me.ess || 0) < qk.ess; }
       const ab2 = el.querySelector('[data-act="arms"]'); if (ab2) { ab2.disabled = (me.armsCd || 0) > 0; const at2 = $('armsT'); if (at2) at2.textContent = me.armsCd > 0 ? `Ready in ${Math.ceil(me.armsCd)}s` : 'Arm nearby workers'; }
@@ -3539,10 +3884,11 @@ const UI = {
     }
     if (mode === 'core' && UI.coreTab === 'evolve' && U[one.type].core) {
       el.querySelectorAll('[data-act="research"]').forEach(b => {
-        const id = b.dataset.id, g = UPG[id], done = me.up && me.up[id], busy = me.res && me.res.id === id;
-        b.disabled = !!done || !!me.res || me.matter < g.cost || (me.ess || 0) < g.ess;
-        b.classList.toggle('done', !!done); b.classList.toggle('busy', !!busy);
-        const c = b.querySelector('[data-c]'); if (c) c.innerHTML = done ? 'Mutated' : busy ? `${Math.round(me.res.p * 100)}%` : cost(g.cost, g.ess);
+        const id = b.dataset.id, g = UPG[id], done = me.up && me.up[id], busy = me.res && me.res.id === id, L = RACES[me.race].upg, i = L.indexOf(id);
+        const closed = (me.up && me.up[L[i ^ 1]]) || (me.res && me.res.id === L[i ^ 1]), early = i >= 2 && !(me.up && (me.up[L[(i & ~1) - 2]] || me.up[L[(i & ~1) - 1]]));
+        b.disabled = !!done || !!closed || early || !!me.res || me.matter < g.cost || (me.ess || 0) < g.ess;
+        b.classList.toggle('done', !!done); b.classList.toggle('busy', !!busy); b.classList.toggle('closed', !!closed);
+        const c = b.querySelector('[data-c]'); if (c) c.innerHTML = done ? 'Mutated' : closed ? 'Path not taken' : early ? `Needs tier ${(i >> 1)}` : busy ? `${Math.round(me.res.p * 100)}%` : cost(g.cost, g.ess);
       });
       const rl = $('reslab'), rx = $('resX');
       if (rl) rl.textContent = me.res ? `Mutating ${UPG[me.res.id].name}: ${Math.round(me.res.p * 100)}%` : 'Mutations cost Essence, which only comes from the dead.';
@@ -3724,7 +4070,7 @@ function edOpenScreen() {
 function edExportScreen() {
   const json = JSON.stringify(mapToJSON(ED.map));
   show(`<div class="card"><h2>Export ${esc(ED.map.name)}</h2><textarea id="expTxt" readonly>${esc(json)}</textarea>
-    <div class="actions"><button class="btn" data-go="ed-copy">Copy</button><button class="btn" data-go="ed-share">Share</button><button class="btn" data-go="ed-dl">Download</button></div>
+    <div class="actions"><button class="btn" data-go="ed-copy">Copy</button><button class="btn" data-go="ed-link">Copy share link</button><button class="btn" data-go="ed-dl">Download</button></div>
     <p class="fine">Anyone can import this text or file in their own map designer.</p>
     <div class="actions"><button class="btn ghost" data-go="ed-menu">Back</button></div></div>`);
 }
@@ -3770,6 +4116,7 @@ function edAction(a, v) {
     case 'ed-new': { const m = blankMap(+v, 'New map'); const S = m.n * TILE; m.starts = [[420, S - 420], [S - 420, 420]]; openEditor(m); ED.saved = false; edBuildUI(); return true; }
     case 'ed-gen': { const m = genRandomMap((Math.random() * 1e9) | 0, ED.map.n, ED.sym === 'quad' ? 4 : 2); m.name = 'Generated map'; openEditor(m); ED.saved = false; edBuildUI(); return true; }
     case 'ed-export': edExportScreen(); return true;
+    case 'ed-link': shareLink('m', mapToJSON(ED.map)); return true;
     case 'ed-import': edImportScreen(); return true;
     case 'ed-copy': { const t = $('expTxt'); if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(() => toast('Copied')).catch(() => { t.select(); toast('Select the text and copy it'); }); else { t.select(); toast('Select the text and copy it'); } return true; }
     case 'ed-share': { const t = $('expTxt').value; if (navigator.share) navigator.share({ title: ED.map.name, text: t }).catch(() => {}); else toast('Sharing is not available here. Use Copy instead.'); return true; }
@@ -3825,6 +4172,7 @@ function menuScreen() {
     <button class="btn ${res ? '' : 'prime'}" data-go="campaign">Campaign: the Atlas</button>
     <button class="btn" data-go="deep">The Deep Lumen: dive to Varuun's heart</button>
     <button class="btn" data-go="pick:solo">Skirmish against the AI</button>
+    <div class="actions" style="margin-top:0"><button class="btn" data-go="survival">Survival</button><button class="btn" data-go="replays">Replays</button></div>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="pick:host">Host online</button><button class="btn" data-go="pick:join">Join online</button></div>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="tutorials">Tutorials</button><button class="btn" data-go="races">Race builder</button></div>
     <div class="actions" style="margin-top:0"><button class="btn" data-go="designer">Map designer</button><button class="btn" data-go="codex">Codex</button></div>
@@ -3845,6 +4193,8 @@ function storyScreen() {
 function settingsScreen() {
   show(`<div class="card"><h2>Settings</h2>
     <div class="row"><label for="pname">Your name in online rooms</label><input id="pname" class="txt" maxlength="16" value="${esc(App.name())}"></div>
+    <div class="row"><label>Default AI difficulty</label><div class="seg">${DIFFS.map(d => `<button data-go="setdiff:${d}" class="${App.diff === d ? 'on' : ''}">${DIFF_NAME[d]}</button>`).join('')}</div>
+      <p class="fine" style="text-align:left">${DIFF_DESC[App.diff]} Used for new AI opponents, and for the AI that covers a player who drops out of an online match.</p></div>
     <div class="row"><label>Music</label><div class="seg"><button data-go="mus:1" class="${Music.on ? 'on' : ''}">On</button><button data-go="mus:0" class="${Music.on ? '' : 'on'}">Off</button></div><p class="fine" style="text-align:left">Each race has its own theme, and the music builds as fighting heats up on screen.</p></div>
     <div class="row"><label>Sound effects</label><div class="seg"><button data-go="snd:1" class="${SFX.on ? 'on' : ''}">On</button><button data-go="snd:0" class="${SFX.on ? '' : 'on'}">Off</button></div></div>
     <div class="actions"><button class="btn prime" data-go="menu">Done</button></div></div>`);
@@ -3880,18 +4230,18 @@ function pickScreen(mode) {
     extra = arenaPicker(sk.length) + `<div class="row"><label>Players</label>
       <div class="seg" style="margin-bottom:8px"><button data-go="preset:1v1">1 v 1</button><button data-go="preset:2v2">2 v 2</button><button data-go="preset:ffa3">3 free-for-all</button><button data-go="preset:ffa4">4 free-for-all</button></div>
       ${sk.map((s, i) => `<div class="slot"><button class="team t${s.team}" data-go="steam:${i}">${TEAM_NAMES[s.team]}</button>
-        <b>${s.kind === 'you' ? 'You' : 'AI ' + i}</b>${s.kind === 'ai' ? `<button class="tog" data-go="srace:${i}">${s.race === 'random' ? 'Random' : esc(raceLabel(s.race))}</button><button class="tog" data-go="sdiff:${i}">${s.diff}</button><button class="tog" data-go="sdel:${i}">Remove</button>` : ''}</div>`).join('')}
+        <b>${s.kind === 'you' ? 'You' : 'AI ' + i}</b>${s.kind === 'ai' ? `<button class="tog" data-go="srace:${i}">${s.race === 'random' ? 'Random' : esc(raceLabel(s.race))}</button><button class="tog" data-go="sdiff:${i}" title="${esc(DIFF_DESC[s.diff])}">${DIFF_NAME[s.diff]}</button><button class="tog" data-go="sdel:${i}">Remove</button>` : ''}</div>`).join('')}
       ${sk.length < 4 ? '<button class="tog" data-go="sadd">Add an AI</button>' : ''}
-      <p class="fine" style="text-align:left">Tap a team letter to change teams. Players on the same team share vision.</p></div>`;
+      <p class="fine" style="text-align:left">Tap a team letter to change teams, and an AI's difficulty to cycle Passive, Easy, Normal, Hard and Brutal. <button class="tog" data-go="alldiff">Set all AIs</button></p></div>`;
   } else if (mode === 'host') extra = arenaPicker(2);
   else extra = `<div class="row"><label for="code">Room code</label><input id="code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${esc(App.joinCode)}" placeholder="ABCD"></div>`;
   show(`<div class="card wide"><h2>${mode === 'join' ? 'Join a room' : mode === 'host' ? 'Host a room' : 'Skirmish'}</h2>
     ${raceCards(App.myRace, 'race')}${extra}
-    <div class="actions"><button class="btn ghost" data-go="menu">Back</button><button class="btn prime" data-go="go:${mode}">${cta}</button></div></div>`);
+    <div class="actions"><button class="btn ghost" data-go="menu">Back</button>${mode === 'join' ? '<button class="btn" data-go="go:watch">Watch as a spectator</button>' : ''}<button class="btn prime" data-go="go:${mode}">${cta}</button></div></div>`);
   const inp = $('code'); if (inp) inp.addEventListener('input', () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); App.joinCode = inp.value; });
 }
 function skirmishPreset(p) {
-  const ai = (team) => ({ kind: 'ai', race: 'random', diff: App.diff, team });
+  const ai = (team) => ({ kind: 'ai', race: 'random', diff: App.diff === 'passive' ? 'normal' : App.diff, team });
   App.skirmish = p === '2v2' ? [{ kind: 'you', team: 0 }, ai(0), ai(1), ai(1)] : p === 'ffa3' ? [{ kind: 'you', team: 0 }, ai(1), ai(2)] : p === 'ffa4' ? [{ kind: 'you', team: 0 }, ai(1), ai(2), ai(3)] : [{ kind: 'you', team: 0 }, ai(1)];
 }
 function codexScreen(back) {
@@ -3967,11 +4317,20 @@ function endScreen(won, note) {
   if (App.exp && !App.exp.doneR) { App.exp.doneR = 1; Deep.result(won); }
   SFX.ui(won ? 'win' : 'lose');
   if (App.tut && won) { LS.set('nt.tut.' + App.tut.race, 1); }
-  show(`<div class="card end wide"><h2 style="color:${won ? '#8fe388' : '#ff5a4e'}">${App.tut && won ? 'Tutorial complete' : won ? 'Victory' : 'Defeat'}</h2>
+  const surv = App.role === 'guest' ? null : W && W.survival, rep = REC.finish();
+  if (rep && Net.role === 'host') for (const s of Host.slots) if (s.kind === 'guest' && s.linked && s.conn) { try { sendBig(s.conn, { t: 'replay', r: rep }); } catch (e) {} }
+  let title = App.tut && won ? 'Tutorial complete' : won ? 'Victory' : 'Defeat';
+  if (surv) { const best = LS.get('nt.surv.best') || 0, w = Math.max(0, surv.wave - 1); if (w > best) LS.set('nt.surv.best', w); title = `${w} waves survived`; note = w > best ? 'A new best.' : `Your best is ${Math.max(best, w)} waves.`; }
+  if (App.spectate && App.role !== 'replay') { title = 'Match over'; note = note || ''; }
+  const hist = V.guest() ? G.hist : W && W.hist;
+  show(`<div class="card end wide"><h2 style="color:${won ? '#8fe388' : surv || App.spectate ? '#ffe08a' : '#ff5a4e'}">${title}</h2>
     <div class="sub">${note || (won ? 'Their cores are consumed. This part of Varuun feeds your kind now.' : 'Your core is consumed. Something else inside Varuun will feed on what remains.')}</div>
     ${statsTable()}
+    ${hist && hist.length > 1 ? '<canvas class="recap" id="recapCv"></canvas>' : ''}
+    ${rep || (V.guest() && !App.spectate) ? '<p class="fine">This match was saved to <button class="tog" data-go="rv-last">Replays</button></p>' : ''}
     <div class="actions"><button class="btn ghost" data-go="watch">View the field</button><button class="btn prime" data-go="quit">${App.exp ? 'Return to the Deep Lumen' : App.camp ? 'Return to the Atlas' : App.returnTo === 'editor' ? 'Back to the designer' : App.tut ? 'Back to tutorials' : 'Main menu'}</button></div></div>`);
   clearSaved();
+  drawRecap($('recapCv'), hist, V.np());
 }
 function elimScreen() {
   App.elimShown = true;
@@ -3991,25 +4350,36 @@ scr.addEventListener('click', e => {
     case 'settings': settingsScreen(); break;
     case 'story': storyScreen(); break;
     case 'snd': SFX.set(v === '1'); settingsScreen(); break;
+    case 'setdiff': App.diff = v; LS.set('nt.diff', v); settingsScreen(); break;
     case 'mus': Music.set(v === '1'); settingsScreen(); break;
     case 'mustog': Music.set(!Music.on); gameMenu(); break;
     case 'sndtog': SFX.set(!SFX.on); gameMenu(); break;
     case 'pick': pickScreen(v); break;
-    case 'race': App.myRace = v; if (App.pickMode === 'deep') { deepPick(); break; } if (App.pickMode === 'host-lobby') { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
+    case 'race': App.myRace = v; if (App.pickMode === 'deep') { deepPick(); break; } if (App.pickMode === 'survival') { survivalPick(); break; } if (App.pickMode === 'host-lobby') { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
     case 'map': App.mapId = v; if (Net.role === 'host' && !App.inGame) { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
     case 'drift': App.drift = v === '1'; if (Net.role === 'host' && !App.inGame) { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
     case 'fog': App.fog = v === '1'; if (Net.role === 'host' && !App.inGame) { hostLobby(); Host.broadcastLobby(); } else pickScreen(App.pickMode); break;
     case 'preset': skirmishPreset(v); pickScreen('solo'); break;
     case 'steam': App.skirmish[+v].team = (App.skirmish[+v].team + 1) % 4; pickScreen('solo'); break;
     case 'srace': { const s = App.skirmish[+v], opts = ['random', ...BASE_RACES, ...customRaces().map(d => 'custom:' + d.id)]; s.race = opts[(opts.indexOf(s.race) + 1) % opts.length]; pickScreen('solo'); break; }
-    case 'sdiff': { const s = App.skirmish[+v], o = ['easy', 'normal', 'hard']; s.diff = o[(o.indexOf(s.diff) + 1) % 3]; App.diff = s.diff; pickScreen('solo'); break; }
+    case 'sdiff': { const s = App.skirmish[+v]; s.diff = DIFFS[(DIFFS.indexOf(s.diff) + 1) % DIFFS.length]; pickScreen('solo'); break; }
+    case 'alldiff': { const d = DIFFS[(DIFFS.indexOf((App.skirmish.find(s => s.kind === 'ai') || {}).diff || 'normal') + 1) % DIFFS.length]; for (const s of App.skirmish) if (s.kind === 'ai') s.diff = d; pickScreen('solo'); break; }
     case 'sdel': App.skirmish.splice(+v, 1); pickScreen('solo'); break;
     case 'sadd': if (App.skirmish.length < 4) App.skirmish.push({ kind: 'ai', race: 'random', diff: App.diff, team: Math.min(3, App.skirmish.length) }); pickScreen('solo'); break;
-    case 'go': if (v === 'solo') startSolo(); else if (v === 'host') startHost(); else startJoin(($('code') || {}).value || ''); break;
+    case 'go': App.wantSpectate = v === 'watch'; if (v === 'solo') startSolo(); else if (v === 'host') startHost(); else startJoin(($('code') || {}).value || ''); break;
+    case 'survival': survivalPick(); break;
+    case 'survdiff': App.survDiff = v; survivalPick(); break;
+    case 'surv-go': startSurvival(); break;
+    case 'replays': replaysScreen(); break;
+    case 'rv-watch': { const r = replays()[+v]; if (r) watchReplay(r); break; }
+    case 'rv-export': { const r = replays()[+v]; if (r) exportReplay(r); break; }
+    case 'rv-del': { const a = replays(); a.splice(+v, 1); LS.set('nt.replays', a); replaysScreen(); break; }
+    case 'rv-import': importReplay(); break;
+    case 'rv-last': { const r = replays()[0]; if (r) watchReplay(r); break; }
     case 'lteam': Host.slots[+v].team = (Host.slots[+v].team + 1) % 4; Host.broadcastLobby(); UI.lobbyUpdate(); break;
     case 'lkind': { const s = Host.slots[+v], o = ['open', 'ai', 'closed']; s.kind = o[(o.indexOf(s.kind) + 1) % 3]; if (s.kind === 'ai') { s.race = s.race || 'random'; s.ai = s.ai || 'normal'; } hostLobby(); Host.broadcastLobby(); ensureSignal().catch(() => {}); break; }
     case 'lairace': { const s = Host.slots[+v], o = ['random', ...BASE_RACES]; s.race = o[(o.indexOf(s.race || 'random') + 1) % o.length]; Host.broadcastLobby(); UI.lobbyUpdate(); break; }
-    case 'laidiff': { const s = Host.slots[+v], o = ['easy', 'normal', 'hard']; s.ai = o[(o.indexOf(s.ai || 'normal') + 1) % 3]; Host.broadcastLobby(); UI.lobbyUpdate(); break; }
+    case 'laidiff': { const s = Host.slots[+v]; s.ai = DIFFS[(DIFFS.indexOf(s.ai || 'normal') + 1) % DIFFS.length]; Host.broadcastLobby(); UI.lobbyUpdate(); break; }
     case 'lkick': { const s = Host.slots[+v]; try { s.conn && s.conn.send({ t: 'bye' }); } catch (e) {} setTimeout(() => { try { s.conn && s.conn.close(); } catch (e) {} }, 200); Object.assign(s, { kind: 'open', token: '', conn: null, linked: false, def: null, race: '', name: '' }); hostLobby(); Host.broadcastLobby(); break; }
     case 'designer': openEditor(null); break;
     case 'codex': codexScreen(); break;
@@ -4027,17 +4397,24 @@ scr.addEventListener('click', e => {
 });
 
 function startGame(seat) {
+  if (seat < 0) App.spectate = true; else if (App.role !== 'replay') App.spectate = false;
+  if (!App.spectate) applySkin(isCustomPick(App.myRace) ? '' : App.myRace);
   App.inGame = true; App.editing = false; App.seat = seat; App.sel.clear(); App.endShown = false; App.elimShown = false; App.paused = false; App.amove = false; App.boxMode = false; App.place = false;
   genDecor(App.role === 'guest' ? G.seed : W.seed);
   hideScr(); $('hud').classList.remove('hide'); $('edhud').classList.add('hide'); $('deephud').classList.add('hide');
-  const s = V.starts()[seat] || [MAP_W / 2, MAP_H / 2];
+  const s = (seat >= 0 && V.starts()[seat]) || [MAP_W / 2, MAP_H / 2];
+  $('specbar').classList.toggle('hide', !App.spectate); $('rvCtl').classList.toggle('hide', App.role !== 'replay');
+  $('bar').classList.toggle('hide', !!App.spectate); $('ctx').classList.toggle('hide', !!App.spectate); $('top').classList.toggle('hide', !!App.spectate); $('groups').classList.toggle('hide', !!App.spectate);
+  $('bPing').classList.toggle('hide', !(App.role === 'host' || App.role === 'guest') || !!App.spectate); $('pingbar').classList.add('hide');
+  if (App.spectate) cam.z = 0.5;
+  if (App.role !== 'replay') REC.begin();
   cam.z = Math.max(0.8, Math.min(1.4, Math.min(vw, vh) / 430));
   centerOn(s[0] + (MAP_W / 2 - s[0]) * 0.12, s[1] + (MAP_H / 2 - s[1]) * 0.12);
   localFx = []; markers = []; fogDrawn = -1; UI.ctxDirty = true; UI.coreTab = 'train'; UI.lastUp = ''; UI.bar(); UI.netState(); Groups.reset();
   $('tut').classList.toggle('hide', !App.tut);
-  SFX.unlock(); Music.setTheme(V.race(seat)); Music.target = 0.2;
+  SFX.unlock(); Music.setTheme(V.race(Math.max(0, seat))); Music.target = 0.2;
   if (DRIFT && !App.tut) setTimeout(() => toast('The Lumen Sea: islands drift on the current. Units leap across golden bridges when islands pass close.'), 600);
-  if (!App.tut && !LS.get('lc.hint3')) {
+  if (!App.tut && !App.spectate && !LS.get('lc.hint3')) {
     const h = $('hint'); h.classList.remove('hide');
     h.innerHTML = `<b>Drag</b> to pan, <b>pinch</b> to zoom. <b>Tap</b> a unit, then tap the ground to move or an enemy to attack. <b>Hold and drag</b> to box-select. <b>Hold a group button</b> on the right to save a squad. Tap your <b>core</b> to train and evolve. Corpses give <b>Essence</b> for upgrades and elite units. New here? Try the Tutorials.<br><button class="tog" id="hintOk">Got it</button>`;
     $('hintOk').onclick = () => { h.classList.add('hide'); LS.set('lc.hint3', 1); };
@@ -4091,6 +4468,7 @@ function hostStart() {
   startGame(Host.slots[0].seat);
   for (const k in lastVis) delete lastVis[k];
   Host.slots.forEach((s, i) => { if (s.kind === 'guest') sendInit(i); });
+  for (const sp of Host.spec) if (sp.linked && sp.conn) sendInitTo(sp.conn, -1);
   for (const s of Host.slots) if (s.kind === 'open') s.kind = 'closed';
   Host.refreshState(); saveSession(); saveWorld();
 }
@@ -4130,7 +4508,8 @@ function resumeMatch() {
   if (s.role === 'host') {
     restoreWorld(s.world.W);
     Host.inGame = true;
-    Host.slots = s.world.host.map(x => Object.assign({ conn: null, linked: false, ping: 0 }, x));
+    Host.slots = s.world.host.map(x => Object.assign({ conn: null, linked: false, ping: 0, droppedAt: performance.now() }, x));
+    for (const sl of Host.slots) if (sl.kind === 'guest' && sl.seat != null && W.P[sl.seat] && W.P[sl.seat].aiTemp) sl.covered = 1;
     App.role = 'host'; App.tut = null; startGame(s.seat || 0);
     Host.refreshState('host reloaded');
     hostWait();
@@ -4328,8 +4707,9 @@ function rbAction(a, v) {
     }
     case 'rb-back': cancelAnimationFrame(RB.raf); raceLibrary(); return true;
     case 'rb-test': runBalance(); return true;
+    case 'rb-link': shareLink('r', RB.def); return true;
     case 'rb-export': show(`<div class="card"><h2>Export ${esc(RB.def.name)}</h2><textarea id="expTxt" readonly>${esc(JSON.stringify(RB.def))}</textarea>
-      <div class="actions"><button class="btn" data-go="ed-copy">Copy</button><button class="btn" data-go="rb-share">Share</button></div>
+      <div class="actions"><button class="btn" data-go="ed-copy">Copy</button><button class="btn" data-go="rb-link">Copy share link</button></div>
       <div class="actions"><button class="btn ghost" data-go="rb-reopen">Back</button></div></div>`); return true;
     case 'rb-share': { const t = $('expTxt').value; if (navigator.share) navigator.share({ title: RB.def.name, text: t }).catch(() => {}); else toast('Sharing is not available here. Use Copy instead.'); return true; }
     case 'rb-reopen': rbEditor(); return true;
@@ -4666,7 +5046,8 @@ const Camp = {
       const pool = near.length ? near : this.rivals();
       foes = a >= 3 && pool.length > 1 ? pool.slice(0, 2) : [pool[(o.length + s.wins) % pool.length]];
     }
-    const diff = o === 'cradle' ? 'hard' : o === 'crown' ? 'normal' : holder && holder !== s.race ? (a >= 2 ? 'hard' : 'normal') : (a >= 2 ? 'normal' : 'easy');
+    const base = o === 'cradle' ? 'hard' : o === 'crown' ? 'normal' : holder && holder !== s.race ? (a >= 2 ? 'hard' : 'normal') : (a >= 2 ? 'normal' : 'easy');
+    const diff = shiftDiff(base, App.campDiff === 'story' ? -1 : App.campDiff === 'brutal' ? 1 : 0);
     return { foes, diff, mods: { fever: a >= 2, collapse: a >= 3 }, holder };
   },
   boons() { return Object.keys(this.st.held).filter(k => this.mine(k) && ORGANS[k].boon).map(k => ORGANS[k]); }
@@ -4675,8 +5056,13 @@ const Camp = {
 function campaignPick() {
   show(`<div class="card wide"><h2>The Atlas</h2>
     <p class="status" style="text-align:left">Choose a lifeform and spread through Varuun's body, organ by organ. Each campaign runs from first infection to Varuun's last breath, and every lifeform has its own ending.</p>
+    <div class="row" style="margin-top:0"><label>Campaign difficulty</label><div class="seg">${[['story', 'Story'], ['standard', 'Standard'], ['brutal', 'Brutal']].map(([k, n]) => `<button data-go="campdiff:${k}" class="${App.campDiff === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+      <p class="fine" style="text-align:left">${App.campDiff === 'story' ? 'Rivals are one step easier and you start every battle with 100 extra Nutrient.' : App.campDiff === 'brutal' ? 'Rivals are one step harder, up to Brutal at the Cradle.' : 'The intended challenge.'} You can change this at any time.</p></div>
     <div class="races">${BASE_RACES.map(r => { const s = Camp.load(r); const status = !s ? 'Not started' : s.done ? 'Complete ✓' : `Act ${Camp.act(s)}: ${ACTS[Camp.act(s)]} · ${Object.values(s.held).filter(x => x === r).length} organs`;
-      return `<button class="race" data-go="camp:${r}" style="--rc:${RACES[r].col}"><img src="${iconFor(PFX[r] + '_core')}" alt=""><b>${RACES[r].name}</b><span>Starts in ${ORGANS[homeOf(r)].name}. ${status}</span></button>`; }).join('')}</div>
+      const sk = skinsUnlocked(r), si = LS.get('nt.skin.' + r);
+      return `<div><button class="race" data-go="camp:${r}" style="--rc:${RACES[r].col}"><img src="${iconFor(PFX[r] + '_core')}" alt=""><b>${RACES[r].name}</b><span>Starts in ${ORGANS[homeOf(r)].name}. ${status}${s ? ` · ${Object.keys(s.chal || {}).length} challenges` : ''}</span></button>
+        ${sk.length ? `<button class="tog" data-go="skin:${r}">Colors: ${si != null && sk[si] ? sk[si].name : 'Original'}</button>` : ''}</div>`; }).join('')}</div>
+    <p class="fine" style="text-align:left">Each organ has an optional challenge. Complete 1, 3 and 5 with a lifeform to unlock the Ashen, Abyssal and Gilded colors for it.</p>
     <div class="actions"><button class="btn ghost" data-go="menu">Back</button></div></div>`);
 }
 function campaignOpen(race) {
@@ -4722,6 +5108,7 @@ function atlasScreen() {
     panel = `<div class="opanel"><b>${esc(o.name)}</b> <span style="color:${h ? RACES[h].col : 'var(--mute)'}">${h ? (h === s.race ? 'Yours' : 'Held by ' + RACES[h].name) : 'Unclaimed'}</span>
       <p>${esc(o.desc)}</p>
       ${o.boonText ? `<p class="fine" style="text-align:left;margin:4px 0">Holding it: ${esc(o.boonText)}.</p>` : ''}
+      <p class="fine" style="text-align:left;margin:4px 0">Challenge: ${esc(organChallenge(k).text)} ${(s.chal || {})[k] ? '<b style="color:#8fe388">✓ done</b>' : '<span style="color:var(--mute)">(optional, unlocks colors)</span>'}</p>
       ${p ? `<p class="fine" style="text-align:left;margin:4px 0">You will face ${p.foes.map(f => `<b style="color:${RACES[f].col}">${RACES[f].name}</b>`).join(' and ')} (${p.diff})${p.mods.fever ? ', under fever' : ''}${p.mods.collapse ? ' and collapse' : ''}.</p>
         <button class="btn prime" data-go="invade:${k}">Invade</button>` :
         h === s.race ? '' : `<p class="fine" style="text-align:left;margin:4px 0">${k === 'crown' ? 'Opens in Act 4, after five victories.' : k === 'cradle' ? 'Opens after the Crown.' : 'Not reachable yet. Take a neighbouring organ first.'}</p>`}</div>`;
@@ -4776,6 +5163,7 @@ function invade(k) {
   map.name = o.name;
   newWorld(slots, { map, drift: arena && arena.drift, fog: true, mods: p.mods });
   const P = W.P[0];
+  if (App.campDiff === 'story') P.matter += 100;
   for (const b of Camp.boons()) {
     const B = b.boon;
     if (B.matter) P.matter += B.matter;
@@ -4796,6 +5184,8 @@ function campaignResult(won) {
   if (!s || !k) return;
   const before = Camp.act();
   if (won) {
+    const ch = organChallenge(k);
+    if (ch.ok(W.P[0], 0) && !(s.chal || {})[k]) { const before = skinsUnlocked(s.race).length; s.chal = Object.assign({}, s.chal, { [k]: 1 }); Camp.save(); App.chalMsg = `Challenge complete: ${ch.text}.` + (skinsUnlocked(s.race).length > before ? ` New color unlocked for ${RACES[s.race].name}!` : ''); }
     s.held[k] = s.race; s.wins++; s.life = Math.max(5, s.life - 9);
     if (k === 'crown') s.crown = 1;
     if (k === 'cradle') { s.done = 1; s.life = 0; }
@@ -4812,6 +5202,7 @@ function campaignResult(won) {
 }
 function campaignContinue() {
   const after = App.campAfter; App.campAfter = null;
+  if (App.chalMsg) { setTimeout(() => toast(App.chalMsg), 400); App.chalMsg = null; }
   if (after === 'ending') endingCard(); else if (after === 'story') storyCard(); else atlasScreen();
 }
 function storySoFar() {
@@ -4823,6 +5214,8 @@ function storySoFar() {
 function campAction(a, v) {
   switch (a) {
     case 'campaign': campaignPick(); return true;
+    case 'skin': { const sk = skinsUnlocked(v), cur = LS.get('nt.skin.' + v); const nx = cur == null ? 0 : cur + 1 >= sk.length ? null : cur + 1; if (nx == null) LS.del('nt.skin.' + v); else LS.set('nt.skin.' + v, nx); campaignPick(); return true; }
+    case 'campdiff': App.campDiff = v; LS.set('nt.campdiff', v); campaignPick(); return true;
     case 'camp': campaignOpen(v); return true;
     case 'atlas': atlasScreen(); return true;
     case 'organ': atlasSel = v; atlasScreen(); return true;
@@ -4857,11 +5250,11 @@ const Deep = {
     r += 70 * Math.exp(-(((z - DEEP_LEN) / 220) ** 2));
     return r;
   },
-  start(race) {
-    const seed = (Math.random() * 1e9) | 0, R = mulberry(seed), kinds = Object.keys(BODY_KINDS);
+  start(race, fixedSeed, daily) {
+    const seed = fixedSeed || ((Math.random() * 1e9) | 0), R = mulberry(seed), kinds = Object.keys(BODY_KINDS);
     this.st = { race, seed, z: 0, ox: 0, oy: 0, tx: 0, ty: 0, speed: 60, vit: 100, nut: 0, ess: 0, claimed: [], lost: 0, motes: 0,
       bodies: DEEP_BODIES.map((z, i) => ({ z, kind: kinds[(i + Math.floor(R() * 4)) % 4], done: 0, x: (R() - 0.5) * 30, y: (R() - 0.5) * 20 })),
-      objs: [], gen: 0, hitT: 0, flash: 0, heart: 0 };
+      objs: [], gen: 0, hitT: 0, flash: 0, heart: 0, daily: !!daily };
     this.ended = false;
     App.deep = true; App.inGame = false;
     hideScr(); $('hud').classList.add('hide'); $('deephud').classList.remove('hide');
@@ -4883,7 +5276,8 @@ const Deep = {
       for (let i = 0; i < 6; i++) { const z = z0 + R() * 200, a = R() * TAU, d = R() * 0.8; s.objs.push({ k: 'blood', z, a, d, spin: R() * TAU, vz: 22 + R() * 14 }); }
       const nm = 3 + Math.floor(R() * 3);
       for (let i = 0; i < nm; i++) { const z = z0 + R() * 200, a = R() * TAU, d = R() * 0.7; s.objs.push({ k: R() < 0.72 ? 'nut' : 'ess', z, a, d }); }
-      if (z0 > 300 && R() < 0.45 + depth * 0.45) { const n = 1 + Math.floor(R() * (1 + depth * 3)); for (let i = 0; i < n; i++) s.objs.push({ k: 'warden', z: z0 + R() * 200, a: R() * TAU, d: R() * 0.7 }); }
+      const dm = App.deepDiff === 'gentle' ? 0.55 : App.deepDiff === 'brutal' ? 1.45 : 1;
+      if (z0 > 300 && R() < (0.45 + depth * 0.45) * dm) { const n = 1 + Math.floor(R() * (1 + depth * 3 * dm)); for (let i = 0; i < n; i++) s.objs.push({ k: 'warden', z: z0 + R() * 200, a: R() * TAU, d: R() * 0.7 }); }
       s.gen += 200;
     }
   },
@@ -4917,7 +5311,7 @@ const Deep = {
       if (Math.abs(dz) > 4) continue;
       const dd = Math.hypot(w.x - px, w.y - py);
       if (o.k === 'blood' && dd < 6) { s.ox += (px - w.x) / (dd || 1) * 3; s.oy += (py - w.y) / (dd || 1) * 3; o.dead = 1; }
-      else if (o.k === 'warden' && dd < 6.5) { o.dead = 1; s.vit -= 12; s.flash = 0.45; vibrate(40); SFX.ui('alert'); }
+      else if (o.k === 'warden' && dd < 6.5) { o.dead = 1; s.vit -= App.deepDiff === 'gentle' ? 8 : App.deepDiff === 'brutal' ? 16 : 12; s.flash = 0.45; vibrate(40); SFX.ui('alert'); }
       else if ((o.k === 'nut' || o.k === 'ess') && dd < 7) { o.dead = 1; s.motes++; if (o.k === 'nut') s.nut += 12; else s.ess += 5; SFX.ui('select'); }
     }
     s.objs = s.objs.filter(o => !o.dead && o.z > s.z - 40);
@@ -5030,7 +5424,7 @@ const Deep = {
     const s = this.st;
     const rivals = BASE_RACES.filter(r => r !== s.race);
     const foes = final ? rivals.sort(() => Math.random() - 0.5).slice(0, 2) : [rivals[Math.floor(Math.random() * rivals.length)]];
-    const depth = s.z / DEEP_LEN, diff = final ? 'hard' : depth < 0.35 ? 'easy' : depth < 0.7 ? 'normal' : 'hard';
+    const depth = s.z / DEEP_LEN, diff = shiftDiff(final ? 'hard' : depth < 0.35 ? 'easy' : depth < 0.7 ? 'normal' : 'hard', App.deepDiff === 'gentle' ? -1 : App.deepDiff === 'brutal' ? 1 : 0);
     const slots = [{ race: s.race, team: 0, name: App.name() }, ...foes.map((r, i) => ({ race: r, team: i + 1, ai: diff, name: RACES[r].name }))];
     if (!prepareRaces(slots)) return;
     const seed = (Math.random() * 1e9) | 0;
@@ -5074,30 +5468,41 @@ const Deep = {
     const s = this.st; this.ended = true; App.paused = true;
     const best = LS.get('nt.deep.best') || 0, pct = Math.round(s.z / DEEP_LEN * 100);
     if (pct > best) LS.set('nt.deep.best', pct);
+    const score = pct * 10 + s.claimed.length * 300 + s.motes * 5 + Math.round(s.vit) * 2 + (won ? 1000 : 0);
+    let board = '';
+    if (s.daily) { const key = 'nt.daily.' + todayKey(), L = (LS.get(key) || []).concat([{ score, race: s.race, at: Date.now() }]).sort((a, b) => b.score - a.score).slice(0, 10); LS.set(key, L);
+      board = `<p class="fine" style="text-align:left;margin-top:10px">Today's daily dive, your best runs:</p><div class="tbl"><table>${L.map((e, i) => `<tr><td>${i + 1}.</td><td>${esc(RACES[e.race] ? RACES[e.race].name : e.race)}</td><td class="c">${e.score}</td></tr>`).join('')}</table></div>`; }
     SFX.ui(won ? 'win' : 'lose');
     show(`<div class="card end"><h2 style="color:${won ? '#8fe388' : '#ff5a4e'}">${won ? 'The Heart is yours' : 'Consumed by the Lumen'}</h2>
       <div class="sub">${won ? 'Your strain reached the centre of Varuun and took it.' : 'Your colony-cell dissolved into Varuun\'s bloodstream.'}</div>
-      <div class="tbl"><table><tr><td>Depth reached</td><td class="c">${pct}%</td></tr><tr><td>Bodies claimed</td><td class="c">${s.claimed.length}</td></tr><tr><td>Battles lost</td><td class="c">${s.lost}</td></tr><tr><td>Motes gathered</td><td class="c">${s.motes}</td></tr><tr><td>Best depth</td><td class="c">${Math.max(best, pct)}%</td></tr></table></div>
+      <div class="tbl"><table><tr><td>Depth reached</td><td class="c">${pct}%</td></tr><tr><td>Bodies claimed</td><td class="c">${s.claimed.length}</td></tr><tr><td>Battles lost</td><td class="c">${s.lost}</td></tr><tr><td>Motes gathered</td><td class="c">${s.motes}</td></tr><tr><td>Best depth</td><td class="c">${Math.max(best, pct)}%</td></tr><tr><td><b>Score</b></td><td class="c"><b>${score}</b></td></tr></table></div>${board}
       <div class="actions"><button class="btn ghost" data-go="menu-from-deep">Main menu</button><button class="btn prime" data-go="deep-again">Dive again</button></div></div>`);
   },
   leave() { App.deep = false; App.paused = false; this.st = null; $('deephud').classList.add('hide'); startDemo(); menuScreen(); }
 };
+function todayKey() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+function dailySeed() { return [...todayKey()].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 17) >>> 0 || 1; }
 function deepPick() {
   const best = LS.get('nt.deep.best');
   show(`<div class="card wide"><h2>The Deep Lumen</h2>
     <p class="status" style="text-align:left">Pilot a colony-cell down Varuun's vessels toward its heart. Drag to steer, hold Boost to surge. Gather Nutrient and Essence motes, dodge the Wardens, and dock with the bodies drifting in the chambers. Each one is a battle, and everything you gather and claim carries into the next.${best ? ` Your best dive reached ${best}%.` : ''}</p>
     ${raceCards(App.myRace, 'race')}
-    <div class="actions"><button class="btn ghost" data-go="menu">Back</button><button class="btn prime" data-go="deep-go">Dive</button></div></div>`);
+    <div class="row"><label>Difficulty</label><div class="seg">${[['gentle', 'Gentle'], ['standard', 'Standard'], ['brutal', 'Brutal']].map(([k, n]) => `<button data-go="deepdiff:${k}" class="${App.deepDiff === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+      <p class="fine" style="text-align:left">${App.deepDiff === 'gentle' ? 'Fewer Wardens that hit softer, and easier battles.' : App.deepDiff === 'brutal' ? 'Swarms of Wardens that hit hard, and harder battles.' : 'The intended dive.'}</p></div>
+    <div class="actions"><button class="btn ghost" data-go="menu">Back</button><button class="btn" data-go="deep-daily">Daily dive</button><button class="btn prime" data-go="deep-go">Dive</button></div>
+    <p class="fine">The daily dive is the same vessel for everyone today. ${(() => { const L = LS.get('nt.daily.' + todayKey()); return L && L.length ? `Your best today: ${L[0].score}.` : 'You have not tried today\'s yet.'; })()}</p></div>`);
   App.pickMode = 'deep';
 }
 function deepAction(a, v) {
   switch (a) {
     case 'deep': deepPick(); return true;
+    case 'deepdiff': App.deepDiff = v; LS.set('nt.deepdiff', v); deepPick(); return true;
     case 'deep-go': { const r = myRaceKey(); const race = isCustomPick(r) ? 'kytinos' : r; if (isCustomPick(r)) toast('Custom races join the Deep Lumen soon. Diving as Kytinos.'); Deep.start(race); return true; }
     case 'deep-pass': { const b = Deep.nearBody(); if (b) b.done = 1; App.paused = false; hideScr(); return true; }
     case 'deep-dock': { const b = Deep.st.bodies[+v]; if (b) { hideScr(); Deep.battle(b.kind, false, b.z); } return true; }
     case 'deep-final': hideScr(); Deep.battle('heart', true); return true;
-    case 'deep-again': { const race = Deep.st.race; hideScr(); App.paused = false; Deep.start(race); return true; }
+    case 'deep-again': { const race = Deep.st.race, dl = Deep.st.daily; hideScr(); App.paused = false; Deep.start(race, dl ? dailySeed() : 0, dl); return true; }
+    case 'deep-daily': { const r = myRaceKey(); Deep.start(isCustomPick(r) ? 'kytinos' : r, dailySeed(), true); return true; }
     case 'menu-from-deep': Deep.leave(); return true;
     case 'deep-resume': App.paused = false; hideScr(); return true;
     case 'deep-abandon': Deep.leave(); return true;
@@ -5127,6 +5532,219 @@ window.addEventListener('keyup', e => { if (App.deep) { Deep.keys[e.key] = false
   });
 })();
 
+/* ================= REPLAYS =================
+   The sim is deterministic, so a replay is just the start state plus every player order with its tick. */
+const REC = {
+  on: false, start: null, cmds: [], meta: null,
+  begin() {
+    if (!W || App.role === 'guest' || App.role === 'demo' || App.role === 'replay' || App.tut) { this.on = false; return; }
+    this.on = true; this.start = JSON.stringify(worldSnap()); this.cmds = [];
+    this.meta = { date: Date.now(), map: (W.map && W.map.name) || 'Battle', players: W.P.map(p => ({ race: p.race, name: p.name || (p.ai ? 'AI' : 'You'), team: p.team })) };
+  },
+  log(o, c) { if (this.on && W) this.cmds.push([W.tick, o, JSON.parse(JSON.stringify(c))]); },
+  finish() {
+    if (!this.on || !W) return null;
+    this.on = false;
+    const r = { v: 1, start: this.start, cmds: this.cmds, meta: Object.assign(this.meta, { ticks: W.tick, over: W.over, custom: W.custom || [] }) };
+    saveReplay(r); return r;
+  }
+};
+function replays() { const a = LS.get('nt.replays'); return Array.isArray(a) ? a : []; }
+function saveReplay(r) { let a = replays(); a.unshift(r); while (a.length) { if (LS.set('nt.replays', a)) return; a.pop(); } }
+function raceName(k) { return RACES[k] ? RACES[k].name : 'Custom'; }
+function replaysScreen() {
+  const a = replays();
+  show(`<div class="card wide"><h2>Replays</h2>
+    <p class="status" style="text-align:left">Your last few matches are kept here automatically. Watch them back with full vision, or export one to share.</p>
+    ${a.length ? a.map((r, i) => `<div class="slot" style="flex-wrap:wrap"><b style="flex:1">${esc(r.meta.map)}</b><span class="fine">${new Date(r.meta.date).toLocaleDateString()} · ${Math.round(r.meta.ticks / 20 / 60)} min</span>
+      <div style="flex-basis:100%;font-size:12.5px;color:var(--mute)">${r.meta.players.map(p => esc(raceName(p.race))).join(' vs ')}</div>
+      <button class="tog" data-go="rv-watch:${i}">Watch</button><button class="tog" data-go="rv-export:${i}">Export</button><button class="tog" data-go="rv-del:${i}">Delete</button></div>`).join('') : '<p class="fine">No replays yet. Finish a match and it will appear here.</p>'}
+    <div class="actions"><button class="btn ghost" data-go="menu">Back</button><button class="btn" data-go="rv-import">Import a replay file</button></div></div>`);
+}
+const RV = { r: null, i: 0, speed: 1, playing: true, acc: 0 };
+function watchReplay(r) {
+  try { registerMatchRaces(r.meta.custom || []); restoreWorld(JSON.parse(r.start)); } catch (e) { toast('That replay could not be loaded.'); return; }
+  Object.assign(RV, { r, i: 0, speed: 1, playing: true, acc: 0 });
+  App.role = 'replay'; App.spectate = true; App.returnTo = ''; App.tut = null; App.camp = null; App.exp = null;
+  W.fog = false; fogVer++;
+  startGame(-1);
+  $('rvCtl').classList.remove('hide');
+}
+// Called from the sim pump instead of the live sim while watching.
+function replayPump(dt) {
+  if (!RV.r || !RV.playing) return;
+  RV.acc += dt * RV.speed;
+  let n = 0;
+  while (RV.acc >= STEP && n < 400) {
+    RV.acc -= STEP; n++;
+    if (W.tick >= RV.r.meta.ticks) { RV.playing = false; $('rvPlay').textContent = 'Play'; break; }
+    const C = RV.r.cmds;
+    while (RV.i < C.length && C[RV.i][0] === W.tick) { applyCmd(C[RV.i][1], C[RV.i][2]); RV.i++; }
+    tick(STEP); drainFx();
+  }
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-rv]'); if (!b) return;
+  const a = b.dataset.rv;
+  if (a === 'play') { if (W.tick >= RV.r.meta.ticks) watchReplay(RV.r); else { RV.playing = !RV.playing; } $('rvPlay').textContent = RV.playing ? 'Pause' : 'Play'; }
+  if (a === 'speed') { RV.speed = RV.speed === 1 ? 4 : RV.speed === 4 ? 16 : 1; b.textContent = RV.speed + '×'; }
+  if (a === 'restart') watchReplay(RV.r);
+  if (a === 'exit') { if (App.role === 'replay') { RV.r = null; quitToMenu(); } else quitToMenu(); }
+});
+function exportReplay(r) {
+  const blob = new Blob([JSON.stringify(r)], { type: 'application/json' }), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `necrotroph-replay-${new Date(r.meta.date).toISOString().slice(0, 10)}.json`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function importReplay() {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = async () => { try { const r = JSON.parse(await inp.files[0].text()); if (!r || r.v !== 1 || !r.start) throw 0; saveReplay(r); toast('Replay imported'); replaysScreen(); } catch (e) { toast('That file is not a Necrotroph replay.'); } };
+  inp.click();
+}
+/* ================= SPECTATING ================= */
+function specHud() {
+  const now = performance.now(); if (now - (specHud.t || 0) < 300) return; specHud.t = now;
+  const np = V.np(), parts = [];
+  for (let i = 0; i < np; i++) { const p = V.player(i); if (!p) continue; const nm = V.guest() ? (G.players[i].name || raceName(p.race)) : (W.P[i].name || raceName(p.race));
+    parts.push(`<span style="color:${(RACES[p.race] || RACES.kytinos).col}">${esc(nm)} ${p.dead ? '✕' : `<b>${(p.st && p.st.k) || 0}</b> kills`}</span>`); }
+  $('specInfo').innerHTML = (App.role === 'replay' ? '<span>Replay</span>' : '<span>Spectating</span>') + parts.join('');
+  if (App.role === 'replay' && RV.r) { $('rvProg').style.width = Math.min(100, W.tick / RV.r.meta.ticks * 100) + '%'; const s = Math.floor(W.time); $('rvTime').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
+}
+/* ================= PINGS ================= */
+const PINGS = [];
+const PING_TXT = { attack: 'Attack here', help: 'Help me', retreat: 'Retreat', look: 'Look here' };
+let pingKind = null;
+$('bPing').addEventListener('click', () => { const pb = $('pingbar'); pb.classList.toggle('hide'); pingKind = null; });
+$('pingbar').addEventListener('click', e => { const b = e.target.closest('[data-ping]'); if (!b) return; pingKind = b.dataset.ping; $('pingbar').classList.add('hide'); toast(`Tap the map to place: ${PING_TXT[pingKind]}`); });
+// Returns true when a tap was used to place a ping.
+function pingTap(x, y) {
+  if (!pingKind) return false;
+  const m = { x: x | 0, y: y | 0, k: pingKind }; pingKind = null;
+  if (V.guest()) { netSend(Object.assign({ t: 'ping' }, m)); showPing(Object.assign({ name: App.name(), from: App.seat }, m)); }
+  else Host.relayPing(App.seat, m);
+  return true;
+}
+function showPing(p) {
+  PINGS.push({ x: p.x, y: p.y, k: p.k, t0: performance.now() });
+  if (PINGS.length > 8) PINGS.shift();
+  if (p.from !== App.seat) { toast(`${p.name}: ${PING_TXT[p.k] || 'Look here'}`); SFX.ui('step'); vibrate(30); }
+}
+function drawPings(c, now) {
+  for (let i = PINGS.length - 1; i >= 0; i--) {
+    const p = PINGS[i], a = (now - p.t0) / 1000; if (a > 5) { PINGS.splice(i, 1); continue; }
+    const col = p.k === 'attack' ? '255,90,78' : p.k === 'help' ? '255,224,138' : p.k === 'retreat' ? '110,190,255' : '236,227,208';
+    for (let k = 0; k < 2; k++) { const r = 20 + ((a * 50 + k * 30) % 60); c.strokeStyle = `rgba(${col},${Math.max(0, 1 - r / 80) * (1 - a / 5)})`; c.lineWidth = 3 / cam.z; c.beginPath(); c.arc(p.x, p.y, r / cam.z, 0, TAU); c.stroke(); }
+    c.fillStyle = `rgba(${col},${1 - a / 5})`; c.font = `700 ${13 / cam.z}px Oxanium,sans-serif`; c.textAlign = 'center'; c.fillText(PING_TXT[p.k] || '', p.x, p.y - 30 / cam.z);
+  }
+}
+/* ================= VARUUN'S EVENTS: announcements ================= */
+let evSeen = null;
+function watchEvents() {
+  const ev = V.guest() ? G.lastEv : (W && W.lastEv);
+  if (!ev || ev === evSeen || (evSeen && ev.t === evSeen.t && ev.k === evSeen.k)) return;
+  evSeen = ev;
+  const nm = o => o === App.seat ? 'You' : V.guest() ? ((G.players[o] || {}).name || 'A rival') : ((W.P[o] || {}).name || raceName(V.race(o)));
+  const msg = { surge: 'Varuun\'s heart surges! Everything is thrown outward from the centre.', sweep: 'A Warden sweep is coming in from the edge of the map.', bloom: 'A nutrient bloom has surfaced.',
+    fever: 'Varuun runs a fever: everyone moves faster and slowly burns for 30 seconds.', pod: `${nm(ev.o)} won over a Symbiont Pod.`, rogue: `${nm(ev.o)} abandoned the fight. Their swarm has gone rogue.`, wave: `Wave ${ev.n} is coming.` }[ev.k];
+  if (msg) { toast(msg); SFX.ui(ev.k === 'wave' || ev.k === 'sweep' || ev.k === 'surge' ? 'alert' : 'step'); }
+  if (ev.k === 'bloom' && ev.x != null) PINGS.push({ x: ev.x, y: ev.y, k: 'look', t0: performance.now() });
+}
+function heroBusy(t, me) {
+  if (V.units().some(u => u.o === App.seat && u.type === t && u.hp > 0)) return true;
+  return Object.values(me.qs || {}).some(q => (q.q || []).some(x => TYPES[x[0]] === t));
+}
+/* ================= RECAP CHART ================= */
+function drawRecap(cv2, hist, np) {
+  if (!cv2 || !hist || hist.length < 2) return;
+  const d = Math.min(2, window.devicePixelRatio || 1), w = cv2.clientWidth, h = cv2.clientHeight;
+  cv2.width = w * d; cv2.height = h * d;
+  const g = cv2.getContext('2d'); g.scale(d, d);
+  const half = h / 2, T = hist[hist.length - 1][0] || 1;
+  const charts = [{ k: 0, label: 'Army' }, { k: 1, label: 'Nutrient gathered' }];
+  charts.forEach((ch, ci) => {
+    const y0 = ci * half, max = Math.max(1, ...hist.flatMap(r => r[1].map(v => v[ch.k])));
+    g.fillStyle = '#a89c86'; g.font = '600 10px Oxanium,sans-serif'; g.fillText(ch.label, 6, y0 + 12);
+    for (let o = 0; o < np; o++) {
+      g.strokeStyle = (RACES[V.race(o)] || RACES.kytinos).col; g.lineWidth = o === App.seat ? 2.5 : 1.5; g.beginPath();
+      hist.forEach((r, i) => { const x = 6 + (r[0] / T) * (w - 12), y = y0 + half - 4 - (r[1][o] ? r[1][o][ch.k] : 0) / max * (half - 20); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+      g.stroke();
+    }
+  });
+}
+/* ================= SURVIVAL ================= */
+function survivalPick() {
+  App.pickMode = 'survival';
+  const best = LS.get('nt.surv.best') || 0, dd = App.survDiff || 'standard';
+  show(`<div class="card wide"><h2>Survival</h2>
+    <p class="status" style="text-align:left">Varuun has noticed you. Every 70 seconds a bigger wave of Wardens marches on your core, and from wave 4 the Brutes come too. Every Warden you kill feeds you a little Nutrient. Hold out as long as you can.${best ? ` Your best: ${best} waves.` : ''}</p>
+    ${raceCards(App.myRace, 'race')}
+    <div class="row"><label>Difficulty</label><div class="seg">${[['gentle', 'Gentle'], ['standard', 'Standard'], ['brutal', 'Brutal']].map(([k, n]) => `<button data-go="survdiff:${k}" class="${dd === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+    <div class="actions"><button class="btn ghost" data-go="menu">Back</button><button class="btn prime" data-go="surv-go">Begin</button></div></div>`);
+}
+function startSurvival() {
+  const slots = [{ race: myRaceKey(), team: 0, name: App.name() }];
+  if (!prepareRaces(slots)) return;
+  newWorld(slots, { map: genMapWith((Math.random() * 1e9) | 0, 64, 2, { rock: 6, thick: 4, bog: 3, lairs: 0 }, 'The Wound'), fog: true, survival: { wave: 0, next: 60, diff: App.survDiff || 'standard' }, pods: false, events: false, custom: App.matchCustom });
+  App.role = 'solo'; App.returnTo = ''; App.tut = null; App.camp = null; App.exp = null; App.surv = 1;
+  startGame(0);
+}
+/* ================= SHARE LINKS ================= */
+async function packShare(obj) {
+  const txt = JSON.stringify(obj);
+  try {
+    const cs = new Blob([txt]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+    const buf = new Uint8Array(await new Response(cs).arrayBuffer());
+    let s = ''; for (const b of buf) s += String.fromCharCode(b);
+    return 'z' + btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  } catch (e) { return 'j' + btoa(unescape(encodeURIComponent(txt))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+}
+async function unpackShare(code) {
+  const b64 = code.slice(1).replace(/-/g, '+').replace(/_/g, '/'), bin = atob(b64);
+  if (code[0] === 'j') return JSON.parse(decodeURIComponent(escape(bin)));
+  const bytes = Uint8Array.from(bin, ch => ch.charCodeAt(0));
+  const ds = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return JSON.parse(await new Response(ds).text());
+}
+async function shareLink(kind, obj) {
+  const url = location.origin + location.pathname + '#nt=' + kind + '.' + await packShare(obj);
+  try { await navigator.clipboard.writeText(url); toast('Share link copied'); } catch (e) { prompt('Copy this link:', url); }
+}
+async function openShared() {
+  const m = /#nt=([mr])\.(.+)$/.exec(location.hash); if (!m) return false;
+  history.replaceState(null, '', location.pathname + location.search);
+  try {
+    const obj = await unpackShare(m[2]);
+    if (m[1] === 'm') { const map = mapFromJSON(obj); map.id = 'u' + rid(8); saveCustomMap(map); toast(`Map added: ${map.name}`); openEditor(map); }
+    else { const v = validateRace(obj); if (!v.ok) throw new Error(v.errs[0]); obj.id = obj.id || 'x' + rid(8); saveCustomRace(obj); toast(`Race added: ${obj.name}`); rbAction('rb-edit', obj.id); }
+    return true;
+  } catch (e) { toast('That share link could not be opened.'); return false; }
+}
+/* ================= CAMPAIGN CHALLENGES AND SKINS ================= */
+const CHALLENGES = [
+  { id: 'noworker', text: 'Win without losing a worker', ok: P => !(P.st.wl > 0) },
+  { id: 'fast', text: 'Win in under 9 minutes', ok: () => W.time < 540 },
+  { id: 'nomut', text: 'Win without mutating', ok: P => !Object.keys(P.up).length },
+  { id: 'holds', text: 'Win while holding 2 footholds', ok: (P, o) => W.units.filter(u => u.o === o && U[u.type].post && u.build == null).length >= 2 },
+  { id: 'hero', text: 'Win with your hero alive', ok: (P, o) => W.units.some(u => u.o === o && U[u.type].hero && u.hp > 0) }
+];
+function organChallenge(k) { const i = Object.keys(ORGANS).indexOf(k); return CHALLENGES[i % CHALLENGES.length]; }
+const SKINS = [
+  { name: 'Ashen', col: '#9a9a9a', col2: '#efe8da', dark: '#3a3a3a' },
+  { name: 'Abyssal', col: '#3a5bd9', col2: '#8ef0ff', dark: '#141c44' },
+  { name: 'Gilded', col: '#d4a52a', col2: '#fff3b0', dark: '#4a3810' }
+];
+const SKIN_AT = [1, 3, 5];
+function skinsUnlocked(race) { const s = Camp.load(race); const n = s ? Object.keys(s.chal || {}).length : 0; return SKINS.filter((_, i) => n >= SKIN_AT[i]); }
+const PAL_BASE = {};
+function applySkin(race) {
+  for (const r of Object.keys(PAL_BASE)) PAL[r] = PAL_BASE[r];
+  if (!RACES[race] || !PAL[race]) return;
+  const i = LS.get('nt.skin.' + race), sk = i != null && skinsUnlocked(race)[i];
+  if (!sk) return;
+  PAL_BASE[race] = PAL[race];
+  PAL[race] = { b: sk.col, a: sk.col2, d: sk.dark };
+}
+
 /* ================= MAIN LOOP ================= */
 let acc = 0, snapT = 0, lastCoreHp = 0, coreAlertT = 0;
 function drainFx() {
@@ -5139,6 +5757,7 @@ function drainFx() {
 let simLast = performance.now();
 function simPump() {
   const now = performance.now(), dt = Math.min(1, (now - simLast) / 1000); simLast = now;
+  if (App.role === 'replay') { const now = performance.now(); replayPump(Math.min(0.25, (now - (simPump.last || now)) / 1000)); simPump.last = now; return; }
   if (App.role === 'guest' || !W || App.editing || App.testing || App.deep) return;
   const demo = App.role === 'demo';
   const run = W.over < 0 && !App.paused && !(App.role === 'host' && Net.state !== 'online');
@@ -5168,7 +5787,7 @@ function frame(now) {
   if (App.inGame) {
     const over = V.over(), me = V.player(App.seat);
     if (over === -2 && !App.endShown) { App.endShown = true; setTimeout(() => endScreen(true, 'The host left the match.'), 600); }
-    else if (over >= 0 && !App.endShown) { App.endShown = true; setTimeout(() => endScreen(over === V.myTeam()), 900); }
+    else if (over >= 0 && !App.endShown && App.role !== 'replay') { App.endShown = true; setTimeout(() => endScreen(over === V.myTeam()), 900); }
     else if (over < 0 && me && me.dead && !App.elimShown) { App.elimShown = true; setTimeout(elimScreen, 900); }
     const core = me && V.unit(me.core);
     if (core) {
@@ -5182,6 +5801,8 @@ function frame(now) {
   startDemo();
   if (q) { App.joinCode = q.toUpperCase().slice(0, 4); history.replaceState(null, '', location.pathname); pickScreen('join'); }
   else menuScreen();
+  if (location.hash.startsWith('#nt=')) openShared();
+  window.addEventListener('hashchange', () => { if (location.hash.startsWith('#nt=')) openShared(); });
   requestAnimationFrame(frame);
 })();
 </script>
