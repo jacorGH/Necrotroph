@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Necrotroph has moved</title><link rel="canonical" href="https://justforfun-games.github.io/necrotroph/">
+<script>
+(function () {
+  var to = "https://justforfun-games.github.io/necrotroph/", base = "/necrotroph/", carry = false, hash = location.hash;
+  var p = location.pathname, rest = p.toLowerCase().indexOf(base) === 0 ? p.slice(base.length) : '';
+  if (carry) {
+    to += rest.replace(/^index\.html$/, '') + location.search;
+    // bring the saved games along; the game keeps any it already has at the new address
+    try { var o = {}, n = 0; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); o[k] = localStorage.getItem(k); n++; }
+      var s = JSON.stringify(o); if (n && s.length < 1500000) hash = '#gm-saves=' + encodeURIComponent(btoa(unescape(encodeURIComponent(s)))); } catch (e) {}
+  }
+  location.replace(to + hash);
+})();
+</script></head>
+<body style="font:17px system-ui;padding:40px 24px;text-align:center"><p>Necrotroph has moved to <a href="https://justforfun-games.github.io/necrotroph/">https://justforfun-games.github.io/necrotroph/</a>.</p></body></html>
